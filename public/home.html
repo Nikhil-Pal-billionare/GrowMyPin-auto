@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>My GrowMyPin home</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#09423D">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="/brand.css">
+<link rel="stylesheet" href="/style.css">
+<style>
+  :root { --night: #061815; --gold: #FFC75A; --mari: #F29A2E; --card: #FFFFFF; }
+  body.h-body { background: #F6F5FB; min-height: 100vh; }
+  .h-wrap { max-width: 1120px; margin: 0 auto; padding: 22px 16px 70px; display: grid; gap: 18px; }
+  .h-nav-r { display: flex; align-items: center; gap: 10px; }
+  .h-nav-r a.h-link { font-weight: 700; font-size: .92rem; color: var(--muted); text-decoration: none; }
+  .h-nav-r a.h-link:hover { color: var(--green-text); }
+  .h-av { width: 36px; height: 36px; border-radius: 50%; background: var(--grad); color: #fff; display: grid; place-items: center; font-family: var(--f-display); font-weight: 800; }
+  .h-out { background: none; border: 1.5px solid var(--line); border-radius: 999px; padding: 7px 12px; font: inherit; font-weight: 700; font-size: .85rem; cursor: pointer; color: var(--charcoal); }
+
+  .h-card { background: var(--card); border: 1px solid var(--line); border-radius: 24px; padding: clamp(18px, 3vw, 26px); min-width: 0; }
+  .h-card h2 { font-size: clamp(1.15rem, 2.4vw, 1.4rem); margin: 0; }
+  .h-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+  .h-muted { color: var(--muted); font-size: .92rem; }
+
+  /* hero */
+  .h-hero { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 18px; align-items: stretch; }
+  .h-hello { padding: clamp(6px, 2vw, 14px) 4px; display: grid; align-content: center; gap: 10px; }
+  .h-hello h1 { font-size: clamp(2rem, 5vw, 3.1rem); line-height: 1.04; }
+  .h-hello p { color: var(--muted); font-size: 1.05rem; max-width: 52ch; }
+  .h-setup { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center; }
+  .ring { width: 92px; height: 92px; position: relative; }
+  .ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring circle { fill: none; stroke-width: 9; }
+  .ring .bg { stroke: var(--lav-deep); }
+  .ring .fg { stroke: url(#ringGrad); stroke-linecap: round; transition: stroke-dashoffset 1.2s cubic-bezier(.2,.8,.2,1); }
+  .ring b { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--f-display); font-size: 1.35rem; color: var(--charcoal); }
+  .steps-l { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; font-size: .9rem; }
+  .steps-l li { display: flex; align-items: center; gap: 9px; min-height: 28px; }
+  .steps-l .ck { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--line); flex: none; display: grid; place-items: center; }
+  .steps-l li.ok .ck { background: var(--green); border-color: var(--green); }
+  .steps-l li.ok .ck::after { content: ""; width: 8px; height: 4px; border: 2px solid #fff; border-top: 0; border-right: 0; transform: rotate(-45deg) translate(1px, -1px); }
+  .steps-l li.ok span { color: var(--muted); text-decoration: line-through; text-decoration-color: rgba(89,96,110,.4); }
+  .steps-l button, .steps-l a.go { margin-left: auto; border: 0; background: var(--mint); color: var(--green-text); font: inherit; font-weight: 700; font-size: .8rem; padding: 5px 11px; border-radius: 999px; cursor: pointer; text-decoration: none; white-space: nowrap; }
+
+  /* offer banner */
+  .h-offer { position: relative; overflow: hidden; border-radius: 22px; padding: 18px 20px; color: #fff; display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    background: radial-gradient(80% 140% at 0% 100%, #3A2108 0, transparent 60%), radial-gradient(60% 120% at 100% 0%, #0F3B35 0, transparent 60%), var(--night); }
+  .h-offer .flame { width: 14px; height: 22px; border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%; background: radial-gradient(circle at 50% 72%, #FFFBE6 0, #FFE08A 30%, var(--mari) 75%); box-shadow: 0 0 22px 6px rgba(255,199,90,.45); flex: none; animation: hflick 1.2s ease-in-out infinite alternate; }
+  .h-offer .tx { flex: 1; min-width: 220px; }
+  .h-offer .tx b { display: block; font-family: var(--f-display); font-size: 1.12rem; letter-spacing: -.02em; color: var(--gold); }
+  .h-offer .tx span { color: #D9E7E3; font-size: .95rem; }
+  .h-offer .cd { font-family: var(--f-mono); font-size: .9rem; color: #F4E7CF; background: rgba(255,255,255,.08); border: 1px solid rgba(255,199,90,.25); border-radius: 12px; padding: 8px 12px; white-space: nowrap; }
+  .btn-gold { background: linear-gradient(135deg, #FFE08A, var(--gold) 40%, var(--mari)); color: #2A1503; box-shadow: 0 14px 30px -14px rgba(242,154,46,.9); }
+  .btn-gold:hover { transform: translateY(-2px); }
+  .h-offer.done { background: linear-gradient(135deg, #09423D, #0F8A76 70%, #14B88F); }
+  .h-offer.done .tx b { color: #fff; }
+
+  /* store + goal */
+  .h-row { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 18px; }
+  .shops { display: grid; gap: 10px; }
+  .shop { display: grid; grid-template-columns: 46px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 12px; border-radius: 16px; background: #FAFAFD; border: 1px solid #EEF0F5; }
+  .shop .ic { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; background: var(--mint); color: var(--green-text); font-family: var(--f-display); font-weight: 800; }
+  .shop .ic.etsy { background: #FFE9DC; color: #B84A12; }
+  .shop .ic.ebay { background: #E6ECFF; color: #3348A8; }
+  .shop .ic.shopify { background: #E3F5E7; color: #1E7A3A; }
+  .shop b { display: block; font-family: var(--f-display); font-size: 1rem; }
+  .shop .u { font-size: .85rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
+  .shop a.open { font-weight: 700; font-size: .85rem; color: var(--green-text); white-space: nowrap; }
+  .h-form { display: grid; gap: 12px; }
+  .h-form label { display: grid; gap: 6px; font-weight: 700; font-size: .88rem; color: var(--charcoal); }
+  .h-form input { border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 13px; font: inherit; background: #fff; width: 100%; }
+  .h-form input:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 4px rgba(15,150,130,.15); }
+  .pchips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .pchip { border: 1.5px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 14px; font: inherit; font-weight: 700; cursor: pointer; color: var(--muted); }
+  .pchip.on { background: var(--charcoal); color: #fff; border-color: var(--charcoal); }
+  .h-err { color: #C02D52; font-weight: 600; font-size: .88rem; min-height: 1.2em; }
+  .linkish { background: none; border: 0; padding: 0; font: inherit; color: var(--green-text); font-weight: 700; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+  .goal { display: grid; gap: 12px; }
+  .goal-big { font-family: var(--f-display); font-weight: 800; font-size: clamp(2.2rem, 5vw, 3rem); letter-spacing: -.04em; line-height: 1; color: var(--charcoal); }
+  .goal-big small { font-size: .38em; letter-spacing: 0; color: var(--muted); font-weight: 700; margin-left: 6px; }
+  .gbars { display: grid; gap: 8px; }
+  .bar-r { display: grid; grid-template-columns: 74px 1fr 60px; gap: 10px; align-items: center; font-size: .82rem; color: var(--muted); font-weight: 600; }
+  .bar-r i { display: block; height: 10px; border-radius: 6px; background: var(--lav); overflow: hidden; position: relative; }
+  .bar-r i::after { content: ""; position: absolute; inset: 0; width: var(--w, 0%); background: var(--grad); border-radius: 6px; transition: width 1.2s cubic-bezier(.2,.8,.2,1); }
+  .bar-r.goal-r i::after { background: linear-gradient(90deg, #FFE08A, var(--mari)); }
+  .bar-r b { text-align: right; color: var(--charcoal); }
+
+  /* pins */
+  .pins { columns: 4 170px; column-gap: 12px; }
+  .pin-c { break-inside: avoid; margin: 0 0 12px; display: block; border-radius: 16px; overflow: hidden; background: var(--lav); text-decoration: none; color: var(--ink); position: relative; opacity: 0; transform: translateY(14px); animation: hrise .6s cubic-bezier(.2,.8,.2,1) forwards; }
+  .pin-c img { display: block; width: 100%; height: auto; min-height: 120px; object-fit: cover; transition: transform .5s ease; }
+  .pin-c:hover img { transform: scale(1.04); }
+  .pin-c span { position: absolute; left: 0; right: 0; bottom: 0; padding: 26px 10px 9px; font-size: .78rem; font-weight: 600; color: #fff; background: linear-gradient(transparent, rgba(0,0,0,.65)); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .src { display: inline-flex; align-items: center; gap: 7px; font-size: .82rem; font-weight: 700; color: var(--green-text); background: var(--mint); padding: 5px 11px; border-radius: 999px; }
+  .src i { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: livePing 1.6s infinite; }
+  .empty { display: grid; justify-items: center; text-align: center; gap: 12px; padding: 26px 10px; border: 2px dashed var(--line); border-radius: 18px; }
+  .empty .ghost { display: flex; gap: 8px; }
+  .empty .ghost i { width: 46px; border-radius: 10px; background: linear-gradient(180deg, var(--lav), var(--lav-deep)); }
+  .empty .ghost i:nth-child(1) { height: 70px; } .empty .ghost i:nth-child(2) { height: 92px; } .empty .ghost i:nth-child(3) { height: 60px; }
+
+  /* prediction */
+  .pred-top { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 8px; }
+  .pred-num { font-family: var(--f-display); font-weight: 800; letter-spacing: -.04em; font-size: clamp(2rem, 5.4vw, 3.2rem); line-height: 1; color: var(--charcoal); }
+  .pred-num em { font-style: normal; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .pred-num small { font-size: .4em; color: var(--muted); letter-spacing: 0; margin: 0 .3em; }
+  .tabs-h { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tab-h { border: 1.5px solid var(--line); background: #fff; border-radius: 999px; padding: 7px 13px; font: inherit; font-weight: 700; font-size: .86rem; cursor: pointer; color: var(--muted); }
+  .tab-h.on { background: var(--charcoal); color: #fff; border-color: var(--charcoal); }
+  .seg-h { display: inline-flex; background: var(--lav); border-radius: 999px; padding: 4px; position: relative; }
+  .seg-h button { position: relative; z-index: 1; border: 0; background: none; font: inherit; font-weight: 700; font-size: .86rem; padding: 7px 14px; border-radius: 999px; cursor: pointer; color: var(--muted); transition: color .25s; }
+  .seg-h button.on { color: #fff; }
+  .seg-h .knob { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); border-radius: 999px; background: var(--grad); transition: transform .4s cubic-bezier(.2,.8,.2,1); }
+  .seg-h.r6 .knob { transform: translateX(100%); }
+  .pred-bar { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; align-items: center; margin: 12px 0 6px; }
+  .hchart { width: 100%; height: auto; display: block; overflow: visible; }
+  .stats3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 8px; }
+  .stats3 div { border-radius: 16px; background: var(--lav); padding: 12px 14px; display: grid; gap: 2px; }
+  .stats3 b { font-family: var(--f-display); font-size: clamp(1.1rem, 2.6vw, 1.4rem); color: var(--charcoal); letter-spacing: -.02em; }
+  .stats3 small { color: var(--muted); font-size: .8rem; line-height: 1.3; }
+  .stats3 .warm { background: #FFF4E0; }
+  .fine { font-size: .78rem; color: var(--muted); margin-top: 10px; }
+  .pred-cta { margin-top: 16px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; padding: 16px; border-radius: 18px; background: linear-gradient(135deg, #F1EEFB, #E6F6F0); }
+  .pred-cta p { flex: 1; min-width: 220px; font-weight: 600; color: var(--charcoal); }
+  .h-ok { font-weight: 700; color: var(--green-text); }
+
+  /* how */
+  .how { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  .how li { list-style: none; background: #FAFAFD; border: 1px solid #EEF0F5; border-radius: 18px; padding: 16px; display: grid; gap: 6px; }
+  .how ol { margin: 0; padding: 0; display: contents; }
+  .how .n { width: 30px; height: 30px; border-radius: 50%; background: var(--charcoal); color: #fff; display: grid; place-items: center; font-family: var(--f-display); font-weight: 800; font-size: .9rem; }
+  .how b { font-family: var(--f-display); font-size: 1rem; color: var(--charcoal); }
+  .how span { color: var(--muted); font-size: .9rem; }
+
+  .skel { background: linear-gradient(90deg, #EEF0F5 25%, #F7F8FB 50%, #EEF0F5 75%); background-size: 200% 100%; animation: shimmer 1.2s linear infinite; border-radius: 12px; color: transparent !important; }
+  .h-load { min-height: 60vh; display: grid; place-items: center; }
+  @keyframes hrise { to { opacity: 1; transform: none; } }
+  @keyframes hflick { from { transform: scale(1) rotate(-2deg); } to { transform: scale(.94, 1.06) rotate(2deg); } }
+
+  @media (max-width: 900px) {
+    .h-hero, .h-row { grid-template-columns: 1fr; }
+    .how { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 560px) {
+    .h-nav-r a.h-link.hide-sm { display: none; }
+    .h-setup { grid-template-columns: 1fr; justify-items: start; }
+    .ring { width: 78px; height: 78px; }
+    .stats3 { grid-template-columns: 1fr; }
+    .pins { columns: 2 140px; column-gap: 10px; }
+    .shop { grid-template-columns: 40px minmax(0, 1fr); }
+    .shop .ic { width: 40px; height: 40px; }
+    .shop a.open { grid-column: 2; }
+    .h-offer .cd { order: 3; }
+  }
+  @media (prefers-reduced-motion: reduce) { .pin-c { opacity: 1; transform: none; animation: none; } .h-offer .flame { animation: none; } }
+</style>
+</head>
+<body class="h-body">
+<div class="lg-bg" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#09423D"/><stop offset=".6" stop-color="#0F8A76"/><stop offset="1" stop-color="#34D6A8"/></linearGradient></defs></svg>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="logo" href="/home.html" aria-label="GrowMyPin home">
+      <svg class="logo-mark" viewBox="0 0 136 128" aria-hidden="true"><defs><linearGradient id="gmpArrow" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#09423D"/><stop offset=".55" stop-color="#0F8A76"/><stop offset="1" stop-color="#14B88F"/></linearGradient></defs><path d="M134 0 L110 29 L66 29 C45 29 30 45 30 64 C30 84 44 100 60 105 L39 127 C16 121 0 95 0 64 C0 29 28 0 66 0 Z" fill="#24292F"/><path d="M75 50 L128 50 Q135 50 135 57 L135 120 Q135 127 128 127 L112 127 L112 96 L80 128 L48 128 L97 76 L51 76 Z" fill="url(#gmpArrow)"/></svg>
+      <span class="logo-text">GrowMy<b>Pin</b></span>
+    </a>
+    <div class="h-nav-r" id="acctArea">
+      <a class="h-link hide-sm" href="/app.html">Pin Studio</a>
+      <span class="h-av" id="av" aria-hidden="true">G</span>
+      <button class="h-out" type="button" id="logout">Log out</button>
+    </div>
+  </div>
+</header>
+
+<main class="h-wrap" id="main">
+  <div class="h-load" id="loading"><div class="skel" style="width:min(520px,90vw);height:220px"></div></div>
+</main>
+
+<template id="tpl">
+  <section class="h-hero">
+    <div class="h-hello">
+      <h1 id="hi">Hi there</h1>
+      <p id="hiSub">Here is your shop, your Pinterest and where they can go together.</p>
+    </div>
+    <div class="h-card h-setup" aria-label="Your setup">
+      <div class="ring"><svg viewBox="0 0 100 100"><circle class="bg" cx="50" cy="50" r="42"/><circle class="fg" id="ringFg" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="264"/></svg><b id="ringTxt">0%</b></div>
+      <div>
+        <h2 style="font-size:1.05rem;margin-bottom:8px">Your growth setup</h2>
+        <ul class="steps-l" id="steps"></ul>
+        <p class="h-muted" id="setupMsg" style="font-size:.82rem;margin-top:6px" aria-live="polite"></p>
+      </div>
+    </div>
+  </section>
+
+  <div id="offerBox"></div>
+
+  <section class="h-row">
+    <div class="h-card" id="storeCard">
+      <div class="h-head"><div><h2>Your store</h2><p class="h-muted">Buyers from Pinterest land here.</p></div><button class="linkish" type="button" id="editShop" hidden>Edit</button></div>
+      <div id="storeBody"></div>
+    </div>
+    <div class="h-card goal" id="goalCard">
+      <div class="h-head" style="margin-bottom:0"><div><h2>Your monthly goal</h2><p class="h-muted" id="goalSub">Sales you want from Pinterest</p></div></div>
+      <div class="goal-big" id="goalBig">100<small>sales / month</small></div>
+      <div class="gbars" id="goalBars"></div>
+      <p class="h-muted" id="goalNote"></p>
+    </div>
+  </section>
+
+  <section class="h-card" id="pinCard">
+    <div class="h-head">
+      <div><h2>Your Pinterest</h2><p class="h-muted" id="pinSub">Your latest pins</p></div>
+      <div id="pinActions" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+    </div>
+    <div id="pinBody"></div>
+  </section>
+
+  <section class="h-card" id="predCard">
+    <div class="pred-top">
+      <div>
+        <h2 style="margin-bottom:6px">Your Pinterest views can reach</h2>
+        <div class="pred-num"><em id="pFrom">0</em><small>to</small><em id="pTo">0</em></div>
+        <p class="h-muted" style="margin-top:6px">monthly views in 6 months, estimate for your shop</p>
+      </div>
+    </div>
+    <div class="pred-bar">
+      <div class="tabs-h" id="pTabs"></div>
+      <div class="seg-h" id="pSeg"><span class="knob"></span><button type="button" class="on" data-r="3">3 months</button><button type="button" data-r="6">6 months</button></div>
+    </div>
+    <svg class="hchart" id="pChart" viewBox="0 0 640 300" role="img" aria-label="Growth prediction"></svg>
+    <div class="stats3">
+      <div><b id="sV">0</b><small id="sVl">monthly views</small></div>
+      <div><b id="sVis">0</b><small id="sVisl">store visits from Pinterest</small></div>
+      <div class="warm"><b id="sS">0</b><small id="sSl">estimated sales</small></div>
+    </div>
+    <p class="fine">Estimate based on similar shops posting optimized pins every day. Not a guarantee: results depend on your products, photos, prices and Pinterest.</p>
+    <div class="pred-cta" id="predCta">
+      <p id="ctaTxt">Want these visits for real? We design and post the pins for you.</p>
+      <button class="btn btn-gold" type="button" id="ctaBtn">Increase my store visits</button>
+    </div>
+  </section>
+
+  <section class="h-card">
+    <div class="h-head"><h2>What happens after you start</h2></div>
+    <div class="how"><ol>
+      <li><span class="n">1</span><b>We make pins for your products</b><span>Fresh pin designs, titles and descriptions for this season's searches.</span></li>
+      <li><span class="n">2</span><b>Pinterest learns your shop</b><span>New accounts usually take 2 to 3 weeks before views start to climb.</span></li>
+      <li><span class="n">3</span><b>Buyers click through to your store</b><span>Every pin links to your product, so views turn into store visits.</span></li>
+    </ol></div>
+  </section>
+</template>
+
+<script src="/pins.js"></script>
+<script src="/gmp-growth.js"></script>
+<script>
+(function () {
+  function $(id) { return document.getElementById(id); }
+  var GR = window.GMPGrowth;
+  var NAMES = GR.NAMES;
+  var D = null, ST = {}, P = { tab: 0, range: 3, items: [] };
+
+  async function api(p, body) {
+    var o = { credentials: "same-origin", headers: {} };
+    if (body) { o.method = "POST"; o.headers["Content-Type"] = "application/json"; o.body = JSON.stringify(body); }
+    var r = await fetch(p, o);
+    var j = {}; try { j = await r.json(); } catch (e) {}
+    if (!r.ok) { var err = new Error(j.error || "Request failed (" + r.status + ")"); err.status = r.status; throw err; }
+    return j;
+  }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c]; }); }
+  function first() { return ((D && D.user.name) || "").split(" ")[0]; }
+  function tpl(t) { return String(t || "").replace(/\{offer\}/g, ST.offer_name || "").replace(/\{percent\}/g, ST.offer_percent || "").replace(/\{first\}/g, first() || "you"); }
+  function shortUrl(u) { try { var x = new URL(u); return x.hostname.replace(/^www\./, "") + (x.pathname.length > 1 ? x.pathname.replace(/\/$/, "") : ""); } catch (e) { return u; } }
+  function mainPlatform() { return GR.pickPlatform(D.profile.platforms) || ""; }
+  function storeName() { var p = mainPlatform(); return p ? NAMES[p] : "online"; }
+
+  $("logout").onclick = async function () {
+    try { await fetch("/api/user/logout", { method: "POST", credentials: "same-origin" }); } catch (e) {}
+    document.cookie = "gmp_in=; Max-Age=0; path=/";
+    location.href = "/?landing=1";
+  };
+
+  // ---------------- setup checklist ----------------
+  function renderSetup() {
+    var pr = D.profile, pin = D.pinterest;
+    var hasShop = Object.keys(pr.links || {}).length > 0;
+    var alerts = "Notification" in window && Notification.permission === "granted";
+    var items = [
+      { ok: true, t: "Account created" },
+      { ok: hasShop, t: "Add your store link", act: "shop" },
+      { ok: pin.connected, t: "Connect Pinterest", href: "/api/auth/login?next=/home.html" },
+      { ok: pr.offer_status === "submitted", t: ST.offer_active ? "Reserve your " + ST.offer_name + " slot" : "Reserve your growth slot", href: "/signup.html#offer" },
+      { ok: alerts, t: "Get updates on this phone", act: "alerts" }
+    ];
+    var done = items.filter(function (i) { return i.ok; }).length;
+    var pct = Math.round(100 * done / items.length);
+    $("steps").innerHTML = items.map(function (i, k) {
+      var btn = i.ok ? "" : (i.href ? '<a class="go" href="' + i.href + '">Do it</a>' : '<button type="button" data-act="' + i.act + '">Do it</button>');
+      return '<li class="' + (i.ok ? "ok" : "") + '"><span class="ck"></span><span>' + esc(i.t) + '</span>' + btn + '</li>';
+    }).join("");
+    requestAnimationFrame(function () { $("ringFg").setAttribute("stroke-dashoffset", String(264 - 264 * pct / 100)); });
+    GR.countUp($("ringTxt"), pct, 1200, function (v) { return Math.round(v) + "%"; });
+    $("hiSub").textContent = pct === 100 ? "Everything is set. Here is where your shop is heading." : "You are " + pct + "% set up. Finish the steps to get the most out of Pinterest.";
+  }
+  document.addEventListener("click", async function (e) {
+    var b = e.target.closest("[data-act]");
+    if (!b) return;
+    var act = b.getAttribute("data-act");
+    if (act === "shop") { showShopForm(); $("storeCard").scrollIntoView({ behavior: "smooth", block: "center" }); }
+    if (act === "alerts" && window.GMPPush) {
+      b.disabled = true; b.textContent = "Wait";
+      var r = await window.GMPPush.enable();
+      renderSetup();
+      $("setupMsg").textContent = r.message;
+    }
+  });
+
+  // ---------------- offer banner ----------------
+  var cdT = null;
+  function renderOffer() {
+    var box = $("offerBox");
+    box.innerHTML = "";
+    var pr = D.profile;
+    if (pr.offer_status === "submitted") {
+      box.innerHTML = '<div class="h-offer done"><span class="flame" aria-hidden="true"></span><div class="tx"><b>' + esc(ST.offer_active ? "Your " + ST.offer_name + " slot is reserved" : "Your growth slot is reserved") + '</b><span>We will message you on WhatsApp at ' + esc(D.user.phone || "your number") + ' to get started.</span></div></div>';
+      return;
+    }
+    if (!ST.offer_active || !ST.home_banner_enabled) return;
+    box.innerHTML = '<div class="h-offer"><span class="flame" aria-hidden="true"></span><div class="tx"><b>' + esc(ST.offer_name) + ': up to ' + esc(ST.offer_percent) + '% off</b><span>' + esc(tpl(ST.home_banner_text)) + '</span></div><span class="cd" id="cd"></span><a class="btn btn-gold" href="/signup.html#offer">' + esc(ST.offer_reserve_btn) + '</a></div>';
+    var end = new Date(ST.offer_end).getTime();
+    function tick() {
+      var s = Math.floor((end - Date.now()) / 1000);
+      var el = $("cd"); if (!el) return;
+      if (!(s > 0)) { el.style.display = "none"; return; }
+      var d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), sec = s % 60;
+      el.textContent = (d ? d + "d " : "") + h + "h " + m + "m " + (sec < 10 ? "0" : "") + sec + "s left";
+    }
+    tick(); clearInterval(cdT); cdT = setInterval(tick, 1000);
+  }
+
+  // ---------------- store ----------------
+  var editing = false, chosen = [];
+  function renderStore() {
+    var pr = D.profile, links = pr.links || {};
+    var keys = ["etsy", "shopify", "ebay"].filter(function (p) { return links[p]; });
+    $("editShop").hidden = !keys.length || editing;
+    if (!keys.length || editing) return showShopForm();
+    $("storeBody").innerHTML = '<div class="shops">' + keys.map(function (p) {
+      return '<div class="shop"><span class="ic ' + p + '">' + NAMES[p].charAt(0) + '</span><div style="min-width:0"><b>' + NAMES[p] + ' store</b><span class="u">' + esc(shortUrl(links[p])) + '</span></div><a class="open" href="' + esc(links[p]) + '" target="_blank" rel="noopener noreferrer">Open store</a></div>';
+    }).join("") + (pr.pinterest_url ? '<div class="shop"><span class="ic" style="background:#FDE7EC;color:#C02D52">P</span><div style="min-width:0"><b>Pinterest profile</b><span class="u">' + esc(shortUrl(pr.pinterest_url)) + '</span></div><a class="open" href="' + esc(pr.pinterest_url) + '" target="_blank" rel="noopener noreferrer">Open</a></div>' : "") + '</div>';
+  }
+  function showShopForm() {
+    editing = true;
+    $("editShop").hidden = true;
+    var pr = D.profile, links = pr.links || {};
+    chosen = (pr.platforms || []).slice();
+    if (!chosen.length) chosen = ["etsy"];
+    $("storeBody").innerHTML =
+      '<form class="h-form" id="shopForm" novalidate>' +
+      '<div><div style="font-weight:700;font-size:.88rem;margin-bottom:6px">Where do you sell?</div><div class="pchips" id="pchips">' +
+      ["etsy", "shopify", "ebay"].map(function (p) { return '<button type="button" class="pchip' + (chosen.indexOf(p) > -1 ? " on" : "") + '" data-p="' + p + '">' + NAMES[p] + '</button>'; }).join("") +
+      '</div></div><div id="lnks" style="display:grid;gap:12px"></div>' +
+      '<label>Pinterest profile link <span class="h-muted" style="font-weight:500">(optional)</span><input id="fPin" type="url" inputmode="url" placeholder="pinterest.com/yourname" value="' + esc(pr.pinterest_url || "") + '"></label>' +
+      '<div class="h-err" id="shopErr" role="alert"></div>' +
+      '<div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-primary" type="submit" id="shopSave">Save my store</button>' + (Object.keys(links).length ? '<button class="btn btn-ghost" type="button" id="shopCancel">Cancel</button>' : "") + '</div></form>';
+    function drawLinks() {
+      var keep = {};
+      Array.prototype.forEach.call(document.querySelectorAll("#lnks input"), function (i) { keep[i.getAttribute("data-p")] = i.value; });
+      $("lnks").innerHTML = chosen.map(function (p) {
+        var v = keep[p] !== undefined ? keep[p] : (links[p] || "");
+        var ph = { etsy: "etsy.com/shop/yourshop", shopify: "yourstore.com", ebay: "ebay.com/str/yourstore" }[p];
+        return '<label>' + NAMES[p] + ' link<input type="url" inputmode="url" data-p="' + p + '" placeholder="' + ph + '" value="' + esc(v) + '"></label>';
+      }).join("");
+    }
+    drawLinks();
+    $("pchips").onclick = function (e) {
+      var b = e.target.closest(".pchip"); if (!b) return;
+      var p = b.getAttribute("data-p"), at = chosen.indexOf(p);
+      if (at > -1) { if (chosen.length > 1) chosen.splice(at, 1); } else chosen.push(p);
+      Array.prototype.forEach.call(document.querySelectorAll(".pchip"), function (c) { c.classList.toggle("on", chosen.indexOf(c.getAttribute("data-p")) > -1); });
+      drawLinks();
+    };
+    var cancel = $("shopCancel"); if (cancel) cancel.onclick = function () { editing = false; renderStore(); };
+    $("shopForm").onsubmit = async function (e) {
+      e.preventDefault();
+      var lk = {};
+      Array.prototype.forEach.call(document.querySelectorAll("#lnks input"), function (i) { if (i.value.trim()) lk[i.getAttribute("data-p")] = i.value.trim(); });
+      if (!Object.keys(lk).length) { $("shopErr").textContent = "Paste at least one store link."; return; }
+      var btn = $("shopSave"); btn.disabled = true; btn.textContent = "Saving";
+      try {
+        var r = await api("/api/user/hub", { action: "shop", platforms: chosen, links: lk, pinterest_url: $("fPin").value.trim() });
+        D.profile.platforms = r.platforms; D.profile.links = r.links; D.profile.pinterest_url = r.pinterest_url || "";
+        editing = false;
+        renderAll(true);
+      } catch (err) {
+        $("shopErr").textContent = err.message;
+        btn.disabled = false; btn.textContent = "Save my store";
+      }
+    };
+  }
+
+  // ---------------- goal ----------------
+  function renderGoal() {
+    var pr = D.profile;
+    var target = pr.target || 100;
+    var p = mainPlatform() || "etsy";
+    var m = GR.model(p, (pr.links || {})[p] || "", { target: target, hasPin: !!pr.pinterest_url || D.pinterest.connected, startViews: D.pinterest.views30 || 0 });
+    $("goalBig").innerHTML = esc(target) + "<small>sales / month</small>";
+    $("goalSub").textContent = pr.target ? "The goal you set" + (pr.wait ? ", in " + pr.wait + " month" + (pr.wait > 1 ? "s" : "") : "") : "A common first goal (set yours in the slot form)";
+    var rows = [3, 6].map(function (mo) { var s = GR.sales(m, mo); return { l: "Month " + mo, v: Math.round((s.lo + s.hi) / 2) }; });
+    var max = Math.max(target, rows[1].v) || 1;
+    $("goalBars").innerHTML = rows.map(function (r) { return '<div class="bar-r"><span>' + r.l + '</span><i style="--w:0%" data-w="' + Math.max(3, 100 * r.v / max) + '%"></i><b>~' + r.v + '</b></div>'; }).join("") +
+      '<div class="bar-r goal-r"><span>Your goal</span><i style="--w:0%" data-w="' + (100 * target / max) + '%"></i><b>' + target + '</b></div>';
+    requestAnimationFrame(function () { Array.prototype.forEach.call(document.querySelectorAll("#goalBars i"), function (i) { i.style.setProperty("--w", i.getAttribute("data-w")); }); });
+    var m6 = rows[1].v;
+    $("goalNote").textContent = m6 >= target ? "On track: Pinterest alone could cover your goal by month 6." : "Pinterest alone may give about " + m6 + " sales a month by month 6. More pins per day and better photos close the gap faster.";
+  }
+
+  // ---------------- pinterest ----------------
+  function renderPins() {
+    var pin = D.pinterest, pr = D.profile;
+    var acts = $("pinActions"); acts.innerHTML = "";
+    if (pin.connected) {
+      $("pinSub").innerHTML = '<span class="src"><i></i>Live from @' + esc(pin.username) + '</span>' + (pin.views30 != null ? ' <span class="h-muted" style="margin-left:6px">' + GR.fmt(pin.views30) + ' views in the last 30 days</span>' : "");
+      acts.innerHTML = '<a class="btn btn-primary btn-sm" href="/app.html">Make new pins</a>';
+    } else {
+      $("pinSub").innerHTML = pin.source === "profile" ? '<span class="src"><i></i>From your public profile' + (pin.link_user ? " @" + esc(pin.link_user) : "") + '</span>' : "Connect to see your pins and real views here";
+      acts.innerHTML = '<a class="btn btn-primary btn-sm" href="/api/auth/login?next=/home.html">Connect Pinterest</a>';
+    }
+    if (pin.pins && pin.pins.length) {
+      $("pinBody").innerHTML = '<div class="pins">' + pin.pins.map(function (p, i) {
+        var inner = '<img src="' + esc(p.img) + '" alt="' + esc(p.title || "Pin") + '" loading="lazy" referrerpolicy="no-referrer">' + (p.title ? '<span>' + esc(p.title) + '</span>' : "");
+        return p.url ? '<a class="pin-c" style="animation-delay:' + (i * 60) + 'ms" href="' + esc(p.url) + '" target="_blank" rel="noopener noreferrer">' + inner + '</a>' : '<div class="pin-c" style="animation-delay:' + (i * 60) + 'ms">' + inner + '</div>';
+      }).join("") + '</div>';
+      Array.prototype.forEach.call(document.querySelectorAll(".pin-c img"), function (im) {
+        im.onerror = function () {
+          var c = im.closest(".pin-c"); if (c) c.remove();
+          if (!document.querySelector(".pin-c")) { D.pinterest.pins = []; renderPins(); }
+        };
+      });
+      return;
+    }
+    var msg = pr.pinterest_url
+      ? "We could not load pins from " + esc(shortUrl(pr.pinterest_url)) + ". The profile may be private or new. Connect Pinterest to show your pins here."
+      : "No pins to show yet. Connect your Pinterest account, or add your Pinterest link in Your store.";
+    $("pinBody").innerHTML = '<div class="empty"><div class="ghost" aria-hidden="true"><i></i><i></i><i></i></div><p class="h-muted" style="max-width:46ch">' + msg + '</p></div>';
+  }
+
+  // ---------------- prediction ----------------
+  function renderPred() {
+    var pr = D.profile;
+    var plats = (pr.platforms && pr.platforms.length) ? ["etsy", "shopify", "ebay"].filter(function (p) { return pr.platforms.indexOf(p) > -1; }) : ["etsy"];
+    var opts = { target: pr.target || 100, hasPin: !!pr.pinterest_url || D.pinterest.connected, startViews: D.pinterest.views30 || 0 };
+    P.items = plats.map(function (p) { return GR.model(p, (pr.links || {})[p] || "", opts); });
+    if (P.tab >= P.items.length) P.tab = 0;
+    var tabs = $("pTabs");
+    tabs.innerHTML = P.items.length > 1 ? P.items.map(function (it, i) { return '<button type="button" class="tab-h' + (i === P.tab ? " on" : "") + '" data-i="' + i + '">' + NAMES[it.p] + '</button>'; }).join("") : "";
+    tabs.onclick = function (e) { var b = e.target.closest(".tab-h"); if (!b) return; P.tab = Number(b.getAttribute("data-i")); renderPred(); };
+    var it = P.items[P.tab];
+    GR.countUp($("pFrom"), it.worst[6], 1400);
+    GR.countUp($("pTo"), it.best[6], 1800);
+    drawPred();
+    var store = pr.platforms && pr.platforms.length ? NAMES[it.p] : "online";
+    $("ctaBtn").textContent = "Increase my " + store + " store visits";
+    if (pr.interest_at) setInterestDone();
+  }
+  function drawPred() {
+    var it = P.items[P.tab], n = P.range;
+    GR.drawChart($("pChart"), it, { range: n, target: D.profile.target || 0, wait: D.profile.wait || 0 });
+    var s = GR.sales(it, n);
+    GR.countUp($("sV"), it.avg[n], 1200);
+    $("sVl").textContent = "monthly views by month " + n;
+    GR.countUp($("sVis"), it.visits[n], 1200);
+    $("sVisl").textContent = "store visits from Pinterest in month " + n;
+    $("sS").textContent = s.lo + " to " + s.hi;
+    $("sSl").textContent = "estimated sales in month " + n + (D.profile.platforms.length ? "" : " (average Etsy shop)");
+  }
+  function setInterestDone() {
+    $("predCta").innerHTML = '<p class="h-ok">You asked us to increase your store visits. Our team will WhatsApp you within 24 hours.</p>' +
+      (ST.sales_whatsapp ? '<a class="btn btn-primary" target="_blank" rel="noopener" href="https://wa.me/' + ST.sales_whatsapp.replace(/\D/g, "") + '?text=' + encodeURIComponent("Hi GrowMyPin, I want to increase my store visits.") + '">Chat now on WhatsApp</a>' : "");
+  }
+  function wireSeg() {
+    Array.prototype.forEach.call(document.querySelectorAll("#pSeg button"), function (b) {
+      b.onclick = function () {
+        P.range = Number(b.getAttribute("data-r"));
+        Array.prototype.forEach.call(document.querySelectorAll("#pSeg button"), function (x) { x.classList.toggle("on", x === b); });
+        $("pSeg").classList.toggle("r6", P.range === 6);
+        drawPred();
+      };
+    });
+    $("ctaBtn").onclick = async function () {
+      var btn = this; btn.disabled = true; btn.textContent = "Saving";
+      try { await api("/api/user/hub", { action: "interest", source: "home" }); D.profile.interest_at = new Date().toISOString(); setInterestDone(); }
+      catch (e) { btn.disabled = false; btn.textContent = "Try again"; }
+    };
+    $("editShop").onclick = function () { showShopForm(); };
+  }
+
+  function renderAll(again) {
+    $("hi").textContent = (first() ? "Hi " + first() + "," : "Hi,") + " here is your growth";
+    $("av").textContent = (first() || D.user.email || "G").charAt(0).toUpperCase();
+    renderSetup(); renderOffer(); renderStore(); renderGoal(); renderPins(); renderPred();
+    if (!again) wireSeg();
+  }
+
+  (async function boot() {
+    try {
+      D = await api("/api/user/home");
+    } catch (e) {
+      if (e.status === 401) { document.cookie = "gmp_in=; Max-Age=0; path=/"; location.replace("/signup.html#login"); return; }
+      $("main").innerHTML = '<div class="h-card" style="text-align:center"><h2>Could not load your home</h2><p class="h-muted" style="margin:8px 0 14px">' + esc(e.message) + '</p><button class="btn btn-primary" onclick="location.reload()">Try again</button></div>';
+      return;
+    }
+    ST = D.settings || {};
+    $("main").innerHTML = "";
+    $("main").appendChild($("tpl").content.cloneNode(true));
+    renderAll(false);
+  })();
+})();
+</script>
+<script src="/gmp.js" defer></script>
+</body>
+</html>

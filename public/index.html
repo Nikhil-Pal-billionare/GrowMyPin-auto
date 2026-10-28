@@ -1,1 +1,764 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GrowMyPin Studio - Pinterest pins you approve</title>
+<meta name="description" content="GrowMyPin Studio writes Pinterest pin drafts for your Etsy and Shopify products. You review and approve every pin before it is published.">
+<meta name="theme-color" content="#09423D">
+<script>try{if(/(^|;\s*)gmp_in=1/.test(document.cookie)&&!/[?&]landing=1/.test(location.search)){location.replace("/home.html"+location.search);}}catch(e){}</script>
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20136%20128%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22f%22%20x1%3D%220%22%20y1%3D%221%22%20x2%3D%221%22%20y2%3D%220%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%2309423D%22%2F%3E%3Cstop%20offset%3D%22.55%22%20stop-color%3D%22%230F8A76%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2314B88F%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Cpath%20d%3D%22M134%200%20L110%2029%20L66%2029%20C45%2029%2030%2045%2030%2064%20C30%2084%2044%20100%2060%20105%20L39%20127%20C16%20121%200%2095%200%2064%20C0%2029%2028%200%2066%200%20Z%22%20fill%3D%22%2324292F%22%2F%3E%3Cpath%20d%3D%22M75%2050%20L128%2050%20Q135%2050%20135%2057%20L135%20120%20Q135%20127%20128%20127%20L112%20127%20L112%2096%20L80%20128%20L48%20128%20L97%2076%20L51%2076%20Z%22%20fill%3D%22url%28%23f%29%22%2F%3E%3C%2Fsvg%3E">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="stylesheet" href="/brand.css">
+<link rel="stylesheet" href="/style.css">
+<style>
+  .float-a { left: auto; right: -16px; top: 38%; }
+  .phases .phase-item p { max-width: 40ch; }
+</style>
+</head>
+<body>
+<div class="lg-bg" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+<div class="progress" aria-hidden="true"><i id="prog"></i></div>
 
+<header class="nav">
+  <div class="wrap">
+    <a class="logo" href="/" aria-label="GrowMyPin Studio home">
+      <svg class="logo-mark" viewBox="0 0 136 128" aria-hidden="true"><defs><linearGradient id="gmpArrow" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#09423D"/><stop offset=".55" stop-color="#0F8A76"/><stop offset="1" stop-color="#14B88F"/></linearGradient></defs><path d="M134 0 L110 29 L66 29 C45 29 30 45 30 64 C30 84 44 100 60 105 L39 127 C16 121 0 95 0 64 C0 29 28 0 66 0 Z" fill="#24292F"/><path d="M75 50 L128 50 Q135 50 135 57 L135 120 Q135 127 128 127 L112 127 L112 96 L80 128 L48 128 L97 76 L51 76 Z" fill="url(#gmpArrow)"/></svg>
+      <span class="logo-text">GrowMy<b>Pin</b></span>
+    </a>
+    <nav class="nav-links" aria-label="Main">
+      <a href="/report.html">Free report</a>
+      <a href="#demo">Try it</a>
+      <a href="#process">How it works</a>
+      <a href="#results">Forecast</a>
+      <a href="#access">Your data</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <a class="btn btn-primary magnet" href="/signup.html"><span class="long">Connect Pinterest</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero" id="hero">
+  <div class="blobs" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="wrap">
+    <div class="hero-copy">
+      <span class="eyebrow fade-in">GrowMyPin Studio for Etsy and Shopify sellers</span>
+      <h1>
+        <span class="w" style="--i:0">AI</span> <span class="w" style="--i:1">drafts</span> <span class="w" style="--i:2">your</span> <span class="w" style="--i:3"><span class="rot" id="rot">product</span></span> <span class="w" style="--i:4">pins.</span> <span class="w" style="--i:5">Nothing</span> <span class="w" style="--i:6">goes</span> <span class="w" style="--i:7">live</span> <span class="w" style="--i:8">until</span> <span class="w" style="--i:9">you</span> <span class="w hl" id="hlWord" style="--i:10">approve.<svg viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M2 9 C 50 2, 120 2, 198 7"/></svg></span>
+      </h1>
+      <p class="lede fade-in">Add a listing and the Studio writes Pinterest pin drafts for it: titles, descriptions and alt text tuned for this season's searches. You edit, approve the ones you like, and only those get published to your board.</p>
+      <div class="hero-ctas fade-in d2">
+        <a class="btn btn-primary magnet" href="/signup.html">Connect Pinterest <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="btn btn-ghost" href="#demo">Try it without login</a>
+      </div>
+      <div class="chips fade-in d3">
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Every pin needs your approval</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Official Pinterest sign in</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Disconnect any time</span>
+      </div>
+    </div>
+
+    <div class="board-wrap" id="boardWrap" aria-label="Animated example: a pin draft is approved and published">
+      <svg class="stamp" viewBox="0 0 120 120" aria-hidden="true">
+        <defs>
+          <linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#09423D"/><stop offset=".6" stop-color="#0F8A76"/><stop offset="1" stop-color="#14B88F"/></linearGradient>
+          <path id="sp" d="M60,60 m-45,0 a45,45 0 1,1 90,0 a45,45 0 1,1 -90,0"/>
+        </defs>
+        <circle cx="60" cy="60" r="59" fill="url(#sg)"/>
+        <g class="ring"><text><textPath href="#sp" textLength="276" lengthAdjust="spacing">YOU APPROVE &#183; THEN IT POSTS &#183;</textPath></text></g>
+        <circle cx="60" cy="60" r="29" fill="#FFFFFF"/>
+        <g transform="translate(44 45) scale(.235)"><path d="M134 0 L110 29 L66 29 C45 29 30 45 30 64 C30 84 44 100 60 105 L39 127 C16 121 0 95 0 64 C0 29 28 0 66 0 Z" fill="#24292F"/><path d="M75 50 L128 50 Q135 50 135 57 L135 120 Q135 127 128 127 L112 127 L112 96 L80 128 L48 128 L97 76 L51 76 Z" fill="url(#gmpArrow)"/></g>
+      </svg>
+
+      <div class="board" id="board" aria-hidden="true"></div>
+
+      <div class="float float-a" id="floatA" aria-hidden="true">
+        <span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+        <div class="msg"><strong id="fT">Drafts ready</strong><small id="fS">4 pins waiting for you</small></div>
+      </div>
+
+      <div class="review glass" id="review" aria-hidden="true">
+        <div class="top"><span class="who2" id="draftNo">Draft 1 of 4</span><span class="st pending" id="rvChip">To review</span></div>
+        <div class="thumb" id="rvThumb">
+          <div class="seal-wrap"><div class="seal-ring"></div><div class="seal"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Approved</div></div>
+        </div>
+        <div class="ttl"><span id="rvTitle"></span><span class="caret"></span></div>
+        <div class="lines"><i></i><i></i><i></i></div>
+        <div class="acts2">
+          <span class="btn btn-reject">Reject</span>
+          <span class="btn btn-primary" id="rvApprove">Approve</span>
+        </div>
+      </div>
+
+      <svg class="cursor" id="cursor" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 2.5l15 8.2-6.6 1.6 3.9 7.3-2.9 1.5-3.9-7.3L4.8 18.6z" fill="#24292F" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>
+    </div>
+  </div>
+</section>
+
+<section class="trust" aria-label="Highlights">
+  <div class="wrap">
+    <div class="trust-top">
+      <p>Built on the official Pinterest API, for sellers who want control.</p>
+      <div class="facts"><span>OAuth sign in</span><span>Approval required</span><span>Encrypted session</span></div>
+    </div>
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track"><span>Write drafts</span><span>Edit every word</span><span>Approve</span><span>Publish</span><span>Track views</span><span>Write drafts</span><span>Edit every word</span><span>Approve</span><span>Publish</span><span>Track views</span></div>
+      <div class="marquee-track rev"><span>Jewelry</span><span>Home decor</span><span>Crochet</span><span>Fashion</span><span>Wellness</span><span>Gifts</span><span>Jewelry</span><span>Home decor</span><span>Crochet</span><span>Fashion</span><span>Wellness</span><span>Gifts</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="band s-white" id="free-report">
+  <div class="wrap fr-grid">
+    <div class="reveal">
+      <div class="head">
+        <span class="eyebrow">Free growth report</span>
+        <h2>How far can <span class="mk">your shop</span> go on Pinterest?</h2>
+        <p class="lede">Sign up, add your Etsy or Shopify link, and our AI builds your personal 3 and 6 month Pinterest forecast with worst, average and best case, plus the audience and strategy that fit your products. Ready in about 4 hours.</p>
+      </div>
+      <div class="hero-ctas">
+        <a class="btn btn-primary magnet" href="/report.html">Get my free report <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </div>
+    <div class="fc-panel glass reveal fr-card">
+      <div class="fc-top"><div><span class="unit">Sample report, 6 months</span></div><span class="st approved">Free</span></div>
+      <div class="fc" id="frChart"></div>
+      <p class="fc-fine">Sample only. Your report is built for your shop.</p>
+    </div>
+  </div>
+</section>
+
+<section class="band s-lav" id="demo">
+  <div class="wrap">
+    <div class="head reveal">
+      <span class="eyebrow">Try it here</span>
+      <h2>Approve your first pin <span class="mk">right now.</span></h2>
+      <p class="lede">A sample of the Studio that runs in your browser. Type a product, get drafts, approve the ones you like and watch them land on a sample board. Nothing is sent anywhere.</p>
+    </div>
+    <div class="demo-grid">
+      <div class="demo-form glass reveal">
+        <div class="fld">
+          <label for="dName">Your product</label>
+          <input id="dName" value="Handmade silver hoop earrings" maxlength="60">
+        </div>
+        <div class="fld">
+          <span class="lbl">Niche</span>
+          <div class="niche-pick" id="dNiche" role="group" aria-label="Niche">
+            <button type="button" data-n="jewelry" aria-pressed="true">Jewelry</button>
+            <button type="button" data-n="decor" aria-pressed="false">Home decor</button>
+            <button type="button" data-n="crochet" aria-pressed="false">Crochet</button>
+            <button type="button" data-n="fashion" aria-pressed="false">Fashion</button>
+            <button type="button" data-n="wellness" aria-pressed="false">Wellness</button>
+          </div>
+        </div>
+        <button class="btn btn-primary" id="dGen" type="button">Write sample drafts</button>
+        <p class="demo-note">Sample only. The real Studio writes drafts with AI after you connect Pinterest.</p>
+      </div>
+      <div class="demo-stage">
+        <div class="demo-drafts" id="dDrafts" aria-live="polite"></div>
+        <div class="demo-board glass" id="dBoard">
+          <div class="demo-board-head">
+            <div><span class="unit">Sample board</span><b id="dBoardName">Jewelry gift ideas</b></div>
+            <button class="btn btn-dark btn-sm" id="dPub" type="button" disabled>Publish approved <span class="n" id="dPubN">0</span></button>
+          </div>
+          <div class="demo-slots" id="dSlots"></div>
+        </div>
+        <div class="demo-fc glass" id="dFc" hidden>
+          <div class="demo-fc-head">
+            <div>
+              <span class="unit">Sample forecast</span>
+              <b id="dFcTitle">Where these pins can take a new account</b>
+            </div>
+            <span class="st approved" id="dFcStrat">Gift angle</span>
+          </div>
+          <div class="fc" id="dChart"></div>
+          <div class="scen">
+            <div class="s-w"><span class="unit">Worst case</span><div class="num" id="dW">0</div><small>views a month by month 3</small></div>
+            <div class="s-a"><span class="unit">Average case</span><div class="num" id="dA">0</div><small>views a month by month 3</small></div>
+            <div class="s-b"><span class="unit">Best case</span><div class="num" id="dB">0</div><small>views a month by month 3</small></div>
+          </div>
+          <p class="fc-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><span><b>This graph is an average estimate, not real data.</b> Real views depend on your product or service, your images, your niche and Pinterest itself.</span></p>
+          <p class="fc-fine">Sample for a new account starting at 0 and posting at this pace every day. Connect Pinterest to see a forecast built from your own analytics.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band s-white" id="process">
+  <div class="wrap">
+    <div class="head reveal">
+      <span class="eyebrow">How it works</span>
+      <h2>One listing in, <span class="mk">approved pins</span> out.</h2>
+      <p class="lede">Four steps. You are in two of them, and that is on purpose.</p>
+    </div>
+    <div class="steps pre" id="steps">
+      <div class="rail"><i></i></div>
+      <div class="step"><div class="dot">1</div><span class="when">You</span><h3>Add a product</h3><p>Paste your listing link and image, pick your niche and how many pin variations you want.</p></div>
+      <div class="step"><div class="dot">2</div><span class="when">AI</span><h3>Drafts get written</h3><p>Each draft takes its own angle: a gift idea, a styling idea, a seasonal hook. SEO first, no keyword stuffing.</p></div>
+      <div class="step"><div class="dot">3</div><span class="when">You</span><h3>Edit and approve</h3><p>Change any word. Approve what you like, reject the rest. Editing an approved pin sends it back for review.</p></div>
+      <div class="step"><div class="dot">4</div><span class="when">Pinterest</span><h3>It goes live</h3><p>Approved pins publish to the board you choose, after one final confirmation.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="band s-navy" id="control">
+  <div class="wrap control-grid">
+    <div class="reveal">
+      <div class="head">
+        <span class="eyebrow">Your control</span>
+        <h2>Nothing posts without <span class="mk">your yes.</span></h2>
+        <p class="lede">There is no switch that lets the Studio post on its own. Every pin needs your approval and a final confirm before it reaches Pinterest.</p>
+      </div>
+      <ul class="list yes">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="#34D6A8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Encrypted session.</b> Your Pinterest token stays in a secure cookie in your browser.</span></li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="#34D6A8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Your data stays yours.</b> We never sell or share your Pinterest data.</span></li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="#34D6A8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Leave any time.</b> Disconnect from the Studio or from your Pinterest settings.</span></li>
+      </ul>
+    </div>
+    <div class="card big switchboard reveal" id="switchboard">
+      <div class="sw-row"><div><b>Write pin drafts with AI</b><span>Drafts only, never posted</span></div><div class="sw on"><i></i></div></div>
+      <div class="sw-row"><div><b>Ask me before every pin</b><span>Always on</span></div><div class="sw on"><i></i></div></div>
+      <div class="sw-row"><div><b>Post without my approval</b><span>Not available in the Studio</span></div><div class="sw" id="lockSw" title="Not available"><i><svg viewBox="0 0 24 24" fill="none" stroke="#24292F" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></i></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="band s-white" id="access">
+  <div class="wrap">
+    <div class="head reveal">
+      <span class="eyebrow">Your Pinterest data</span>
+      <h2>Exactly what the Studio <span class="mk">can and cannot do.</span></h2>
+      <p class="lede">When you connect, Pinterest shows you these permissions on its own screen. Here is what each one is used for, in plain words. Full details are in our <a href="/privacy.html#pinterest">Privacy Policy</a>.</p>
+    </div>
+    <div class="promise">
+      <div class="card reveal">
+        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+        <h3>What we use</h3>
+        <ul class="list yes scopes">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><code>user_accounts:read</code><b>Your profile and analytics.</b> To show your username and your impressions, clicks and saves.</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><code>boards:read</code><b>Your board names.</b> So you can pick where an approved pin goes.</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><code>pins:read</code><b>Pins made in the Studio.</b> To show what you published.</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><code>pins:write</code><b>Only pins you approve.</b> Used after you click Approve and confirm Publish.</span></li>
+        </ul>
+      </div>
+      <div class="card reveal">
+        <span class="ico v"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></span>
+        <h3>What we never do</h3>
+        <ul class="list no">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg><span><b>Post without your approval.</b> There is no auto-post setting.</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg><span><b>Edit or delete your existing pins.</b> We only add pins you approve.</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg><span><b>Read your messages or followers.</b> We never ask for that access.</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg><span><b>Sell or share your data.</b> Not to advertisers, not to anyone.</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg><span><b>Keep your login.</b> Your token is encrypted in your own browser and gone when you disconnect.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band s-mint" id="results">
+  <div class="wrap">
+    <div class="head reveal">
+      <span class="eyebrow">Growth forecast</span>
+      <h2>See where your account can go <span class="mk">in 3 months.</span></h2>
+      <p class="lede">The Studio reads your Pinterest analytics and estimates the next 90 days: worst case, average case and best case. Switch strategies, change how many pins you post a day, and watch the forecast move.</p>
+    </div>
+    <div class="fc-panel glass reveal" id="lfPanel">
+      <div class="fc-top">
+        <div class="fld lf-niche">
+          <span class="lbl">Example niche</span>
+          <div class="niche-pick" id="lfNiche" role="group" aria-label="Niche">
+            <button type="button" data-n="Jewelry" aria-pressed="true">Jewelry</button>
+            <button type="button" data-n="Home Decor" aria-pressed="false">Home decor</button>
+            <button type="button" data-n="Crafts and Patterns" aria-pressed="false">Crochet</button>
+            <button type="button" data-n="Fashion" aria-pressed="false">Fashion</button>
+            <button type="button" data-n="Health and Wellness" aria-pressed="false">Wellness</button>
+          </div>
+        </div>
+        <div class="fc-legend" aria-hidden="true"><span><i class="l-h"></i>Actual</span><span><i class="l-b"></i>Best</span><span><i class="l-a"></i>Average</span><span><i class="l-w"></i>Worst</span></div>
+      </div>
+      <div class="fc-controls">
+        <div class="fld">
+          <span class="lbl">Strategy</span>
+          <div class="strat-pills" id="lfStrats" role="group" aria-label="Strategy"></div>
+        </div>
+        <div class="ppd">
+          <div class="row"><label for="lfPpd">Pins per day</label><b id="lfPpdVal">3</b></div>
+          <input type="range" class="slider" id="lfPpd" min="1" max="10" step="1" value="3">
+        </div>
+      </div>
+      <div class="strat-why"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/></svg><span id="lfWhy"></span></div>
+      <div class="fc" id="lfChart"></div>
+      <div class="scen">
+        <div class="s-w"><span class="unit">Worst case</span><div class="num" id="lfW">0</div><small>views a month by month 3</small></div>
+        <div class="s-a"><span class="unit">Average case</span><div class="num" id="lfA">0</div><small>views a month by month 3</small></div>
+        <div class="s-b"><span class="unit">Best case</span><div class="num" id="lfB">0</div><small>views a month by month 3</small></div>
+      </div>
+      <p class="fc-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><span><b>This graph is an average estimate, not real data.</b> Real views depend on your product or service, your images, your niche and Pinterest itself.</span></p>
+      <p class="fc-fine">Example account with 60 days of history. Your forecast uses your own Pinterest analytics.</p>
+    </div>
+  </div>
+</section>
+
+<section class="band s-lav" id="about">
+  <div class="wrap about-grid">
+    <figure class="founder card reveal">
+      <svg class="qmark" viewBox="0 0 48 36" aria-hidden="true"><path d="M0 36V22C0 9 7 2 19 0l2 5c-7 2-10 6-10 12h9v19zm27 0V22c0-13 7-20 19-22l2 5c-7 2-10 6-10 12h9v19z" fill="currentColor"/></svg>
+      <blockquote>We run GrowMyPin, a Pinterest marketing agency for Etsy and Shopify sellers. Every day we write and publish pins for our clients, and every seller asks the same thing: "Can I see it before it goes live?" The Studio is our answer. AI does the writing, you keep the final say.</blockquote>
+      <figcaption>
+        <span class="avatar" aria-hidden="true">NP</span>
+        <span><b>Nikhil Pal</b><small>Founder, GrowMyPin</small></span>
+      </figcaption>
+      <div class="facts-grid">
+        <div><span class="unit">Business</span><b>GrowMyPin</b><small>Udyam registered, Delhi, India</small></div>
+        <div><span class="unit">Agency</span><b><a href="https://growmypin.vercel.app" target="_blank" rel="noopener">Visit our agency</a></b><small>Done-for-you Pinterest marketing</small></div>
+        <div><span class="unit">Contact</span><b><a href="https://wa.me/growmypin" target="_blank" rel="noopener">WhatsApp us</a></b><small>We reply within a day</small></div>
+      </div>
+    </figure>
+    <div class="faq reveal" id="faq">
+      <span class="eyebrow">Questions</span>
+      <details open><summary>Does the Studio ever post on its own?</summary><p>No. A pin is published only after you click Approve on it and then confirm Publish. If you edit an approved pin, it goes back to review.</p></details>
+      <details><summary>What do I need to start?</summary><p>A Pinterest business account with at least one board, and a product listing on Etsy, Shopify or your own site.</p></details>
+      <details><summary>Where is my data stored?</summary><p>Your Pinterest access token is encrypted inside a secure cookie in your browser. Pin drafts are saved in your own browser until you publish or clear them.</p></details>
+      <details><summary>How do I disconnect and delete my data?</summary><p>Click Disconnect in the Studio, or remove GrowMyPin Studio from the apps section of your Pinterest settings. You can also message us to confirm deletion.</p></details>
+      <details><summary>Is this made by Pinterest?</summary><p>No. GrowMyPin Studio is an independent tool that uses the official Pinterest API. Pinterest is a trademark of Pinterest, Inc.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="final" id="start">
+  <div class="drift" aria-hidden="true">
+    <i style="--s:22px;--x:8%;--d:16s;--dl:-2s"></i>
+    <i style="--s:14px;--x:22%;--d:12s;--dl:-7s"></i>
+    <i style="--s:30px;--x:40%;--d:20s;--dl:-11s"></i>
+    <i style="--s:16px;--x:63%;--d:14s;--dl:-4s"></i>
+    <i style="--s:26px;--x:78%;--d:18s;--dl:-9s"></i>
+    <i style="--s:12px;--x:92%;--d:11s;--dl:-1s"></i>
+  </div>
+  <svg class="bigmark" viewBox="0 0 136 128" aria-hidden="true"><path d="M134 0 L110 29 L66 29 C45 29 30 45 30 64 C30 84 44 100 60 105 L39 127 C16 121 0 95 0 64 C0 29 28 0 66 0 Z" fill="#FFFFFF"/><path d="M75 50 L128 50 Q135 50 135 57 L135 120 Q135 127 128 127 L112 127 L112 96 L80 128 L48 128 L97 76 L51 76 Z" fill="url(#gmpArrow)"/></svg>
+  <div class="wrap">
+    <span class="eyebrow">Ready when you are</span>
+    <h2>Your first pins can be ready in <span class="mk">two minutes.</span></h2>
+    <p>Connect Pinterest, add one product and review your drafts. Nothing is posted until you say so.</p>
+    <div class="hero-ctas">
+      <a class="btn btn-primary magnet" href="/signup.html">Connect Pinterest <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a class="btn btn-ghost" href="/privacy.html">Read the privacy policy</a>
+    </div>
+  </div>
+</section>
+<a class="btn btn-primary sticky-cta" id="stickyCta" href="/signup.html">Connect Pinterest <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="logo" href="/" aria-label="GrowMyPin Studio home">
+      <svg class="logo-mark" viewBox="0 0 136 128" aria-hidden="true"><defs><linearGradient id="gmpArrow" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#09423D"/><stop offset=".55" stop-color="#0F8A76"/><stop offset="1" stop-color="#14B88F"/></linearGradient></defs><path d="M134 0 L110 29 L66 29 C45 29 30 45 30 64 C30 84 44 100 60 105 L39 127 C16 121 0 95 0 64 C0 29 28 0 66 0 Z" fill="#24292F"/><path d="M75 50 L128 50 Q135 50 135 57 L135 120 Q135 127 128 127 L112 127 L112 96 L80 128 L48 128 L97 76 L51 76 Z" fill="url(#gmpArrow)"/></svg>
+      <span class="logo-text">GrowMy<b>Pin</b></span>
+    </a>
+    <span>GrowMyPin, Udyam registered, Delhi, India. Uses the official Pinterest API. Not affiliated with Pinterest, Inc.</span>
+    <nav aria-label="Footer">
+      <a href="/terms.html">Terms</a>
+      <a href="/billing.html">Billing and refunds</a>
+      <a href="/privacy.html">Privacy</a>
+      <a href="/acceptable-use.html">Acceptable use</a>
+      <a href="https://wa.me/growmypin" target="_blank" rel="noopener">Contact</a>
+      <span>&copy; 2026 GrowMyPin</span>
+    </nav>
+  </div>
+</footer>
+
+<script src="/pins.js"></script>
+<script src="/forecast.js"></script>
+<script>
+(function () {
+  var G = window.GMP;
+  function $(id) { return document.getElementById(id); }
+  function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+  G.fillBoard($("board"), 0);
+  G.typeWords($("rot"), ["jewelry", "home decor", "crochet", "fashion", "wellness", "gift", "product"]);
+
+  // ---------- Approve sequence ----------
+  var DRAFTS = [
+    { t: 0, title: "Oval moissanite engagement ring gift idea for her" },
+    { t: 1, title: "Cozy bedroom decor ideas for small apartments" },
+    { t: 2, title: "Easy crochet granny square pattern for beginners" },
+    { t: 3, title: "Christmas gift ideas for mom she will love" },
+    { t: 6, title: "Calming herbal tea blend for cozy winter nights" }
+  ];
+  var wrap = $("boardWrap"), review = $("review"), thumb = $("rvThumb"), titleEl = $("rvTitle");
+  var chip = $("rvChip"), approveBtn = $("rvApprove"), cursor = $("cursor"), hl = $("hlWord");
+  var fa = $("floatA"), fT = $("fT"), fS = $("fS"), draftNo = $("draftNo");
+  var idx = 0;
+
+  function note(t, s) {
+    fa.classList.add("swap");
+    setTimeout(function () { fT.textContent = t; fS.textContent = s; fa.classList.remove("swap"); }, 360);
+  }
+
+  function setDraft(d, i) {
+    var old = thumb.querySelector(".tilefill");
+    if (old) thumb.removeChild(old);
+    thumb.insertBefore(G.tile(d.t), thumb.firstChild);
+    chip.className = "st pending";
+    chip.textContent = "To review";
+    draftNo.textContent = "Draft " + ((i % 4) + 1) + " of 4";
+    review.classList.remove("stamped");
+    titleEl.textContent = "";
+  }
+
+  function pos(el) {
+    var s = wrap.getBoundingClientRect(), r = el.getBoundingClientRect();
+    return { x: r.left - s.left + r.width / 2, y: r.top - s.top + r.height / 2 };
+  }
+
+  async function loop() {
+    while (true) {
+      if (document.hidden) { await wait(800); continue; }
+      var d = DRAFTS[idx % DRAFTS.length];
+      setDraft(d, idx);
+      review.animate([{ opacity: 0, transform: "translateY(36px) scale(.94)" }, { opacity: 1, transform: "none" }],
+        { duration: 650, easing: "cubic-bezier(.2,.8,.2,1)", fill: "forwards" });
+      note("Draft ready", "Written for this season's searches");
+      await wait(500);
+      for (var i = 1; i <= d.title.length; i++) { titleEl.textContent = d.title.slice(0, i); await wait(24 + Math.random() * 28); }
+      await wait(350);
+
+      var tg = pos(approveBtn), wr = wrap.getBoundingClientRect();
+      cursor.style.opacity = "1";
+      await cursor.animate([
+        { transform: "translate(" + (wr.width * 0.75) + "px," + (wr.height + 10) + "px)" },
+        { transform: "translate(" + (tg.x - 4) + "px," + (tg.y - 4) + "px)" }
+      ], { duration: 900, easing: "cubic-bezier(.65,0,.35,1)", fill: "forwards" }).finished;
+
+      approveBtn.classList.add("hit");
+      hl.animate([{ transform: "scale(1)" }, { transform: "scale(1.12)" }, { transform: "scale(1)" }], { duration: 450, easing: "ease" });
+      await wait(160);
+      approveBtn.classList.remove("hit");
+      review.classList.add("stamped");
+      chip.className = "st approved";
+      chip.textContent = "Approved";
+      note("Approved by you", "Ready to publish");
+      await wait(900);
+
+      cursor.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 250, fill: "forwards" });
+      await review.animate([
+        { opacity: 1, transform: "none" },
+        { opacity: 0, transform: "translate(" + (wr.width * 0.42) + "px,-" + (wr.height * 0.5) + "px) scale(.25) rotate(8deg)" }
+      ], { duration: 750, easing: "cubic-bezier(.55,0,.75,.35)", fill: "forwards" }).finished;
+      cursor.style.opacity = "0";
+      note("Pin published", "Live on your board");
+      await wait(1700);
+      idx += 1;
+    }
+  }
+
+  if (G.reduce) {
+    setDraft(DRAFTS[0], 0);
+    titleEl.textContent = DRAFTS[0].title;
+    review.classList.add("stamped");
+    chip.className = "st approved";
+    chip.textContent = "Approved";
+  } else {
+    setTimeout(loop, 1200);
+  }
+
+  // ---------- Steps rail ----------
+  var steps = $("steps");
+  G.onView(steps, function () { steps.classList.remove("pre"); steps.classList.add("on"); }, 0.35);
+
+  // ---------- Locked switch ----------
+  var lockSw = $("lockSw");
+  function nudge() { lockSw.classList.remove("nudge"); void lockSw.offsetWidth; lockSw.classList.add("nudge"); }
+  G.onView($("switchboard"), function () { setTimeout(nudge, 700); });
+  lockSw.addEventListener("mouseenter", nudge);
+  lockSw.addEventListener("click", nudge);
+
+  // ---------- Forecast showcase ----------
+  var F = window.GMPForecast;
+
+  // ---------- Free report teaser ----------
+  var FRS = [{ worst: 600, avg: 2200, best: 5200 }, { worst: 3500, avg: 9500, best: 21000 }, { worst: 9000, avg: 24000, best: 52000 },
+    { worst: 13000, avg: 36000, best: 82000 }, { worst: 17000, avg: 47000, best: 110000 }, { worst: 21000, avg: 58000, best: 138000 }];
+  G.onView($("frChart"), function () { F.chart($("frChart"), F.fromMonthly(FRS, 0, [], 180), { animate: true, nowLabel: "Today: 0 views" }); }, 0.3);
+  var lf = { niche: "Jewelry", mode: "auto", ppd: 3, shown: false };
+  var lfHist = F.sampleHistory(7);
+  function lfEff() {
+    if (lf.mode === "auto") { var p = F.autoPick(lf.niche, new Date()); return { id: p.id, auto: true, reason: p.reason }; }
+    return { id: lf.mode, auto: false, reason: F.byId(lf.mode).short };
+  }
+  function lfPills() {
+    var box = $("lfStrats");
+    box.innerHTML = "";
+    var eff = lfEff();
+    var auto = document.createElement("button");
+    auto.type = "button";
+    auto.setAttribute("aria-pressed", lf.mode === "auto" ? "true" : "false");
+    auto.innerHTML = '<span class="auto-dot"></span>';
+    auto.appendChild(document.createTextNode("Auto" + (lf.mode === "auto" ? ": " + F.byId(eff.id).name : "")));
+    auto.onclick = function () { lf.mode = "auto"; lfRender(true); };
+    box.appendChild(auto);
+    F.STRATEGIES.forEach(function (st) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = st.name;
+      b.title = st.short;
+      b.setAttribute("aria-pressed", lf.mode === st.id ? "true" : "false");
+      b.onclick = function () { lf.mode = st.id; lfRender(true); };
+      box.appendChild(b);
+    });
+    $("lfWhy").textContent = (eff.auto ? "GrowMyPin picks " + F.byId(eff.id).name + ". " : F.byId(eff.id).name + ": ") + eff.reason;
+  }
+  function lfRender(quick) {
+    lfPills();
+    var eff = lfEff();
+    var r = F.forecast({ history: lfHist, niche: lf.niche, strategy: eff.id, pinsPerDay: lf.ppd, countries: ["US"] });
+    F.chart($("lfChart"), r, { histDays: 45, animate: true, quick: !!quick });
+    G.countUp($("lfW"), r.summary.worst30, 900, F.fmt);
+    G.countUp($("lfA"), r.summary.avg30, 900, F.fmt);
+    G.countUp($("lfB"), r.summary.best30, 900, F.fmt);
+  }
+  Array.prototype.forEach.call($("lfNiche").querySelectorAll("button"), function (b) {
+    b.addEventListener("click", function () {
+      lf.niche = b.getAttribute("data-n");
+      Array.prototype.forEach.call($("lfNiche").querySelectorAll("button"), function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      lfRender(true);
+    });
+  });
+  $("lfPpd").addEventListener("input", function () {
+    lf.ppd = Number($("lfPpd").value);
+    $("lfPpdVal").textContent = lf.ppd;
+    $("lfPpd").style.setProperty("--fill", ((lf.ppd - 1) / 9 * 100) + "%");
+    lfRender(true);
+  });
+  $("lfPpd").style.setProperty("--fill", ((lf.ppd - 1) / 9 * 100) + "%");
+  lfPills();
+  G.onView($("lfChart"), function () { lfRender(false); }, 0.3);
+
+  // ---------- Try-it demo (runs only in the browser) ----------
+  var NICHES = {
+    jewelry: { word: "Jewelry", board: "Jewelry gift ideas", tiles: [0, 3, 0] },
+    decor: { word: "Home Decor", board: "Cozy home decor", tiles: [1, 3, 1] },
+    crochet: { word: "Crochet", board: "Crochet patterns", tiles: [2, 3, 2] },
+    fashion: { word: "Outfit", board: "Winter outfit ideas", tiles: [5, 3, 5] },
+    wellness: { word: "Wellness", board: "Natural wellness", tiles: [6, 3, 4] }
+  };
+  var niche = "jewelry";
+  var dDrafts = $("dDrafts"), dSlots = $("dSlots"), dPub = $("dPub"), dPubN = $("dPubN");
+  var demo = [];
+  var filled = 0;
+  var CHK = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+
+  function titleCase(t) {
+    return t.toLowerCase().replace(/\b[a-z]/g, function (c) { return c.toUpperCase(); });
+  }
+
+  function buildSlots() {
+    dSlots.innerHTML = "";
+    filled = 0;
+    for (var i = 0; i < 6; i++) {
+      var sl = document.createElement("div");
+      sl.className = "slot2";
+      dSlots.appendChild(sl);
+    }
+    $("dBoardName").textContent = NICHES[niche].board;
+  }
+
+  function pubCount() {
+    var n = demo.filter(function (d) { return d.status === "approved"; }).length;
+    dPubN.textContent = n;
+    dPub.disabled = n === 0;
+  }
+
+  function makeDrafts() {
+    var raw = ($("dName").value || "").replace(/[^\x20-\x7E]/g, "").trim() || "Handmade gift";
+    var name = titleCase(raw).slice(0, 48);
+    var nw = NICHES[niche].word;
+    var month = new Date().getMonth();
+    var season = month >= 9 || month <= 0 ? "Holiday" : (month <= 4 ? "Spring" : "Summer");
+    demo = [
+      { angle: "Gift angle", title: name + " Gift Idea for Her | " + season + " Gifts She Will Love", desc: "Looking for a gift that feels personal? " + name + " is a thoughtful pick she will actually use. Save it for your " + season.toLowerCase() + " gift list.", tile: NICHES[niche].tiles[0] },
+      { angle: "Seasonal", title: season + " " + nw + " Ideas | " + name, desc: "Fresh " + nw.toLowerCase() + " inspiration for the season. See how " + name.toLowerCase() + " fits right in.", tile: NICHES[niche].tiles[1] },
+      { angle: "Curiosity hook", title: "The " + nw + " Find Everyone Is Saving This Season", desc: "This one keeps showing up on boards for a reason. Meet " + name.toLowerCase() + ".", tile: NICHES[niche].tiles[2] }
+    ];
+    demo.forEach(function (d) { d.status = "pending"; d.title = d.title.slice(0, 100); });
+    renderDemo(true);
+    buildSlots();
+    pubCount();
+    if (!$("dFc").hidden) { $("dFc").hidden = true; demoFcShown = false; }
+  }
+
+  function renderDemo(enter) {
+    dDrafts.innerHTML = "";
+    demo.forEach(function (d, i) {
+      var c = document.createElement("article");
+      c.className = "ddraft glass " + d.status + (enter ? " enter" : "");
+      if (enter) c.style.animationDelay = (i * 120) + "ms";
+      var img = document.createElement("div");
+      img.className = "img";
+      img.appendChild(G.tile(d.tile));
+      var ov = document.createElement("div");
+      ov.className = "ov";
+      var ang = document.createElement("span");
+      ang.className = "angle";
+      ang.textContent = d.angle;
+      var st = document.createElement("span");
+      st.className = "st " + d.status;
+      st.textContent = d.status === "pending" ? "To review" : (d.status === "approved" ? "Approved" : "Rejected");
+      ov.appendChild(ang);
+      ov.appendChild(st);
+      img.appendChild(ov);
+      c.appendChild(img);
+      var tx = document.createElement("div");
+      tx.className = "txt";
+      var b = document.createElement("b");
+      b.textContent = d.title;
+      var p = document.createElement("p");
+      p.textContent = d.desc;
+      tx.appendChild(b);
+      tx.appendChild(p);
+      c.appendChild(tx);
+      var acts = document.createElement("div");
+      acts.className = "acts3";
+      if (d.status === "pending") {
+        var rj = document.createElement("button");
+        rj.type = "button";
+        rj.className = "btn btn-reject";
+        rj.textContent = "Reject";
+        rj.onclick = function () { d.status = "rejected"; renderDemo(false); pubCount(); };
+        var ap = document.createElement("button");
+        ap.type = "button";
+        ap.className = "btn btn-primary";
+        ap.textContent = "Approve";
+        ap.onclick = function () {
+          d.status = "approved";
+          renderDemo(false);
+          pubCount();
+          var card = dDrafts.children[i];
+          var sw = document.createElement("div");
+          sw.className = "seal-wrap stamped";
+          sw.innerHTML = '<div class="seal-ring"></div><div class="seal">' + CHK + 'Approved</div>';
+          card.querySelector(".img").appendChild(sw);
+          setTimeout(function () { sw.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 400, fill: "forwards" }); }, 1100);
+        };
+        acts.appendChild(rj);
+        acts.appendChild(ap);
+      } else {
+        var un = document.createElement("button");
+        un.type = "button";
+        un.className = "btn btn-ghost";
+        un.textContent = d.status === "approved" ? "Undo" : "Restore";
+        un.onclick = function () { d.status = "pending"; renderDemo(false); pubCount(); };
+        acts.appendChild(un);
+      }
+      c.appendChild(acts);
+      dDrafts.appendChild(c);
+    });
+  }
+
+  async function publishDemo() {
+    var list = [];
+    demo.forEach(function (d, i) { if (d.status === "approved") list.push(i); });
+    if (!list.length) return;
+    dPub.disabled = true;
+    for (var k = 0; k < list.length; k++) {
+      var i = list[k];
+      var card = dDrafts.children[i];
+      var slot = dSlots.children[filled % 6];
+      if (!G.reduce && card && slot) {
+        var cr = card.getBoundingClientRect(), sr = slot.getBoundingClientRect();
+        var ghost = card.cloneNode(true);
+        ghost.style.position = "fixed";
+        ghost.style.left = cr.left + "px";
+        ghost.style.top = cr.top + "px";
+        ghost.style.width = cr.width + "px";
+        ghost.style.height = cr.height + "px";
+        ghost.style.zIndex = 60;
+        ghost.style.margin = 0;
+        document.body.appendChild(ghost);
+        card.classList.add("gone");
+        var dx = sr.left + sr.width / 2 - (cr.left + cr.width / 2);
+        var dy = sr.top + sr.height / 2 - (cr.top + cr.height / 2);
+        var sc = sr.width / cr.width;
+        await ghost.animate([
+          { transform: "none", opacity: 1 },
+          { transform: "translate(" + dx + "px," + dy + "px) scale(" + sc + ") rotate(-6deg)", opacity: .2 }
+        ], { duration: 700, easing: "cubic-bezier(.55,0,.4,1)", fill: "forwards" }).finished;
+        ghost.remove();
+      } else if (card) {
+        card.classList.add("gone");
+      }
+      if (slot) {
+        slot.innerHTML = "";
+        slot.appendChild(G.tile(demo[i].tile));
+        var lv = document.createElement("span");
+        lv.className = "live2";
+        lv.textContent = "Live";
+        slot.appendChild(lv);
+        slot.classList.add("filled");
+      }
+      filled++;
+      demo[i].status = "published";
+    }
+    note("Pin published", list.length + " sample pin" + (list.length > 1 ? "s" : "") + " on your board");
+    showDemoForecast();
+    demo = demo.filter(function (d) { return d.status !== "published"; });
+    renderDemo(false);
+    if (!demo.length) {
+      var done = document.createElement("div");
+      done.className = "demo-done glass";
+      done.innerHTML = "<b></b><p></p>";
+      done.querySelector("b").textContent = "That is the whole flow.";
+      done.querySelector("p").textContent = "Every pin you published here was approved by you first. Write more drafts, or connect Pinterest to do it for real.";
+      dDrafts.appendChild(done);
+    }
+    pubCount();
+  }
+
+  var NICHE_KEY = { jewelry: "Jewelry", decor: "Home Decor", crochet: "Crafts and Patterns", fashion: "Fashion", wellness: "Health and Wellness" };
+  var demoFcShown = false;
+  function showDemoForecast() {
+    var Fx = window.GMPForecast;
+    var key = NICHE_KEY[niche] || "Other";
+    var pick = Fx.autoPick(key, new Date());
+    var perDay = Math.max(1, Math.min(10, filled));
+    var r = Fx.forecast({ history: [], niche: key, strategy: pick.id, pinsPerDay: perDay, countries: ["US"], fromZero: true });
+    var box = $("dFc");
+    var first = box.hidden;
+    box.hidden = false;
+    $("dFcStrat").textContent = Fx.byId(pick.id).name + ", " + perDay + " pin" + (perDay > 1 ? "s" : "") + " a day";
+    $("dFcTitle").textContent = "From 0 to this in 3 months";
+    if (first) box.scrollIntoView({ behavior: G.reduce ? "auto" : "smooth", block: "center" });
+    setTimeout(function () {
+      Fx.chart($("dChart"), r, { animate: true, quick: demoFcShown, nowLabel: "Today: 0 views" });
+      demoFcShown = true;
+      G.countUp($("dW"), r.summary.worst30, 1400, Fx.fmt);
+      G.countUp($("dA"), r.summary.avg30, 1400, Fx.fmt);
+      G.countUp($("dB"), r.summary.best30, 1400, Fx.fmt);
+    }, first ? 450 : 0);
+  }
+
+  Array.prototype.forEach.call($("dNiche").querySelectorAll("button"), function (b) {
+    b.addEventListener("click", function () {
+      niche = b.getAttribute("data-n");
+      Array.prototype.forEach.call($("dNiche").querySelectorAll("button"), function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      makeDrafts();
+    });
+  });
+  $("dGen").addEventListener("click", makeDrafts);
+  $("dName").addEventListener("keydown", function (e) { if (e.key === "Enter") makeDrafts(); });
+  dPub.addEventListener("click", publishDemo);
+  makeDrafts();
+})();
+</script>
+<script src="/gmp.js" defer></script>
+</body>
+</html>
