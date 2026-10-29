@@ -15,7 +15,7 @@
   var NAMES = { etsy: "Etsy", shopify: "Shopify", ebay: "eBay" };
   var ORDER = ["etsy", "shopify", "ebay"];
   var RANK_LABELS = ["Best", "2nd best", "Middle", "2nd worst", "Worst"];
-  var COLORS = ["#34D6A8", "#5BC0EB", "#A78BFA", "#FFB65C", "#FF7A93"];
+  var COLORS = ["#0F9682", "#2F8FD8", "#7C6BE0", "#E8902A", "#E0557A"];
   var PIN_TIERS = [
     { label: "No pins yet", short: "0 pins", value: 0, min: 0 },
     { label: "1 to 24 pins", short: "1-24 pins", value: 12, min: 1 },
@@ -104,7 +104,11 @@
         visits.push(Math.round((cur * ratio + N.visits[t][i] * pm * jit) * visitK));
       }
       var sales = visits.map(function (v) { return v * cvr; });
-      return { id: id, rank: t, label: RANK_LABELS[t], color: COLORS[t], name: meta.name, short: meta.short, views: views, visits: visits, sales: sales };
+      // first month of REWARD: when the new views pass 10% of the month 6 level (always month 2 or 3)
+      var gain6 = Math.max(1, views[6] - cur), pat = 3;
+      for (var k = 1; k <= 6; k++) if (views[k] - cur >= gain6 * 0.1) { pat = k; break; }
+      pat = Math.max(2, Math.min(3, pat));
+      return { id: id, rank: t, label: RANK_LABELS[t], color: COLORS[t], name: meta.name, short: meta.short, views: views, visits: visits, sales: sales, patience: pat };
     });
     var target = Number(o.target) || 0;
     var goalVisits = target && cvr ? Math.ceil(target / cvr) : 0;
@@ -180,94 +184,99 @@
   // ---------- styles ----------
   var css = document.createElement("style");
   css.textContent =
-    ".gw{--gw-mut:#A9C2BC;--gw-line:rgba(255,255,255,.1);--gw-card:rgba(255,255,255,.05);position:relative;isolation:isolate;overflow:hidden;border-radius:28px;color:#fff;padding:clamp(18px,3.4vw,30px);display:grid;gap:18px;font-family:Figtree,system-ui,sans-serif;" +
-    "background:radial-gradient(70% 55% at 100% 0%,rgba(20,184,143,.28) 0,transparent 70%),radial-gradient(60% 50% at 0% 100%,rgba(242,154,46,.22) 0,transparent 70%),linear-gradient(160deg,#08221E 0%,#061815 55%,#0A1412 100%);box-shadow:0 40px 80px -40px rgba(6,24,21,.8)}" +
+    ".gw{--gw-ink:#24292F;--gw-mut:#59606E;--gw-line:#E6E8EF;--gw-card:#FFFFFF;--gw-soft:#F7F7FB;--gw-pat:#E8902A;--gw-pat-bg:#FFF5E6;--gw-rew:#0F9682;--gw-rew-bg:#E8F7F1;" +
+    "position:relative;isolation:isolate;overflow:hidden;border-radius:28px;color:var(--gw-ink);padding:clamp(18px,3.4vw,30px);display:grid;gap:18px;font-family:Figtree,system-ui,sans-serif;" +
+    "background:radial-gradient(60% 50% at 100% 0%,rgba(20,184,143,.12) 0,transparent 70%),radial-gradient(55% 45% at 0% 100%,rgba(242,154,46,.10) 0,transparent 70%),#FFFFFF;border:1px solid var(--gw-line);box-shadow:0 30px 60px -40px rgba(36,41,47,.35)}" +
     ".gw *{box-sizing:border-box}" +
-    ".gw-orb{position:absolute;z-index:-1;border-radius:50%;filter:blur(40px);opacity:.5;pointer-events:none}" +
-    ".gw-orb.a{width:240px;height:240px;right:-90px;top:-80px;background:#14B88F;animation:gwFloat 9s ease-in-out infinite alternate}" +
-    ".gw-orb.b{width:180px;height:180px;left:20%;bottom:-80px;background:#F29A2E;opacity:.28;animation:gwFloat 11s ease-in-out infinite alternate-reverse}" +
     ".gw-top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}" +
-    ".gw-kick{display:inline-flex;align-items:center;gap:8px;font-size:.8rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#34D6A8}" +
-    ".gw-kick i{width:8px;height:8px;border-radius:50%;background:#34D6A8;box-shadow:0 0 0 0 rgba(52,214,168,.6);animation:gwPing 1.8s infinite}" +
+    ".gw-kick{display:inline-flex;align-items:center;gap:8px;font-size:.8rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--gw-rew)}" +
+    ".gw-kick i{width:8px;height:8px;border-radius:50%;background:#14B88F;box-shadow:0 0 0 0 rgba(20,184,143,.5);animation:gwPing 1.8s infinite}" +
     ".gw-chips{display:flex;gap:8px;flex-wrap:wrap}" +
-    ".gw-chip{position:relative;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--gw-line);background:var(--gw-card);border-radius:999px;padding:7px 12px;font-size:.84rem;font-weight:700;color:#E8F3F0;white-space:nowrap}" +
-    ".gw-chip svg{width:14px;height:14px;flex:none}" +
+    ".gw-chip{position:relative;display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--gw-line);background:#fff;border-radius:999px;padding:7px 12px;font-size:.84rem;font-weight:700;color:var(--gw-ink);white-space:nowrap}" +
+    ".gw-chip svg{width:14px;height:14px;flex:none;color:var(--gw-mut)}" +
     ".gw-chip select{appearance:none;-webkit-appearance:none;background:transparent;border:0;color:inherit;font:inherit;font-weight:700;padding:0 16px 0 0;cursor:pointer;max-width:170px}" +
-    ".gw-chip select option{color:#1F242B}" +
-    ".gw-chip.sel::after{content:'';position:absolute;right:12px;top:50%;width:6px;height:6px;border-right:2px solid #A9C2BC;border-bottom:2px solid #A9C2BC;transform:translateY(-70%) rotate(45deg);pointer-events:none}" +
-    ".gw-chip.ask{border-color:#FFC75A;background:rgba(255,199,90,.12);color:#FFE7A8;animation:gwGlow 1.8s ease-in-out infinite}" +
-    ".gw-chip.live{border-color:rgba(52,214,168,.5);color:#BFF5E3}" +
-    ".gw-lead{margin:0;font-size:clamp(1rem,2.2vw,1.18rem);color:#DDEBE7;line-height:1.45}" +
-    ".gw-lead b{color:#fff}" +
-    ".gw-tag{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:2px 10px;font-size:.78rem;font-weight:800;vertical-align:.12em;color:#06231C;background:#34D6A8}" +
+    ".gw-chip.sel::after{content:'';position:absolute;right:12px;top:50%;width:6px;height:6px;border-right:2px solid #8A90A0;border-bottom:2px solid #8A90A0;transform:translateY(-70%) rotate(45deg);pointer-events:none}" +
+    ".gw-chip.ask{border-color:#F29A2E;background:#FFF5E6;color:#8A4B0F;animation:gwGlow 1.8s ease-in-out infinite}" +
+    ".gw-chip.live{border-color:#BDE8DA;background:#F0FAF6;color:#0B7A69}" +
+    ".gw-lead{margin:0;font-size:clamp(1rem,2.2vw,1.18rem);color:var(--gw-mut);line-height:1.45}" +
+    ".gw-lead b{color:var(--gw-ink)}" +
+    ".gw-tag{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:2px 10px;font-size:.78rem;font-weight:800;vertical-align:.12em;color:#fff;background:var(--gw-rew)}" +
     ".gw-big{display:flex;align-items:flex-end;gap:clamp(14px,3vw,30px);flex-wrap:wrap;margin-top:6px}" +
     ".gw-big>div{display:grid;gap:2px}" +
-    ".gw-big b{font-family:Montserrat,system-ui,sans-serif;font-weight:800;letter-spacing:-.045em;line-height:.95;font-size:clamp(2.6rem,8.4vw,4.4rem);background:linear-gradient(180deg,#FFF6D2 5%,#FFC75A 55%,#F29A2E);-webkit-background-clip:text;background-clip:text;color:transparent}" +
-    ".gw-big .v2 b{background:linear-gradient(180deg,#E7FFF7 5%,#34D6A8 60%,#14B88F);-webkit-background-clip:text;background-clip:text;color:transparent}" +
+    ".gw-big b{font-family:Montserrat,system-ui,sans-serif;font-weight:800;letter-spacing:-.045em;line-height:.95;font-size:clamp(2.6rem,8.4vw,4.4rem);background:linear-gradient(135deg,#09423D 0%,#0F8A76 55%,#14B88F 100%);-webkit-background-clip:text;background-clip:text;color:transparent}" +
+    ".gw-big .v2 b{background:linear-gradient(135deg,#B4601A 0%,#E8902A 55%,#F2B046 100%);-webkit-background-clip:text;background-clip:text;color:transparent}" +
     ".gw-big small{font-size:.9rem;color:var(--gw-mut);font-weight:700}" +
-    ".gw-big .plus{font-family:Montserrat,system-ui,sans-serif;font-weight:800;font-size:2rem;color:rgba(255,255,255,.35);padding-bottom:22px}" +
+    ".gw-big .plus{font-family:Montserrat,system-ui,sans-serif;font-weight:800;font-size:2rem;color:#C9CEDA;padding-bottom:22px}" +
     ".gw-sub{margin:4px 0 0;color:var(--gw-mut);font-size:.95rem}" +
-    ".gw-vs{display:inline-flex;align-items:center;gap:8px;margin-top:10px;padding:8px 12px;border-radius:14px;background:rgba(255,199,90,.1);border:1px solid rgba(255,199,90,.25);color:#FFE7A8;font-weight:700;font-size:.9rem}" +
+    ".gw-vs{display:inline-flex;align-items:center;gap:8px;margin-top:10px;padding:8px 12px;border-radius:14px;background:#FFF5E6;border:1px solid #F7DDB4;color:#8A4B0F;font-weight:700;font-size:.9rem}" +
     ".gw-vs svg{width:16px;height:16px;flex:none}" +
     ".gw-ctrl{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}" +
-    ".gw-seg{display:inline-grid;grid-template-columns:1fr 1fr;background:rgba(255,255,255,.07);border:1px solid var(--gw-line);border-radius:999px;padding:4px;position:relative}" +
+    ".gw-seg{display:inline-grid;grid-template-columns:1fr 1fr;background:#F1EEFB;border-radius:999px;padding:4px;position:relative}" +
     ".gw-seg button{position:relative;z-index:1;border:0;background:none;font:inherit;font-weight:800;font-size:.86rem;padding:8px 15px;border-radius:999px;cursor:pointer;color:var(--gw-mut);transition:color .25s;white-space:nowrap}" +
-    ".gw-seg button.on{color:#06231C}" +
-    ".gw-seg .knob{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:999px;background:linear-gradient(135deg,#BFF5E3,#34D6A8);transition:transform .4s cubic-bezier(.2,.8,.2,1)}" +
+    ".gw-seg button.on{color:#fff}" +
+    ".gw-seg .knob{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:999px;background:linear-gradient(135deg,#09423D,#0F8A76 55%,#14B88F);transition:transform .4s cubic-bezier(.2,.8,.2,1)}" +
     ".gw-seg.r2 .knob{transform:translateX(100%)}" +
+    ".gw-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.84rem;font-weight:700;color:var(--gw-ink)}" +
+    ".gw-legend span{display:inline-flex;align-items:center;gap:7px}" +
+    ".gw-legend i{width:22px;height:5px;border-radius:4px;display:inline-block}" +
+    ".gw-legend small{font-weight:600;color:var(--gw-mut)}" +
     ".gw-cap{font-size:.82rem;color:var(--gw-mut)}" +
-    ".gw-chart{position:relative;border-radius:20px;background:rgba(0,0,0,.18);border:1px solid var(--gw-line);padding:10px 6px 4px}" +
+    ".gw-chart{position:relative;border-radius:20px;background:#fff;border:1px solid var(--gw-line);padding:10px 6px 4px}" +
     ".gw-chart svg{display:block;width:100%;height:auto;overflow:visible;touch-action:pan-y}" +
-    ".gw-ax{font-family:Figtree,system-ui,sans-serif;font-size:11px;fill:#7F9893}" +
-    ".gw-vl{font-family:Montserrat,system-ui,sans-serif;font-weight:800;font-size:11.5px;fill:#fff;transition:opacity .3s}" +
-    ".gw-goal{stroke:#FFC75A;stroke-width:1.6;stroke-dasharray:6 6;fill:none}" +
-    ".gw-goal-t{font-family:Figtree,system-ui,sans-serif;font-size:11px;font-weight:800;fill:#FFC75A}" +
-    ".gw-tip rect{fill:#0B1F1C;stroke:rgba(255,255,255,.18)}.gw-tip text{font-family:Figtree,system-ui,sans-serif;font-size:11.5px;fill:#DDEBE7}.gw-tip .h{font-weight:800;fill:#fff}" +
+    ".gw-ax{font-family:Figtree,system-ui,sans-serif;font-size:11px;fill:#8A90A0}" +
+    ".gw-vl{font-family:Montserrat,system-ui,sans-serif;font-weight:800;font-size:11.5px;fill:#24292F;transition:opacity .3s}" +
+    ".gw-zt{font-family:Figtree,system-ui,sans-serif;font-size:10.5px;font-weight:800;letter-spacing:.08em}" +
+    ".gw-goal{stroke:#6B5BD6;stroke-width:1.6;stroke-dasharray:6 6;fill:none}" +
+    ".gw-goal-t{font-family:Figtree,system-ui,sans-serif;font-size:11px;font-weight:800;fill:#6B5BD6}" +
+    ".gw-tip rect{fill:#fff;stroke:#E4E6EE;filter:drop-shadow(0 10px 18px rgba(36,41,47,.16))}.gw-tip text{font-family:Figtree,system-ui,sans-serif;font-size:11.5px;fill:#59606E}.gw-tip .h{font-weight:800;fill:#24292F}" +
     ".gw-board{display:grid;gap:8px}" +
-    ".gw-row{display:grid;grid-template-columns:92px minmax(0,1fr) auto;gap:12px;align-items:center;width:100%;text-align:left;border:1px solid var(--gw-line);background:var(--gw-card);border-radius:16px;padding:10px 12px;font:inherit;color:#fff;cursor:pointer;transition:background .25s,border-color .25s,transform .25s}" +
-    ".gw-row:hover{background:rgba(255,255,255,.08)}" +
-    ".gw-row.on{border-color:var(--c);background:linear-gradient(90deg,rgba(255,255,255,.1),rgba(255,255,255,.03));transform:translateX(3px)}" +
-    ".gw-badge{display:inline-flex;align-items:center;justify-content:center;gap:5px;border-radius:999px;padding:5px 8px;font-size:.74rem;font-weight:800;color:#06231C;background:var(--c);white-space:nowrap}" +
+    ".gw-row{display:grid;grid-template-columns:92px minmax(0,1fr) auto;gap:12px;align-items:center;width:100%;text-align:left;border:1.5px solid var(--gw-line);background:#fff;border-radius:16px;padding:10px 12px;font:inherit;color:var(--gw-ink);cursor:pointer;transition:background .25s,border-color .25s,transform .25s,box-shadow .25s}" +
+    ".gw-row:hover{background:var(--gw-soft)}" +
+    ".gw-row.on{border-color:var(--c);box-shadow:0 12px 24px -18px var(--c);transform:translateX(3px)}" +
+    ".gw-badge{display:inline-flex;align-items:center;justify-content:center;gap:5px;border-radius:999px;padding:5px 8px;font-size:.74rem;font-weight:800;color:#fff;background:var(--c);white-space:nowrap}" +
     ".gw-badge svg{width:13px;height:13px}" +
     ".gw-nm{min-width:0;display:grid;gap:5px}" +
     ".gw-nm b{font-family:Montserrat,system-ui,sans-serif;font-size:.98rem;letter-spacing:-.01em}" +
     ".gw-nm b em{font-style:normal;font-family:Figtree,system-ui,sans-serif;font-weight:600;font-size:.82rem;color:var(--gw-mut);margin-left:6px}" +
-    ".gw-bar{height:8px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden}" +
-    ".gw-bar i{display:block;height:100%;width:0;border-radius:6px;background:var(--c);box-shadow:0 0 14px var(--c);transition:width 1.1s cubic-bezier(.2,.8,.2,1)}" +
+    ".gw-bar{height:8px;border-radius:6px;background:#EEF0F5;overflow:hidden}" +
+    ".gw-bar i{display:block;height:100%;width:0;border-radius:6px;background:var(--c);transition:width 1.1s cubic-bezier(.2,.8,.2,1)}" +
     ".gw-val{text-align:right;display:grid;gap:1px}" +
     ".gw-val b{font-family:Montserrat,system-ui,sans-serif;font-size:1.08rem;letter-spacing:-.02em}" +
     ".gw-val small{font-size:.74rem;color:var(--gw-mut);white-space:nowrap}" +
-    ".gw-runs{display:inline-block;margin-left:6px;font-size:.7rem;font-weight:800;color:#FFC75A;font-family:Figtree,system-ui,sans-serif;letter-spacing:0}" +
-    ".gw-h3{margin:0;font-family:Montserrat,system-ui,sans-serif;font-size:1.02rem;letter-spacing:-.01em;color:#fff}" +
+    ".gw-runs{display:inline-block;margin-left:6px;font-size:.7rem;font-weight:800;color:#B4601A;font-family:Figtree,system-ui,sans-serif;letter-spacing:0}" +
+    ".gw-h3{margin:0;font-family:Montserrat,system-ui,sans-serif;font-size:1.02rem;letter-spacing:-.01em;color:var(--gw-ink)}" +
     ".gw-months{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:8px}" +
-    ".gw-m{position:relative;border-radius:16px;padding:12px;background:var(--gw-card);border:1px solid var(--gw-line);display:grid;gap:3px;opacity:0;transform:translateY(10px);animation:gwRise .5s cubic-bezier(.2,.8,.2,1) forwards}" +
-    ".gw-m .t{font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--gw-mut)}" +
+    ".gw-m{position:relative;border-radius:16px;padding:12px;border:1.5px solid var(--gw-line);display:grid;gap:3px;opacity:0;transform:translateY(10px);animation:gwRise .5s cubic-bezier(.2,.8,.2,1) forwards}" +
+    ".gw-m.pat{background:var(--gw-pat-bg);border-color:#F7DDB4}" +
+    ".gw-m.rew{background:var(--gw-rew-bg);border-color:#BDE8DA}" +
+    ".gw-m .t{display:flex;justify-content:space-between;gap:6px;font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--gw-mut)}" +
+    ".gw-m .t em{font-style:normal;letter-spacing:.04em}" +
+    ".gw-m.pat .t em{color:#B4601A}.gw-m.rew .t em{color:#0B7A69}" +
     ".gw-m b{font-family:Montserrat,system-ui,sans-serif;font-size:1.3rem;letter-spacing:-.03em}" +
-    ".gw-m small{font-size:.76rem;color:#CFE2DD}" +
+    ".gw-m small{font-size:.76rem;color:var(--gw-mut)}" +
     ".gw-m .p{font-size:.74rem;color:var(--gw-mut);line-height:1.3}" +
-    ".gw-m .ms{position:absolute;top:-9px;right:8px;border-radius:999px;padding:2px 8px;font-size:.68rem;font-weight:800;color:#2A1503;background:linear-gradient(135deg,#FFE08A,#FFC75A 45%,#F29A2E);box-shadow:0 6px 16px -6px rgba(242,154,46,.8)}" +
-    ".gw-m.up{background:linear-gradient(180deg,rgba(52,214,168,.12),rgba(255,255,255,.04));border-color:rgba(52,214,168,.35)}" +
+    ".gw-m .ms{position:absolute;top:-10px;right:8px;border-radius:999px;padding:2px 8px;font-size:.68rem;font-weight:800;color:#fff;background:linear-gradient(135deg,#0F8A76,#14B88F);box-shadow:0 6px 14px -6px rgba(15,150,130,.8)}" +
     ".gw-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}" +
-    ".gw-stats div{border-radius:16px;padding:12px 14px;background:var(--gw-card);border:1px solid var(--gw-line);display:grid;gap:2px}" +
+    ".gw-stats div{border-radius:16px;padding:12px 14px;background:var(--gw-soft);border:1px solid var(--gw-line);display:grid;gap:2px}" +
     ".gw-stats b{font-family:Montserrat,system-ui,sans-serif;font-size:clamp(1.1rem,2.6vw,1.4rem);letter-spacing:-.02em}" +
     ".gw-stats small{font-size:.78rem;color:var(--gw-mut);line-height:1.3}" +
-    ".gw-stats .gold{background:rgba(255,199,90,.1);border-color:rgba(255,199,90,.3)}" +
-    ".gw-stats .gold b{color:#FFC75A}" +
-    ".gw-fine{margin:0;font-size:.76rem;color:#7F9893;line-height:1.45}" +
-    "@keyframes gwPing{0%{box-shadow:0 0 0 0 rgba(52,214,168,.6)}80%,100%{box-shadow:0 0 0 10px rgba(52,214,168,0)}}" +
-    "@keyframes gwGlow{0%,100%{box-shadow:0 0 0 0 rgba(255,199,90,.0)}50%{box-shadow:0 0 0 5px rgba(255,199,90,.18)}}" +
-    "@keyframes gwFloat{from{transform:translate(0,0)}to{transform:translate(-30px,20px)}}" +
+    ".gw-stats .gold{background:#FFF5E6;border-color:#F7DDB4}" +
+    ".gw-stats .gold b{color:#B4601A}" +
+    ".gw-fine{margin:0;font-size:.76rem;color:#8A90A0;line-height:1.45}" +
+    "@keyframes gwPing{0%{box-shadow:0 0 0 0 rgba(20,184,143,.5)}80%,100%{box-shadow:0 0 0 10px rgba(20,184,143,0)}}" +
+    "@keyframes gwGlow{0%,100%{box-shadow:0 0 0 0 rgba(242,154,46,0)}50%{box-shadow:0 0 0 5px rgba(242,154,46,.18)}}" +
     "@keyframes gwRise{to{opacity:1;transform:none}}" +
     "@media (max-width:640px){.gw-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.gw-row{grid-template-columns:minmax(0,1fr) auto;row-gap:8px}.gw-row .gw-badge{grid-column:1/-1;justify-self:start}.gw-big .plus{display:none}.gw-nm b em{display:none}.gw-months{grid-template-columns:repeat(2,minmax(0,1fr))}}" +
-    "@media (prefers-reduced-motion:reduce){.gw-orb,.gw-kick i,.gw-chip.ask{animation:none}.gw-m{opacity:1;transform:none;animation:none}}" +
-    // old small chart in the visits popup
-    ".gg-band{fill:rgba(15,150,130,.12)}";
+    "@media (prefers-reduced-motion:reduce){.gw-kick i,.gw-chip.ask{animation:none}.gw-m{opacity:1;transform:none;animation:none}}";
   document.head.appendChild(css);
 
   var CROWN = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 7l4.5 4L12 4l4.5 7L21 7l-2 12H5L3 7z"/></svg>';
   var BOLT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg>';
+  var PAT = "#E8902A", REW = "#0F9682";
 
-  // ---------- multi strategy chart ----------
+  // ---------- patience + reward chart ----------
+  // The chosen strategy is drawn in two colors: PATIENCE (orange, Pinterest is still learning the shop)
+  // and REWARD (green, views take off). Other strategies are thin grey lines behind it, to compare.
   // opts: { range: 3|6, metric: "views"|"visits", sel: rank index, goal: monthly goal value, ms: animation ms }
   function drawRace(svg, P, opts) {
     var o = opts || {};
@@ -275,41 +284,56 @@
     svg.innerHTML = "";
     var cw = svg.clientWidth || (svg.parentNode && svg.parentNode.clientWidth) || 680;
     var narrow = cw < 520;
-    var W = narrow ? Math.max(300, Math.round(cw)) : 700, H = narrow ? 270 : 320;
-    var L = narrow ? 40 : 48, R = narrow ? 14 : 78, T = 26, B = 34;
+    var W = narrow ? Math.max(300, Math.round(cw)) : 700, H = narrow ? 280 : 330;
+    var L = narrow ? 40 : 48, R = narrow ? 14 : 78, T = 40, B = 34;
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
     var series = P.list.map(function (s) { return s[key].slice(0, n + 1); });
     var maxData = 1;
     series.forEach(function (a) { a.forEach(function (v) { if (v > maxData) maxData = v; }); });
     var goal = o.goal || 0;
     var goalOn = goal > 0 && goal <= maxData * 1.35;
-    var raw = Math.max(maxData, goalOn ? goal : 0) * 1.1 / 4;
+    var raw = Math.max(maxData, goalOn ? goal : 0) * 1.08 / 4;
     var p10 = Math.pow(10, Math.floor(Math.log10(Math.max(raw, 1))));
     var f = raw / p10;
     var top = 4 * p10 * (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10);
     var x = function (i) { return L + (W - L - R) * i / n; };
     var y = function (v) { return T + (H - T - B) * (1 - v / top); };
     var gid = "gw" + Math.random().toString(36).slice(2, 8);
-    var col = P.list[sel].color;
+    var S = P.list[sel];
+    var split = Math.min(n, Math.max(1, S.patience - 1)); // month where patience ends and reward starts
+    var xs = x(split);
 
     var defs = el("defs", {}, svg);
-    var lg = el("linearGradient", { id: gid + "a", x1: 0, y1: 0, x2: 0, y2: 1 }, defs);
-    el("stop", { offset: "0", "stop-color": col, "stop-opacity": ".42" }, lg);
-    el("stop", { offset: "1", "stop-color": col, "stop-opacity": "0" }, lg);
-    var fl = el("filter", { id: gid + "g", x: "-20%", y: "-20%", width: "140%", height: "140%" }, defs);
-    el("feGaussianBlur", { stdDeviation: "4", result: "b" }, fl);
-    var fm = el("feMerge", {}, fl);
-    el("feMergeNode", { "in": "b" }, fm);
-    el("feMergeNode", { "in": "SourceGraphic" }, fm);
-    var cp = el("clipPath", { id: gid + "c" }, defs);
-    var clipRect = el("rect", { x: 0, y: 0, width: 0, height: H }, cp);
+    function grad(id, c, a) {
+      var lg = el("linearGradient", { id: id, x1: 0, y1: 0, x2: 0, y2: 1 }, defs);
+      el("stop", { offset: "0", "stop-color": c, "stop-opacity": a }, lg);
+      el("stop", { offset: "1", "stop-color": c, "stop-opacity": "0" }, lg);
+    }
+    grad(gid + "p", PAT, ".30"); grad(gid + "r", REW, ".32");
+    var cpA = el("clipPath", { id: gid + "c" }, defs);
+    var clipRect = el("rect", { x: 0, y: 0, width: 0, height: H }, cpA);
+    var cpP = el("clipPath", { id: gid + "cp" }, defs);
+    el("rect", { x: 0, y: 0, width: xs, height: H }, cpP);
+    var cpR = el("clipPath", { id: gid + "cr" }, defs);
+    el("rect", { x: xs, y: 0, width: W - xs, height: H }, cpR);
+
+    // zones
+    el("rect", { x: L, y: T - 6, width: xs - L, height: H - B - T + 6, fill: "#FFF5E6", rx: 10 }, svg);
+    el("rect", { x: xs, y: T - 6, width: W - R - xs, height: H - B - T + 6, fill: "#F0FAF6", rx: 10 }, svg);
+    var zp = el("text", { "class": "gw-zt", x: (L + xs) / 2, y: T - 14, "text-anchor": "middle", fill: "#B4601A" }, svg);
+    zp.textContent = xs - L < 90 ? "PATIENCE" : "PATIENCE";
+    var zr = el("text", { "class": "gw-zt", x: (xs + W - R) / 2, y: T - 14, "text-anchor": "middle", fill: "#0B7A69" }, svg);
+    zr.textContent = "REWARD";
+    el("line", { x1: xs, x2: xs, y1: T - 6, y2: H - B, stroke: "#E2C9A0", "stroke-dasharray": "3 4" }, svg);
 
     var grid = el("g", {}, svg);
-    for (var g = 0; g <= 4; g++) {
+    for (var g = 1; g <= 4; g++) {
       var gv = top * g / 4;
-      el("line", { x1: L, x2: W - R, y1: y(gv), y2: y(gv), stroke: "rgba(255,255,255,.07)" }, grid);
+      el("line", { x1: L, x2: W - R, y1: y(gv), y2: y(gv), stroke: "rgba(36,41,47,.06)" }, grid);
       el("text", { "class": "gw-ax", x: L - 8, y: y(gv) + 4, "text-anchor": "end" }, grid).textContent = fmt(gv);
     }
+    el("line", { x1: L, x2: W - R, y1: y(0), y2: y(0), stroke: "#D9DCE5" }, grid);
+    el("text", { "class": "gw-ax", x: L - 8, y: y(0) + 4, "text-anchor": "end" }, grid).textContent = "0";
     for (var m = 0; m <= n; m++) {
       el("text", { "class": "gw-ax", x: x(m), y: H - 10, "text-anchor": "middle", "font-weight": m === n ? 800 : 500 }, grid).textContent = m === 0 ? "Now" : (narrow ? "M" + m : "Month " + m);
     }
@@ -319,51 +343,56 @@
     }
 
     var plot = el("g", { "clip-path": "url(#" + gid + "c)" }, svg);
+    for (var t = P.list.length - 1; t >= 0; t--) {
+      if (t === sel) continue;
+      var pts = series[t].map(function (v, i) { return [x(i), y(v)]; });
+      el("path", { d: smooth(pts), fill: "none", stroke: "#C9CEDA", "stroke-width": 1.6, "stroke-linecap": "round" }, plot);
+      el("circle", { cx: pts[n][0], cy: pts[n][1], r: 3.5, fill: P.list[t].color }, plot);
+    }
     var selPts = series[sel].map(function (v, i) { return [x(i), y(v)]; });
     var sd = smooth(selPts);
-    el("path", { d: sd + " L" + x(n) + "," + y(0) + " L" + x(0) + "," + y(0) + " Z", fill: "url(#" + gid + "a)" }, plot);
-    for (var t = P.list.length - 1; t >= 0; t--) {
-      var pts = series[t].map(function (v, i) { return [x(i), y(v)]; });
-      var d = smooth(pts);
-      if (t === sel) continue;
-      el("path", { d: d, fill: "none", stroke: P.list[t].color, "stroke-width": 2, "stroke-opacity": .5, "stroke-linecap": "round" }, plot);
-      el("circle", { cx: pts[n][0], cy: pts[n][1], r: 3.5, fill: P.list[t].color, opacity: .7 }, plot);
-    }
-    el("path", { d: sd, fill: "none", stroke: col, "stroke-width": 4.5, "stroke-linecap": "round", "stroke-linejoin": "round", filter: "url(#" + gid + "g)" }, plot);
+    var area = sd + " L" + x(n) + "," + y(0) + " L" + x(0) + "," + y(0) + " Z";
+    var gp = el("g", { "clip-path": "url(#" + gid + "cp)" }, plot);
+    el("path", { d: area, fill: "url(#" + gid + "p)" }, gp);
+    el("path", { d: sd, fill: "none", stroke: PAT, "stroke-width": 5, "stroke-linecap": "round", "stroke-linejoin": "round" }, gp);
+    var gr = el("g", { "clip-path": "url(#" + gid + "cr)" }, plot);
+    el("path", { d: area, fill: "url(#" + gid + "r)" }, gr);
+    el("path", { d: sd, fill: "none", stroke: REW, "stroke-width": 5, "stroke-linecap": "round", "stroke-linejoin": "round" }, gr);
 
     var dots = el("g", {}, svg);
     var ms = o.ms === undefined ? 1500 : o.ms;
     selPts.forEach(function (p, i) {
       if (i === 0 && !series[sel][0]) return;
-      var c = el("circle", { cx: p[0], cy: p[1], r: reduce || !ms ? 5 : 0, fill: "#061815", stroke: col, "stroke-width": 3, style: "transition:r .3s" }, dots);
-      var showLbl = !narrow || i === n || n <= 3;
+      var c = i <= split ? PAT : REW;
+      if (i === split) c = REW;
+      var dot = el("circle", { cx: p[0], cy: p[1], r: reduce || !ms ? 5 : 0, fill: "#fff", stroke: c, "stroke-width": 3, style: "transition:r .3s" }, dots);
       var lb = null;
-      if (showLbl && i > 0) {
-        lb = el("text", { "class": "gw-vl", x: p[0], y: p[1] - 12, "text-anchor": i === n && !narrow ? "middle" : "middle", opacity: reduce || !ms ? 1 : 0 }, dots);
+      if ((!narrow || i === n || n <= 3) && i > 0) {
+        lb = el("text", { "class": "gw-vl", x: p[0], y: p[1] - 12, "text-anchor": "middle", opacity: reduce || !ms ? 1 : 0 }, dots);
         lb.textContent = fmt(series[sel][i]);
       }
-      if (!reduce && ms) setTimeout(function () { c.setAttribute("r", i === n ? 7 : 5); if (lb) lb.setAttribute("opacity", 1); }, 200 + ms * i / n);
+      if (!reduce && ms) setTimeout(function () { dot.setAttribute("r", i === n ? 7 : 5); if (lb) lb.setAttribute("opacity", 1); }, 200 + ms * i / n);
     });
     if (!narrow) {
       var endY = selPts[n][1];
       var pill = el("g", { transform: "translate(" + (W - R + 10) + " " + (endY - 12) + ")", opacity: reduce || !ms ? 1 : 0, style: "transition:opacity .4s" }, svg);
-      el("rect", { width: 66, height: 24, rx: 12, fill: col }, pill);
-      var pt = el("text", { x: 33, y: 16, "text-anchor": "middle", "font-family": "Montserrat,system-ui,sans-serif", "font-weight": 800, "font-size": 12, fill: "#06231C" }, pill);
-      pt.textContent = fmt(series[sel][n]);
+      el("rect", { width: 66, height: 24, rx: 12, fill: REW }, pill);
+      var ptx = el("text", { x: 33, y: 16, "text-anchor": "middle", "font-family": "Montserrat,system-ui,sans-serif", "font-weight": 800, "font-size": 12, fill: "#fff" }, pill);
+      ptx.textContent = fmt(series[sel][n]);
       if (!reduce && ms) setTimeout(function () { pill.setAttribute("opacity", 1); }, ms + 150);
     }
     reveal(clipRect, W, ms);
 
     // tooltip: hover or tap a month
-    var guide = el("line", { x1: 0, x2: 0, y1: T - 6, y2: H - B, stroke: "rgba(255,255,255,.35)", "stroke-dasharray": "3 4", opacity: 0 }, svg);
+    var guide = el("line", { x1: 0, x2: 0, y1: T - 6, y2: H - B, stroke: "rgba(36,41,47,.3)", "stroke-dasharray": "3 4", opacity: 0 }, svg);
     var tip = el("g", { "class": "gw-tip", opacity: 0, "pointer-events": "none" }, svg);
-    var tw = 176, th = 26 + P.list.length * 17;
+    var tw = 180, th = 26 + P.list.length * 17;
     el("rect", { width: tw, height: th, rx: 12 }, tip);
     var tHead = el("text", { "class": "h", x: 12, y: 18 }, tip);
     var rows = P.list.map(function (s, k) {
       el("circle", { cx: 16, cy: 34 + k * 17, r: 4, fill: s.color }, tip);
       var a = el("text", { x: 26, y: 38 + k * 17 }, tip);
-      var b = el("text", { x: tw - 12, y: 38 + k * 17, "text-anchor": "end", "font-weight": 800 }, tip);
+      var b = el("text", { x: tw - 12, y: 38 + k * 17, "text-anchor": "end", "font-weight": 800, fill: "#24292F" }, tip);
       return [a, b];
     });
     function showAt(i) {
@@ -390,7 +419,7 @@
     hit.addEventListener("pointermove", function (ev) { showAt(idx(ev)); });
     hit.addEventListener("pointerdown", function (ev) { showAt(idx(ev)); });
     hit.addEventListener("pointerleave", hide);
-    svg.setAttribute("aria-label", "Monthly " + (key === "visits" ? "store visits" : "Pinterest views") + " for 5 strategies over " + n + " months. " + P.list[sel].label + " strategy " + P.list[sel].name + " reaches " + fmt(series[sel][n]) + " in month " + n + ".");
+    svg.setAttribute("aria-label", "Monthly " + (key === "visits" ? "store visits" : "Pinterest views") + " over " + n + " months. Patience until month " + split + ", then reward: " + S.name + " reaches " + fmt(series[sel][n]) + " in month " + n + ".");
   }
 
   // ---------- rising graph WITHOUT numbers (visits popup): today -> 6 months ----------
@@ -407,11 +436,13 @@
     var gid = "ggr" + Math.random().toString(36).slice(2, 8);
     var defs = el("defs", {}, svg);
     var lg = el("linearGradient", { id: gid, x1: 0, y1: 0, x2: 0, y2: 1 }, defs);
-    el("stop", { offset: "0", "stop-color": o.color || "#14B88F", "stop-opacity": ".55" }, lg);
-    el("stop", { offset: "1", "stop-color": o.color || "#14B88F", "stop-opacity": "0" }, lg);
+    el("stop", { offset: "0", "stop-color": o.color || "#4BE3B4", "stop-opacity": ".45" }, lg);
+    el("stop", { offset: "1", "stop-color": o.color || "#4BE3B4", "stop-opacity": "0" }, lg);
     var lg2 = el("linearGradient", { id: gid + "s", x1: 0, y1: 0, x2: 1, y2: 0 }, defs);
-    el("stop", { offset: "0", "stop-color": "#34D6A8" }, lg2);
-    el("stop", { offset: "1", "stop-color": "#FFC75A" }, lg2);
+    el("stop", { offset: "0", "stop-color": "#FFB547" }, lg2);
+    el("stop", { offset: ".3", "stop-color": "#FFB547" }, lg2);
+    el("stop", { offset: ".42", "stop-color": "#4BE3B4" }, lg2);
+    el("stop", { offset: "1", "stop-color": "#4BE3B4" }, lg2);
     var cp = el("clipPath", { id: gid + "c" }, defs);
     var clipRect = el("rect", { x: 0, y: 0, width: 0, height: H }, cp);
     for (var g = 1; g <= 3; g++) el("line", { x1: P, x2: W - P, y1: P + (H - 34 - P) * g / 3, y2: P + (H - 34 - P) * g / 3, stroke: "rgba(255,255,255,.08)" }, svg);
@@ -420,9 +451,9 @@
     el("path", { d: d + " L" + x(6) + "," + (H - 34) + " L" + x(0) + "," + (H - 34) + " Z", fill: "url(#" + gid + ")" }, plot);
     el("path", { d: d, fill: "none", stroke: "url(#" + gid + "s)", "stroke-width": 5, "stroke-linecap": "round" }, plot);
     var t1 = el("text", { x: P, y: H - 10, fill: "rgba(255,255,255,.6)", "font-family": "Figtree,system-ui,sans-serif", "font-size": 13, "font-weight": 600 }, svg);
-    t1.textContent = "Today";
+    t1.textContent = "Patience";
     var t2 = el("text", { x: W - P, y: H - 10, fill: "rgba(255,255,255,.6)", "font-family": "Figtree,system-ui,sans-serif", "font-size": 13, "font-weight": 600, "text-anchor": "end" }, svg);
-    t2.textContent = "In 6 months";
+    t2.textContent = "Reward in 6 months";
     var dot = el("circle", { r: 8, fill: "#FFC75A", cx: pts[0][0], cy: pts[0][1], opacity: 0 }, svg);
     var halo = el("circle", { r: 18, fill: "rgba(255,199,90,.25)", cx: pts[0][0], cy: pts[0][1], opacity: 0 }, svg);
     if (reduce) {
@@ -456,13 +487,13 @@
     var S = { input: input || {}, range: opts.range === 6 ? 6 : 3, metric: opts.metric === "visits" ? "visits" : "views", sel: 0, P: null, drawn: false };
     root.innerHTML =
       '<div class="gw">' +
-      '<span class="gw-orb a"></span><span class="gw-orb b"></span>' +
       '<div class="gw-top"><span class="gw-kick"><i></i>Your personal growth forecast</span><div class="gw-chips" data-k="chips"></div></div>' +
       '<div><p class="gw-lead" data-k="lead"></p>' +
       '<div class="gw-big"><div><b data-k="bigV">0</b><small data-k="bigVl">Pinterest views</small></div><span class="plus">+</span><div class="v2"><b data-k="bigS">0</b><small data-k="bigSl">store visits</small></div></div>' +
       '<p class="gw-sub" data-k="sub"></p><div class="gw-vs" data-k="vs"></div></div>' +
       '<div class="gw-ctrl"><div class="gw-seg" data-k="rng"><span class="knob"></span><button type="button" data-v="3">3 months</button><button type="button" data-v="6">6 months</button></div>' +
       '<div class="gw-seg" data-k="met"><span class="knob"></span><button type="button" data-v="views">Views</button><button type="button" data-v="visits">Store visits</button></div></div>' +
+      '<div class="gw-legend" data-k="leg"></div>' +
       '<div class="gw-chart"><svg role="img"></svg></div>' +
       '<p class="gw-cap" data-k="cap" style="margin:-8px 0 0"></p>' +
       '<div class="gw-board" data-k="board" role="list"></div>' +
@@ -536,7 +567,10 @@
 
       drawRace(svg, P, { range: n, metric: S.metric, sel: S.sel, goal: isV ? P.goalViews : P.goalVisits, ms: S.drawn ? 800 : 1600 });
       S.drawn = true;
-      q("cap").textContent = "Monthly " + (isV ? "Pinterest views" : P.store + " store visits") + " for each strategy. Tap the graph to see any month, or tap a strategy below.";
+      var pm = s.patience - 1;
+      q("leg").innerHTML = '<span><i style="background:' + PAT + '"></i>Patience <small>' + (pm === 1 ? "month 1" : "months 1 to " + pm) + ': Pinterest learns your shop</small></span>' +
+        '<span><i style="background:' + REW + '"></i>Reward <small>from month ' + s.patience + ': views and visits take off</small></span>';
+      q("cap").textContent = "Monthly " + (isV ? "Pinterest views" : P.store + " store visits") + ". Grey lines are the other strategies. Tap the graph to see any month, or tap a strategy below.";
 
       // leaderboard
       var vals = P.list.map(function (x) { return sum(x[S.metric], n); });
@@ -563,8 +597,10 @@
           var t = MILESTONES[z];
           if (s.views[m] >= t && s.views[m - 1] < t && !crossed[t]) { badge = fmt(t) + "+ views"; crossed[t] = 1; break; }
         }
-        mh += '<div class="gw-m' + (m === n ? " up" : "") + '" style="animation-delay:' + (m * 70) + 'ms">' + (badge ? '<span class="ms">' + badge + '</span>' : "") +
-          '<span class="t">Month ' + m + '</span>' +
+        var isPat = m < s.patience;
+        if (isPat) badge = "";
+        mh += '<div class="gw-m ' + (isPat ? "pat" : "rew") + '" style="animation-delay:' + (m * 70) + 'ms">' + (badge ? '<span class="ms">' + badge + '</span>' : "") +
+          '<span class="t">Month ' + m + '<em>' + (isPat ? "Patience" : "Reward") + '</em></span>' +
           '<b>' + (isV ? fmt(s.views[m]) : fmtFull(s.visits[m])) + '</b>' +
           '<small>' + (isV ? "views, " + fmtFull(s.visits[m]) + " visits" : "visits, " + fmt(s.views[m]) + " views") + '</small>' +
           '<span class="p">' + esc(PHASES[m - 1] || "") + '</span></div>';

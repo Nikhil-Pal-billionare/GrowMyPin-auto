@@ -216,10 +216,17 @@
   .done-head p { color: #CFE2DD; max-width: 46ch; }
   .fc-pop { position: fixed; inset: 0; z-index: 95; display: none; place-items: center; padding: 16px; background: rgba(3,12,11,.62); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); overflow-y: auto; }
   .fc-pop.on { display: grid; }
-  .fc-card { width: min(760px, 100%); border-radius: 28px; background: #FFFFFF; color: var(--ink); padding: clamp(20px, 4vw, 34px); display: grid; gap: 18px; box-shadow: 0 50px 90px -30px rgba(0,0,0,.7); animation: popIn .6s cubic-bezier(.2,1.2,.3,1); margin: auto; }
+  .fc-card { position: relative; overflow: hidden; width: min(800px, 100%); border-radius: 28px; color: #fff;
+    background: radial-gradient(120% 40% at 50% 112%, rgba(242,154,46,.45) 0, rgba(140,60,120,.25) 35%, transparent 65%), linear-gradient(180deg, #0E0B33 0%, #1E1557 40%, #33206E 75%, #4A2670 100%); padding: clamp(20px, 4vw, 34px); display: grid; gap: 18px; box-shadow: 0 50px 90px -30px rgba(0,0,0,.7); animation: popIn .6s cubic-bezier(.2,1.2,.3,1); margin: auto; }
   .fc-head { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; }
   .fc-head h3 { font-size: clamp(1.4rem, 3.6vw, 1.9rem); }
-  .fc-head p { color: var(--muted); font-size: .95rem; margin-top: 4px; }
+  .fc-head h3 { color: #fff; }
+  .fc-head p { color: #E6E0FF; font-size: .95rem; margin-top: 4px; }
+  .fc-card > *:not(.gmp-sky) { position: relative; z-index: 1; }
+  .fc-card .gw { box-shadow: 0 30px 60px -30px rgba(5,3,30,.7); }
+  .fc-card .x { background: rgba(255,255,255,.14); color: #fff; }
+  .fc-card .btn-ghost { background: rgba(255,255,255,.1); color: #fff; border-color: rgba(255,255,255,.35); }
+  .fc-card .notif-ok { color: #7EF0CB; }
   .x { background: var(--lav); border: 0; width: 38px; height: 38px; border-radius: 50%; font-size: 1.3rem; line-height: 1; cursor: pointer; color: var(--charcoal); flex: none; }
   .fc-bar { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: center; }
   .s-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -1108,6 +1115,7 @@
     var p = GR.pickPlatform(R.platforms) || "etsy";
     var inp = { niche: R.niche, platform: p, pins: null, hasPin: !!R.hasPin, seed: R.links[p] || user.email || "", target: R.target };
     $("fcPop").classList.add("on");
+    if (window.GMPSky) window.GMPSky(document.querySelector("#fcPop .fc-card"));
     if (!FCW) FCW = GR.mount($("fcW"), inp, { edit: true, onChange: function (f, v) {
       var body = { action: "growth" };
       if (f === "niche") { body.niche = v; R.niche = v; } else body.pins_count = v;
