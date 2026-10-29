@@ -1,0 +1,16 @@
+{
+  "functions": {
+    "api/router.js": { "maxDuration": 60, "includeFiles": "private/**" }
+  },
+  "rewrites": [
+    { "source": "/admin", "destination": "/api/router?__r=admin/page" },
+    { "source": "/admin/", "destination": "/api/router?__r=admin/page" },
+    { "source": "/api/:path*", "destination": "/api/router?__r=:path*" }
+  ],
+  "headers": [
+    { "source": "/sw.js", "headers": [ { "key": "Cache-Control", "value": "no-cache" }, { "key": "Service-Worker-Allowed", "value": "/" } ] }
+  ],
+  "crons": [
+    { "path": "/api/report/cron", "schedule": "0 6 * * *" }
+  ]
+}

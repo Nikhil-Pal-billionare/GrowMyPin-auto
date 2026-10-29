@@ -1,0 +1,1214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GrowMyPin Studio - Dashboard</title>
+<meta name="theme-color" content="#09423D">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20136%20128%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22f%22%20x1%3D%220%22%20y1%3D%221%22%20x2%3D%221%22%20y2%3D%220%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%2309423D%22%2F%3E%3Cstop%20offset%3D%22.55%22%20stop-color%3D%22%230F8A76%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2314B88F%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Cpath%20d%3D%22M134%200%20L110%2029%20L66%2029%20C45%2029%2030%2045%2030%2064%20C30%2084%2044%20100%2060%20105%20L39%20127%20C16%20121%200%2095%200%2064%20C0%2029%2028%200%2066%200%20Z%22%20fill%3D%22%2324292F%22%2F%3E%3Cpath%20d%3D%22M75%2050%20L128%2050%20Q135%2050%20135%2057%20L135%20120%20Q135%20127%20128%20127%20L112%20127%20L112%2096%20L80%20128%20L48%20128%20L97%2076%20L51%2076%20Z%22%20fill%3D%22url%28%23f%29%22%2F%3E%3C%2Fsvg%3E">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="stylesheet" href="/brand.css">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="lg-bg" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+<div class="progress" aria-hidden="true"><i id="prog"></i></div>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="logo" href="/" aria-label="GrowMyPin Studio home">
+      <svg class="logo-mark" viewBox="0 0 136 128" aria-hidden="true"><defs><linearGradient id="gmpArrow" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#09423D"/><stop offset=".55" stop-color="#0F8A76"/><stop offset="1" stop-color="#14B88F"/></linearGradient></defs><path d="M134 0 L110 29 L66 29 C45 29 30 45 30 64 C30 84 44 100 60 105 L39 127 C16 121 0 95 0 64 C0 29 28 0 66 0 Z" fill="#24292F"/><path d="M75 50 L128 50 Q135 50 135 57 L135 120 Q135 127 128 127 L112 127 L112 96 L80 128 L48 128 L97 76 L51 76 Z" fill="url(#gmpArrow)"/></svg>
+      <span class="logo-text">GrowMy<b>Pin</b></span>
+    </a>
+    <div id="acctArea"></div>
+  </div>
+</header>
+
+<div class="flash-zone" id="flash" aria-live="polite"></div>
+
+<!-- Not connected -->
+<section class="connect" id="connectView" style="display:none">
+  <div class="board-wrap" aria-hidden="true"><div class="board" id="cBoard"></div></div>
+  <div class="cpanel glass">
+    <span class="eyebrow">GrowMyPin Studio</span>
+    <h1>Connect your <span class="rot" id="cRot">Pinterest</span></h1>
+    <p>The Studio writes pin drafts for your products. You review every pin, and nothing is posted until you approve it.</p>
+    <a class="btn btn-primary magnet" id="connectBtn" href="/signup.html?next=/app.html">Connect Pinterest <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <p class="fine2">You grant access on Pinterest's own screen. Disconnect any time. By connecting you agree to our <a href="/terms.html">Terms</a> and <a href="/privacy.html">Privacy Policy</a>.</p>
+  </div>
+</section>
+
+<!-- Connected -->
+<main id="appView" style="display:none">
+  <section class="app-head" id="hero">
+    <div class="blobs" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="wrap">
+      <div>
+        <span class="eyebrow">Your pin studio</span>
+        <h1 id="hello">Hi there</h1>
+        <p class="lede">Add a product, review the drafts, publish what you approve.</p>
+      </div>
+      <div class="metrics">
+        <div class="metric glass dark"><div class="num" id="sImp">0</div><div class="unit">Impressions</div></div>
+        <div class="metric glass"><div class="num" id="sOut">0</div><div class="unit">Outbound clicks</div></div>
+        <div class="metric glass"><div class="num" id="sSave">0</div><div class="unit">Saves</div></div>
+        <div class="metric glass"><div class="num" id="sClick">0</div><div class="unit">Pin clicks</div></div>
+        <div class="metrics-note" id="statsNote">Last 30 days from your Pinterest analytics</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap tabs-wrap">
+    <div class="tabs" role="tablist" aria-label="Studio sections">
+      <button type="button" role="tab" id="tabFc" aria-selected="true" aria-controls="paneFc">Growth forecast <span class="new-dot" aria-hidden="true"></span></button>
+      <button type="button" role="tab" id="tabCreate" aria-selected="false" aria-controls="paneCreate">Create pins</button>
+    </div>
+  </div>
+
+  <section class="wrap pane" id="paneFc" role="tabpanel" aria-labelledby="tabFc">
+    <div class="fc-panel glass">
+      <div class="fc-top">
+        <div>
+          <span class="eyebrow">Growth forecast</span>
+          <h3>Where your account can go in the next 3 months</h3>
+          <p id="fcSub">Built from your Pinterest analytics, your niche, your target countries and the strategy you run.</p>
+        </div>
+        <div class="fc-legend" aria-hidden="true"><span><i class="l-h"></i>Actual</span><span><i class="l-b"></i>Best</span><span><i class="l-a"></i>Average</span><span><i class="l-w"></i>Worst</span></div>
+      </div>
+      <div class="fc-controls">
+        <div class="fld">
+          <span class="lbl">Strategy</span>
+          <div class="strat-pills" id="fcStrats" role="group" aria-label="Strategy"></div>
+        </div>
+        <div class="ppd">
+          <div class="row"><label for="ppd">Pins per day</label><b id="ppdVal">3</b></div>
+          <input type="range" class="slider" id="ppd" min="1" max="10" step="1" value="3">
+        </div>
+      </div>
+      <div class="strat-why" id="stratWhy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/></svg><span id="stratWhyText"></span></div>
+      <div class="fc" id="fcChart"></div>
+      <div class="scen">
+        <div class="s-w"><span class="unit">Worst case</span><div class="num" id="scW">0</div><small id="scWc">views a month by month 3</small></div>
+        <div class="s-a"><span class="unit">Average case</span><div class="num" id="scA">0</div><small id="scAc">views a month by month 3</small></div>
+        <div class="s-b"><span class="unit">Best case</span><div class="num" id="scB">0</div><small id="scBc">views a month by month 3</small></div>
+      </div>
+      <div class="fc-foot">
+        <div><p class="fc-note" id="fcFine"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><span><b>This graph is an average estimate, not real data.</b> Real views depend on your product or service, your images, your niche and Pinterest itself.</span></p><p class="fc-fine">The forecast updates as your real results come in.</p></div>
+        <button class="btn btn-primary" type="button" id="useStrat">Create pins with this strategy</button>
+      </div>
+    </div>
+
+    <div class="sb-panel glass">
+      <div class="fc-top">
+        <div>
+          <span class="eyebrow">Strategy scoreboard</span>
+          <h3>What each strategy returned, and what it can do next</h3>
+          <p>Real results from pins you published with the Studio, next to each strategy's 3 month forecast for your account. Click a row to switch.</p>
+        </div>
+        <button class="btn btn-ghost btn-sm" type="button" id="sbRefresh">Refresh results</button>
+      </div>
+      <div class="tbl-wrap">
+        <table class="board-tbl">
+          <thead><tr><th>Strategy</th><th>Pins</th><th>Impressions</th><th>Clicks</th><th>Click rate</th><th>3 month estimate (views a month)</th></tr></thead>
+          <tbody id="sbBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap work pane" id="paneCreate" role="tabpanel" aria-labelledby="tabCreate" hidden>
+    <aside class="composer glass">
+      <div>
+        <span class="eyebrow">Step 1</span>
+        <h2>New product</h2>
+      </div>
+      <p class="sub">Drafts are written here. Nothing is posted.</p>
+
+      <div class="pv-box" aria-live="polite">
+        <div class="pv" id="pv"></div>
+        <div><b id="pvTitle">Your product title shows here</b><span class="unit" id="pvMeta">Preview</span></div>
+      </div>
+
+      <div class="fld">
+        <label for="productTitle">Product title</label>
+        <input id="productTitle" placeholder="Handmade wool area rug, 5x7 boho">
+      </div>
+      <div class="fld">
+        <label for="imageUrl">Pin image URL</label>
+        <input id="imageUrl" placeholder="https://...jpg">
+        <span class="hint">Direct link to a JPG or PNG. Lifestyle photos perform best.</span>
+      </div>
+      <div class="fld">
+        <label for="productLink">Product link</label>
+        <input id="productLink" placeholder="https://www.etsy.com/listing/...">
+      </div>
+      <div class="fld">
+        <label for="niche">Niche</label>
+        <select id="niche">
+          <option>Home Decor</option>
+          <option>Jewelry</option>
+          <option>Engagement Rings</option>
+          <option>Fashion</option>
+          <option>Health and Wellness</option>
+          <option>Digital Products</option>
+          <option>Crafts and Patterns</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="fld">
+        <label for="cStrategy">Strategy</label>
+        <select id="cStrategy"></select>
+        <span class="hint" id="cStrategyHint"></span>
+      </div>
+      <div class="fld">
+        <span class="lbl" id="ctryLbl">Target countries</span>
+        <div class="ctry" id="ctryList" aria-labelledby="ctryLbl"></div>
+        <select id="ctryAdd" aria-label="Add a country"></select>
+        <span class="hint">US is the default. Add more countries, or remove US to target others instead. Pinterest does not lock organic pins to a country, so the Studio adapts wording, spelling and seasons.</span>
+      </div>
+      <div class="fld">
+        <label for="audience">Target audience <span class="sugg" id="audTag">Suggested</span></label>
+        <textarea id="audience" rows="3"></textarea>
+        <button type="button" class="linkbtn" id="audReset" hidden>Use the suggestion again</button>
+      </div>
+      <div class="fld">
+        <span class="lbl" id="countLbl">Pin variations</span>
+        <div class="seg" id="countPick" role="group" aria-labelledby="countLbl">
+          <button type="button" data-n="1" aria-pressed="false">1</button>
+          <button type="button" data-n="2" aria-pressed="false">2</button>
+          <button type="button" data-n="3" aria-pressed="true">3</button>
+          <button type="button" data-n="4" aria-pressed="false">4</button>
+          <button type="button" data-n="5" aria-pressed="false">5</button>
+        </div>
+      </div>
+
+      <details class="more">
+        <summary><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>Keywords and notes</summary>
+        <div class="fld">
+          <label for="keywords">Keywords</label>
+          <input id="keywords" placeholder="living room decor, boho rug">
+        </div>
+        <div class="fld">
+          <label for="notes">Notes for the AI</label>
+          <textarea id="notes" placeholder="Gift for mom, made in India, cozy winter feel"></textarea>
+        </div>
+      </details>
+
+      <button class="btn btn-primary gen" id="genBtn">Write pin drafts</button>
+    </aside>
+
+    <section>
+      <div class="qhead">
+        <div>
+          <span class="eyebrow">Step 2</span>
+          <h2>Review and approve</h2>
+        </div>
+        <div class="filters" id="filters" role="group" aria-label="Filter pins">
+          <button type="button" data-f="review" aria-pressed="true">To review <i id="cReview">0</i></button>
+          <button type="button" data-f="approved" aria-pressed="false">Approved <i id="cApproved">0</i></button>
+          <button type="button" data-f="published" aria-pressed="false">Published <i id="cPublished">0</i></button>
+          <button type="button" data-f="rejected" aria-pressed="false">Rejected <i id="cRejected">0</i></button>
+        </div>
+      </div>
+
+      <div class="pubbar glass">
+        <div class="fld">
+          <label for="board">Publish to board</label>
+          <select id="board"></select>
+        </div>
+        <button class="btn btn-dark pubbtn" id="publishBtn">Publish approved <span class="n" id="pubN">0</span></button>
+        <div class="guard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6z"/><path d="M8.8 12.2l2.2 2.2 4.3-4.6"/></svg>Only pins you approve can be published, and you confirm before anything goes live.</div>
+      </div>
+
+      <div id="queue"></div>
+    </section>
+  </div>
+</main>
+
+<div class="modal-bg" id="modalBg" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal glass">
+    <span class="eyebrow">Final check</span>
+    <h3 id="modalTitle">Publish pins?</h3>
+    <p class="to" id="modalText"></p>
+    <div class="pile" id="modalPile"></div>
+    <ul id="modalList"></ul>
+    <div class="btns">
+      <button class="btn btn-ghost" id="modalCancel">Cancel</button>
+      <button class="btn btn-primary" id="modalOk">Publish now</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <a class="logo" href="/" aria-label="GrowMyPin Studio home">
+      <svg class="logo-mark" viewBox="0 0 136 128" aria-hidden="true"><defs><linearGradient id="gmpArrow" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#09423D"/><stop offset=".55" stop-color="#0F8A76"/><stop offset="1" stop-color="#14B88F"/></linearGradient></defs><path d="M134 0 L110 29 L66 29 C45 29 30 45 30 64 C30 84 44 100 60 105 L39 127 C16 121 0 95 0 64 C0 29 28 0 66 0 Z" fill="#24292F"/><path d="M75 50 L128 50 Q135 50 135 57 L135 120 Q135 127 128 127 L112 127 L112 96 L80 128 L48 128 L97 76 L51 76 Z" fill="url(#gmpArrow)"/></svg>
+      <span class="logo-text">GrowMy<b>Pin</b></span>
+    </a>
+    <span>Not affiliated with Pinterest, Inc.</span>
+    <nav aria-label="Footer">
+      <a href="/">Home</a>
+      <a href="/terms.html">Terms</a>
+      <a href="/billing.html">Billing</a>
+      <a href="/privacy.html">Privacy</a>
+      <a href="/acceptable-use.html">Acceptable use</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="/pins.js"></script>
+<script src="/forecast.js"></script>
+<script>
+(function () {
+  var G = window.GMP;
+  var STORE_KEY = "gmp_studio_drafts_v1";
+  var drafts = [];
+  var boards = [];
+  var filter = "review";
+  var count = 3;
+  var freshIds = {};
+  var publishing = false;
+  var CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  var PUB_LABEL = 'Publish approved <span class="n" id="pubN">0</span>';
+  var F = window.GMPForecast;
+  var SETTINGS_KEY = "gmp_studio_settings_v1";
+  var settings = { mode: "auto", countries: ["US"], ppd: 3, audience: "", audEdited: false };
+  var histData = [];
+  var actuals = {};
+  var fcShown = false;
+
+  function $(id) { return document.getElementById(id); }
+
+  function isUrl(s) {
+    try { var u = new URL(s); return u.protocol === "https:" || u.protocol === "http:"; }
+    catch (e) { return false; }
+  }
+
+  function load() {
+    try { drafts = JSON.parse(localStorage.getItem(STORE_KEY) || "[]") || []; }
+    catch (e) { drafts = []; }
+  }
+  function save() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(drafts)); } catch (e) {}
+  }
+
+  var flashTimer = null;
+  function flash(msg, type) {
+    var box = $("flash");
+    box.innerHTML = "";
+    clearTimeout(flashTimer);
+    if (!msg) return;
+    var d = document.createElement("div");
+    d.className = "flash " + (type || "ok");
+    var t = document.createElement("span");
+    t.textContent = msg;
+    var x = document.createElement("button");
+    x.type = "button";
+    x.textContent = "Dismiss";
+    x.onclick = function () { box.innerHTML = ""; };
+    d.appendChild(t);
+    d.appendChild(x);
+    box.appendChild(d);
+    if (type !== "err") flashTimer = setTimeout(function () { box.innerHTML = ""; }, 6000);
+  }
+
+  async function api(path, body) {
+    var opts = { credentials: "same-origin", headers: {} };
+    if (body) {
+      opts.method = "POST";
+      opts.headers["Content-Type"] = "application/json";
+      opts.body = JSON.stringify(body);
+    }
+    var r = await fetch(path, opts);
+    var data = {};
+    try { data = await r.json(); } catch (e) {}
+    if (!r.ok) {
+      var err = new Error(data.error || ("Request failed (" + r.status + ")"));
+      err.status = r.status;
+      throw err;
+    }
+    return data;
+  }
+
+  // Product image if the link works, otherwise a brand tile illustration.
+  function pinVisual(url, i) {
+    if (isUrl(url)) {
+      var img = document.createElement("img");
+      img.src = url;
+      img.alt = "";
+      img.loading = "lazy";
+      img.onerror = function () { img.replaceWith(G.tile(i)); };
+      return img;
+    }
+    return G.tile(i);
+  }
+
+  // ---------- Account ----------
+  function renderAccount(acc) {
+    var area = $("acctArea");
+    area.innerHTML = "";
+    if (!acc) return;
+    var wrap = document.createElement("div");
+    wrap.className = "acct";
+    if (acc.profile_image && isUrl(acc.profile_image)) {
+      var img = document.createElement("img");
+      img.className = "av";
+      img.src = acc.profile_image;
+      img.alt = "";
+      wrap.appendChild(img);
+    }
+    var name = document.createElement("span");
+    name.className = "name";
+    name.textContent = "@" + (acc.username || "pinterest");
+    wrap.appendChild(name);
+    var out = document.createElement("a");
+    out.className = "btn btn-ghost btn-sm";
+    out.href = "/api/auth/logout";
+    out.textContent = "Disconnect";
+    wrap.appendChild(out);
+    area.appendChild(wrap);
+    $("hello").textContent = acc.username ? "Hi @" + acc.username : "Your pin studio";
+  }
+
+  function renderBoards() {
+    var sel = $("board");
+    sel.innerHTML = "";
+    if (!boards.length) {
+      var o = document.createElement("option");
+      o.value = "";
+      o.textContent = "No boards yet. Create one on Pinterest first.";
+      sel.appendChild(o);
+      return;
+    }
+    var saved = "";
+    try { saved = localStorage.getItem("gmp_board") || ""; } catch (e) {}
+    boards.forEach(function (b) {
+      var o = document.createElement("option");
+      o.value = b.id;
+      o.textContent = b.name + (b.privacy && b.privacy !== "PUBLIC" ? " (" + b.privacy.toLowerCase() + ")" : "");
+      if (b.id === saved) o.selected = true;
+      sel.appendChild(o);
+    });
+  }
+
+  async function loadStats() {
+    try {
+      var s = await api("/api/analytics");
+      G.countUp($("sImp"), s.impressions, 1600);
+      G.countUp($("sOut"), s.outbound_clicks, 1600);
+      G.countUp($("sSave"), s.saves, 1600);
+      G.countUp($("sClick"), s.pin_clicks, 1600);
+      $("statsNote").textContent = "Last 30 days from Pinterest, " + s.start_date + " to " + s.end_date;
+      histData = (s.daily || []).map(function (d) { return d.impressions; });
+    } catch (e) {
+      $("statsNote").textContent = "Analytics show here once Pinterest has data for this account";
+      histData = [];
+    }
+    renderForecast(false);
+  }
+
+  // ---------- Live preview ----------
+  function updatePreview() {
+    var t = $("productTitle").value.trim();
+    var u = $("imageUrl").value.trim();
+    $("pvTitle").textContent = t || "Your product title shows here";
+    $("pvMeta").textContent = $("niche").value + " / " + count + " pin" + (count > 1 ? "s" : "");
+    var pv = $("pv");
+    var key = isUrl(u) ? u : "";
+    if (pv.getAttribute("data-k") !== key || !pv.firstChild) {
+      pv.innerHTML = "";
+      pv.setAttribute("data-k", key);
+      pv.appendChild(pinVisual(key, $("niche").selectedIndex));
+    }
+  }
+  ["productTitle", "imageUrl"].forEach(function (id) { $(id).addEventListener("input", updatePreview); });
+  $("niche").addEventListener("change", function () { $("pv").removeAttribute("data-k"); $("pv").innerHTML = ""; updatePreview(); onContextChange(); });
+  $("productTitle").addEventListener("change", function () { onContextChange(); });
+
+  $("countPick").addEventListener("click", function (e) {
+    var b = e.target.closest("button");
+    if (!b) return;
+    count = parseInt(b.getAttribute("data-n"), 10);
+    var all = $("countPick").querySelectorAll("button");
+    for (var i = 0; i < all.length; i++) all[i].setAttribute("aria-pressed", all[i] === b ? "true" : "false");
+    updatePreview();
+  });
+
+  // ---------- Queue ----------
+  function inFilter(d) {
+    if (filter === "review") return d.status === "pending" || d.status === "failed";
+    return d.status === filter;
+  }
+
+  function updateCounts() {
+    var c = { review: 0, approved: 0, published: 0, rejected: 0 };
+    drafts.forEach(function (d) {
+      if (d.status === "pending" || d.status === "failed") c.review++;
+      else if (c[d.status] !== undefined) c[d.status]++;
+    });
+    $("cReview").textContent = c.review;
+    $("cApproved").textContent = c.approved;
+    $("cPublished").textContent = c.published;
+    $("cRejected").textContent = c.rejected;
+    if ($("pubN")) $("pubN").textContent = c.approved;
+    if (!publishing) $("publishBtn").disabled = c.approved === 0 || !boards.length;
+  }
+
+  function emptyState() {
+    var msgs = {
+      review: ["Nothing to review", "Add a product on the left and the Studio writes pin drafts for you to check."],
+      approved: ["No approved pins yet", "Approve drafts in To review and they wait here until you publish."],
+      published: ["Nothing published yet", "Pins you publish show up here with a link to Pinterest."],
+      rejected: ["No rejected pins", "Drafts you reject land here. Restore them any time."]
+    };
+    var m = msgs[filter];
+    var e = document.createElement("div");
+    e.className = "empty glass";
+    var fan = document.createElement("div");
+    fan.className = "fan";
+    [0, 1, 3].forEach(function (i) {
+      var w = document.createElement("div");
+      w.appendChild(G.tile(i));
+      fan.appendChild(w);
+    });
+    e.appendChild(fan);
+    var h = document.createElement("h3");
+    h.textContent = m[0];
+    var p = document.createElement("p");
+    p.textContent = m[1];
+    e.appendChild(h);
+    e.appendChild(p);
+    return e;
+  }
+
+  function fieldEl(label, value, max, multiline, cls, onChange, disabled) {
+    var f = document.createElement("div");
+    f.className = "fld";
+    var l = document.createElement("label");
+    var lt = document.createElement("span");
+    lt.textContent = label;
+    var ct = document.createElement("span");
+    ct.className = "ct";
+    l.appendChild(lt);
+    l.appendChild(ct);
+    var inp = document.createElement(multiline ? "textarea" : "input");
+    if (cls) inp.className = cls;
+    inp.value = value || "";
+    inp.disabled = !!disabled;
+    inp.setAttribute("aria-label", label);
+    function upd() {
+      ct.textContent = inp.value.length + "/" + max;
+      ct.className = "ct" + (inp.value.length > max ? " over" : "");
+    }
+    inp.addEventListener("input", function () { upd(); onChange(inp.value); });
+    upd();
+    f.appendChild(l);
+    f.appendChild(inp);
+    return f;
+  }
+
+  function stampOn(card) {
+    var img = card.querySelector(".img");
+    if (!img) return;
+    var s = document.createElement("div");
+    s.className = "seal-wrap out stamped";
+    s.innerHTML = '<div class="seal-ring"></div><div class="seal">' + CHECK + 'Approved</div>';
+    img.appendChild(s);
+    setTimeout(function () { if (s.parentNode) s.parentNode.removeChild(s); }, 1700);
+  }
+
+  var LABELS = { pending: "To review", approved: "Approved", rejected: "Rejected", published: "Published", failed: "Failed" };
+
+  function cardFor(d, idx) {
+    var locked = d.status === "published";
+    var card = document.createElement("article");
+    card.className = "dcard glass " + d.status + (freshIds[d.id] ? " enter" : "");
+    if (freshIds[d.id]) card.style.animationDelay = (freshIds[d.id] - 1) * 110 + "ms";
+    card.setAttribute("data-id", d.id);
+
+    var img = document.createElement("div");
+    img.className = "img";
+    img.appendChild(pinVisual(d.image_url, idx));
+    var ov = document.createElement("div");
+    ov.className = "ov";
+    var ang = document.createElement("span");
+    ang.className = "angle";
+    ang.textContent = d.angle || "Pin draft";
+    var chip = document.createElement("span");
+    chip.className = "st " + d.status;
+    chip.textContent = LABELS[d.status] || d.status;
+    ov.appendChild(ang);
+    ov.appendChild(chip);
+    img.appendChild(ov);
+    card.appendChild(img);
+
+    var body = document.createElement("div");
+    body.className = "body";
+
+    // Editing an approved pin sends it back to review, so approval always matches the final text.
+    function edit(key) {
+      return function (v) {
+        d[key] = v;
+        if (d.status === "approved") {
+          d.status = "pending";
+          save();
+          flash("You edited an approved pin, so it moved back to To review.", "warn");
+          renderQueue();
+          return;
+        }
+        save();
+      };
+    }
+
+    body.appendChild(fieldEl("Title", d.title, 100, false, "t-in", edit("title"), locked));
+    body.appendChild(fieldEl("Description", d.description, 500, true, "", edit("description"), locked));
+    var alt = document.createElement("details");
+    alt.className = "alt";
+    var sm = document.createElement("summary");
+    sm.textContent = "Alt text";
+    alt.appendChild(sm);
+    alt.appendChild(fieldEl("Alt text", d.alt_text, 500, true, "", edit("alt_text"), locked));
+    body.appendChild(alt);
+
+    var link = document.createElement("div");
+    link.className = "lnk";
+    link.textContent = (d.strategy ? F.byId(d.strategy).name + " / " + (d.countries || ["US"]).join(", ") + " / " : "") + (d.link ? "Links to " + d.link : "No link, inspiration pin");
+    body.appendChild(link);
+
+    if (d.error) {
+      var er = document.createElement("div");
+      er.className = "err";
+      er.textContent = d.error;
+      body.appendChild(er);
+    }
+
+    var acts = document.createElement("div");
+    acts.className = "acts3";
+    function btn(text, cls, fn) {
+      var b = document.createElement(fn ? "button" : "a");
+      b.className = "btn btn-sm " + cls;
+      b.textContent = text;
+      if (fn) { b.type = "button"; b.onclick = fn; }
+      acts.appendChild(b);
+      return b;
+    }
+
+    if (d.status === "published") {
+      if (d.pin_url && isUrl(d.pin_url)) {
+        var v = btn("View on Pinterest", "btn-ghost", null);
+        v.href = d.pin_url;
+        v.target = "_blank";
+        v.rel = "noopener";
+      }
+    } else if (d.status === "approved") {
+      btn("Undo approval", "btn-ghost", function () { d.status = "pending"; save(); renderQueue(); });
+    } else if (d.status === "rejected") {
+      btn("Restore", "btn-ghost", function () { d.status = "pending"; save(); renderQueue(); });
+    } else {
+      btn("Reject", "btn-reject", function () {
+        card.classList.add("tossing");
+        setTimeout(function () { d.status = "rejected"; save(); renderQueue(); }, 380);
+      });
+      btn("Approve", "btn-primary", function () {
+        if (!String(d.title || "").trim()) { flash("Add a title before approving.", "err"); return; }
+        if (d.title.length > 100 || (d.description || "").length > 500 || (d.alt_text || "").length > 500) {
+          flash("Shorten the text marked in red before approving.", "err");
+          return;
+        }
+        d.error = "";
+        d.status = "approved";
+        save();
+        card.className = "dcard glass approved";
+        chip.className = "st approved";
+        chip.textContent = "Approved";
+        stampOn(card);
+        updateCounts();
+        setTimeout(function () { if (filter === "review") renderQueue(); }, G.reduce ? 0 : 1350);
+      });
+    }
+    body.appendChild(acts);
+    card.appendChild(body);
+    return card;
+  }
+
+  function renderQueue() {
+    var q = $("queue");
+    q.innerHTML = "";
+    updateCounts();
+    var list = drafts.filter(inFilter);
+    if (!list.length) { q.appendChild(emptyState()); freshIds = {}; return; }
+    var grid = document.createElement("div");
+    grid.className = "qgrid";
+    list.forEach(function (d) { grid.appendChild(cardFor(d, drafts.indexOf(d))); });
+    q.appendChild(grid);
+    freshIds = {};
+  }
+
+  function setFilter(f) {
+    filter = f;
+    var all = $("filters").querySelectorAll("button");
+    for (var i = 0; i < all.length; i++) all[i].setAttribute("aria-pressed", all[i].getAttribute("data-f") === f ? "true" : "false");
+    renderQueue();
+  }
+  $("filters").addEventListener("click", function (e) {
+    var b = e.target.closest("button");
+    if (b) setFilter(b.getAttribute("data-f"));
+  });
+
+  function showSkeletons(n) {
+    setFilter("review");
+    var q = $("queue");
+    var grid = q.querySelector(".qgrid");
+    if (!grid) {
+      q.innerHTML = "";
+      grid = document.createElement("div");
+      grid.className = "qgrid";
+      q.appendChild(grid);
+    }
+    var lines = ["Reading your product", "Checking this month's trends", "Writing titles", "Picking keywords", "Writing alt text"];
+    for (var i = n - 1; i >= 0; i--) {
+      var c = document.createElement("article");
+      c.className = "dcard glass skel enter";
+      c.style.animationDelay = i * 90 + "ms";
+      c.innerHTML = '<div class="img"></div><div class="body"><div class="bar w1"></div><div class="bar w2"></div><div class="bar w3"></div><div class="writing"></div></div>';
+      c.querySelector(".writing").textContent = lines[i % lines.length];
+      grid.insertBefore(c, grid.firstChild);
+    }
+  }
+
+  // ---------- Generate ----------
+  $("genBtn").onclick = async function () {
+    var payload = {
+      productTitle: $("productTitle").value.trim(),
+      productLink: $("productLink").value.trim(),
+      imageUrl: $("imageUrl").value.trim(),
+      niche: $("niche").value,
+      keywords: $("keywords").value.trim(),
+      notes: $("notes").value.trim(),
+      count: count,
+      strategy: effective().id,
+      countries: settings.countries.slice(),
+      audience: $("audience").value.trim()
+    };
+    if (!payload.productTitle) { flash("Add a product title.", "err"); $("productTitle").focus(); return; }
+    if (!isUrl(payload.imageUrl)) { flash("Add a direct image link that starts with https://", "err"); $("imageUrl").focus(); return; }
+    if (payload.productLink && !isUrl(payload.productLink)) { flash("The product link needs to start with https://", "err"); $("productLink").focus(); return; }
+
+    var btn = $("genBtn");
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spin"></span>Writing ' + count + ' draft' + (count > 1 ? "s" : "");
+    flash("");
+    showSkeletons(count);
+    try {
+      var r = await api("/api/generate", payload);
+      r.drafts.forEach(function (d, i) { freshIds[d.id] = i + 1; });
+      drafts = r.drafts.concat(drafts);
+      save();
+      renderQueue();
+      flash(r.drafts.length + " drafts ready. Edit and approve the ones you like.", "ok");
+    } catch (e) {
+      renderQueue();
+      if (e.status === 401) { showConnect(); return; }
+      flash(e.message, "err");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Write pin drafts";
+    }
+  };
+
+  // ---------- Publish ----------
+  $("board").addEventListener("change", function () {
+    try { localStorage.setItem("gmp_board", $("board").value); } catch (e) {}
+  });
+
+  function confirmPublish(list, boardName) {
+    return new Promise(function (resolve) {
+      $("modalTitle").textContent = "Publish " + list.length + " pin" + (list.length > 1 ? "s" : "") + "?";
+      var mt = $("modalText");
+      mt.innerHTML = "";
+      mt.appendChild(document.createTextNode("They go live on your board "));
+      var b = document.createElement("b");
+      b.textContent = boardName;
+      mt.appendChild(b);
+      mt.appendChild(document.createTextNode("."));
+      var pile = $("modalPile");
+      pile.innerHTML = "";
+      list.slice(0, 6).forEach(function (d) {
+        var w = document.createElement("div");
+        w.appendChild(pinVisual(d.image_url, drafts.indexOf(d)));
+        pile.appendChild(w);
+      });
+      var ul = $("modalList");
+      ul.innerHTML = "";
+      list.forEach(function (d) {
+        var li = document.createElement("li");
+        li.textContent = d.title;
+        ul.appendChild(li);
+      });
+      var bg = $("modalBg");
+      bg.classList.add("open");
+      $("modalOk").focus();
+      function done(v) {
+        bg.classList.remove("open");
+        $("modalOk").onclick = null;
+        $("modalCancel").onclick = null;
+        document.removeEventListener("keydown", onKey);
+        resolve(v);
+      }
+      function onKey(e) { if (e.key === "Escape") done(false); }
+      document.addEventListener("keydown", onKey);
+      $("modalOk").onclick = function () { done(true); };
+      $("modalCancel").onclick = function () { done(false); };
+    });
+  }
+
+  // Pin-shaped confetti in brand colors.
+  function confetti(fromEl) {
+    if (G.reduce) return;
+    var r = fromEl.getBoundingClientRect();
+    var cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    var colors = ["#14B88F", "#09423D", "#34D6A8", "#6B5BD6", "#D7A23E"];
+    for (var i = 0; i < 28; i++) {
+      var p = document.createElement("div");
+      p.className = "confetti";
+      p.style.left = cx + "px";
+      p.style.top = cy + "px";
+      p.style.background = colors[i % colors.length];
+      document.body.appendChild(p);
+      var ang = Math.random() * Math.PI * 2;
+      var dist = 80 + Math.random() * 150;
+      var dx = Math.cos(ang) * dist, dy = Math.sin(ang) * dist - 70;
+      var a = p.animate([
+        { transform: "translate(-50%,-50%) rotate(-45deg) scale(1)", opacity: 1 },
+        { transform: "translate(calc(-50% + " + dx + "px), calc(-50% + " + (dy + 130) + "px)) rotate(" + (Math.random() * 540 - 270) + "deg) scale(.6)", opacity: 0 }
+      ], { duration: 950 + Math.random() * 500, easing: "cubic-bezier(.2,.7,.4,1)", fill: "forwards" });
+      (function (el) { a.onfinish = function () { el.remove(); }; })(p);
+    }
+  }
+
+  $("publishBtn").onclick = async function () {
+    var list = drafts.filter(function (d) { return d.status === "approved"; });
+    var boardId = $("board").value;
+    if (!list.length) return;
+    if (!boardId) { flash("Choose a board first.", "err"); return; }
+    var boardName = $("board").options[$("board").selectedIndex].textContent;
+    var ok = await confirmPublish(list, boardName);
+    if (!ok) return;
+
+    setFilter("approved");
+    var btn = $("publishBtn");
+    publishing = true;
+    btn.disabled = true;
+    var done = 0, failed = 0;
+    for (var i = 0; i < list.length; i++) {
+      var d = list[i];
+      btn.innerHTML = '<span class="spin"></span>Publishing ' + (i + 1) + ' of ' + list.length;
+      var el = document.querySelector('.dcard[data-id="' + d.id + '"]');
+      try {
+        var r = await api("/api/publish", {
+          approved: true,
+          board_id: boardId,
+          title: d.title,
+          description: d.description,
+          alt_text: d.alt_text,
+          link: d.link,
+          image_url: d.image_url
+        });
+        d.status = "published";
+        d.pin_id = r.id;
+        d.pin_url = r.url;
+        d.published_at = new Date().toISOString();
+        d.error = "";
+        done++;
+        if (el && !G.reduce) { el.classList.add("flying"); await new Promise(function (res) { setTimeout(res, 650); }); }
+        if (el) el.remove();
+      } catch (e) {
+        if (e.status === 401) {
+          save();
+          publishing = false;
+          btn.innerHTML = PUB_LABEL;
+          showConnect();
+          return;
+        }
+        d.status = "failed";
+        d.error = e.message;
+        failed++;
+      }
+      save();
+      updateCounts();
+      // Small gap between posts to stay well inside Pinterest rate limits.
+      await new Promise(function (res) { setTimeout(res, 900); });
+    }
+    publishing = false;
+    btn.innerHTML = PUB_LABEL;
+    if (done) confetti(btn);
+    setFilter(done ? "published" : "review");
+    flash(done + " pin" + (done === 1 ? "" : "s") + " published" + (failed ? ". " + failed + " failed, see To review for the reason." : "."), failed ? "warn" : "ok");
+  };
+
+  // ---------- Strategy, countries, audience, forecast ----------
+  function loadSettings() {
+    try {
+      var x = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "null");
+      if (x) {
+        settings.mode = x.mode || "auto";
+        settings.countries = Array.isArray(x.countries) && x.countries.length ? x.countries : ["US"];
+        settings.ppd = Number(x.ppd) || 3;
+        settings.audience = x.audience || "";
+        settings.audEdited = !!x.audEdited;
+      }
+    } catch (e) {}
+  }
+  function saveSettings() {
+    try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); } catch (e) {}
+  }
+
+  function actualsByStrategy() {
+    var out = {};
+    drafts.forEach(function (d) {
+      if (d.status !== "published" || !d.strategy) return;
+      var a = out[d.strategy] || (out[d.strategy] = { pins: 0, impressions: 0, clicks: 0, saves: 0 });
+      a.pins++;
+      var st = actuals[d.pin_id];
+      if (st && !st.error) { a.impressions += st.impressions; a.clicks += st.outbound_clicks; a.saves += st.saves; }
+    });
+    return out;
+  }
+
+  function effective() {
+    var act = actualsByStrategy();
+    if (settings.mode === "auto") {
+      var p = F.autoPick($("niche").value, new Date(), act);
+      return { id: p.id, auto: true, reason: p.reason };
+    }
+    return { id: settings.mode, auto: false, reason: F.byId(settings.mode).short };
+  }
+
+  // Learn from real results: strategies that beat the account average get a boost.
+  function perfFor(id, act) {
+    var tot = 0, pins = 0;
+    Object.keys(act).forEach(function (k) { tot += act[k].impressions; pins += act[k].pins; });
+    var a = act[id];
+    if (!a || a.pins < 3 || !pins || !tot) return 1;
+    var r = (a.impressions / a.pins) / (tot / pins);
+    return Math.sqrt(Math.max(0.5, Math.min(1.8, r)));
+  }
+
+  function runForecast(id, act) {
+    return F.forecast({
+      history: histData, niche: $("niche").value, strategy: id,
+      pinsPerDay: settings.ppd, countries: settings.countries, perf: perfFor(id, act || actualsByStrategy())
+    });
+  }
+
+  function renderStratPills() {
+    var box = $("fcStrats");
+    box.innerHTML = "";
+    var eff = effective();
+    var auto = document.createElement("button");
+    auto.type = "button";
+    auto.setAttribute("aria-pressed", settings.mode === "auto" ? "true" : "false");
+    auto.innerHTML = '<span class="auto-dot"></span>';
+    auto.appendChild(document.createTextNode("Auto" + (settings.mode === "auto" ? ": " + F.byId(eff.id).name : "")));
+    auto.onclick = function () { setMode("auto"); };
+    box.appendChild(auto);
+    F.STRATEGIES.forEach(function (st) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = st.name;
+      b.title = st.short;
+      b.setAttribute("aria-pressed", settings.mode === st.id ? "true" : "false");
+      b.onclick = function () { setMode(st.id); };
+      box.appendChild(b);
+    });
+    $("stratWhyText").textContent = (eff.auto ? "GrowMyPin picked " + F.byId(eff.id).name + ". " : F.byId(eff.id).name + ": ") + eff.reason;
+  }
+
+  function renderStrategySelect() {
+    var sel = $("cStrategy");
+    sel.innerHTML = "";
+    var eff = effective();
+    var o = document.createElement("option");
+    o.value = "auto";
+    o.textContent = "Auto (now: " + F.byId(eff.id).name + ")";
+    sel.appendChild(o);
+    F.STRATEGIES.forEach(function (st) {
+      var x = document.createElement("option");
+      x.value = st.id;
+      x.textContent = st.name;
+      sel.appendChild(x);
+    });
+    sel.value = settings.mode;
+    $("cStrategyHint").textContent = eff.auto ? eff.reason : F.byId(eff.id).short;
+  }
+  $("cStrategy").addEventListener("change", function () { setMode($("cStrategy").value); });
+
+  function setMode(m) {
+    settings.mode = m;
+    saveSettings();
+    renderStratPills();
+    renderStrategySelect();
+    renderForecast(true);
+    renderScoreboard();
+  }
+
+  function renderCountries() {
+    var box = $("ctryList");
+    box.innerHTML = "";
+    settings.countries.forEach(function (code) {
+      var c = F.country(code);
+      var chip = document.createElement("span");
+      chip.className = "ctry-chip";
+      chip.appendChild(document.createTextNode(c ? c.name : code));
+      var x = document.createElement("button");
+      x.type = "button";
+      x.setAttribute("aria-label", "Remove " + (c ? c.name : code));
+      x.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+      x.onclick = function () {
+        if (settings.countries.length === 1) { flash("Keep at least one country. Add another first, then remove this one.", "warn"); return; }
+        settings.countries = settings.countries.filter(function (k) { return k !== code; });
+        onCountriesChange();
+      };
+      chip.appendChild(x);
+      box.appendChild(chip);
+    });
+    var add = $("ctryAdd");
+    add.innerHTML = "";
+    var first = document.createElement("option");
+    first.value = "";
+    first.textContent = "+ Add a country";
+    add.appendChild(first);
+    F.COUNTRIES.forEach(function (c) {
+      if (settings.countries.indexOf(c.code) > -1) return;
+      var o = document.createElement("option");
+      o.value = c.code;
+      o.textContent = c.name;
+      add.appendChild(o);
+    });
+  }
+  $("ctryAdd").addEventListener("change", function () {
+    var v = $("ctryAdd").value;
+    if (!v) return;
+    if (settings.countries.length >= 8) { flash("Up to 8 countries at a time.", "warn"); renderCountries(); return; }
+    settings.countries.push(v);
+    onCountriesChange();
+  });
+  function onCountriesChange() {
+    saveSettings();
+    renderCountries();
+    onContextChange();
+  }
+
+  function suggestion() {
+    return F.suggestAudience($("niche").value, $("productTitle").value, settings.countries, new Date());
+  }
+  function updateAudience() {
+    var ta = $("audience");
+    if (!settings.audEdited) {
+      ta.value = suggestion();
+      settings.audience = ta.value;
+    } else if (ta.value !== settings.audience) {
+      ta.value = settings.audience;
+    }
+    $("audTag").textContent = settings.audEdited ? "Edited by you" : "Suggested";
+    $("audTag").className = "sugg" + (settings.audEdited ? " edited" : "");
+    $("audReset").hidden = !settings.audEdited;
+  }
+  $("audience").addEventListener("input", function () {
+    settings.audience = $("audience").value;
+    settings.audEdited = true;
+    saveSettings();
+    $("audTag").textContent = "Edited by you";
+    $("audTag").className = "sugg edited";
+    $("audReset").hidden = false;
+  });
+  $("audReset").addEventListener("click", function () {
+    settings.audEdited = false;
+    saveSettings();
+    updateAudience();
+  });
+
+  function onContextChange() {
+    updateAudience();
+    renderStratPills();
+    renderStrategySelect();
+    renderForecast(true);
+    renderScoreboard();
+  }
+
+  function renderForecast(quick) {
+    var eff = effective();
+    var r = runForecast(eff.id);
+    var el = $("fcChart");
+    var visible = !$("paneFc").hidden;
+    if (visible) {
+      if (!fcShown) {
+        fcShown = true;
+        F.chart(el, r, { histDays: 45, animate: true });
+      } else {
+        F.chart(el, r, { histDays: 45, quick: quick !== false });
+      }
+    }
+    var sm = r.summary;
+    G.countUp($("scW"), sm.worst30, 900, F.fmt);
+    G.countUp($("scA"), sm.avg30, 900, F.fmt);
+    G.countUp($("scB"), sm.best30, 900, F.fmt);
+    $("scWc").textContent = "views a month by month 3, about " + F.fmt(sm.clicksWorst30) + " clicks";
+    $("scAc").textContent = "views a month by month 3, about " + F.fmt(sm.clicksAvg30) + " clicks";
+    $("scBc").textContent = "views a month by month 3, about " + F.fmt(sm.clicksBest30) + " clicks";
+    $("fcSub").textContent = r.hasData
+      ? "Built from your last " + histData.length + " days of Pinterest analytics, your niche, " + settings.countries.length + " target countr" + (settings.countries.length > 1 ? "ies" : "y") + " and " + settings.ppd + " pins a day. Now: " + F.fmt(sm.now30) + " views in the last 30 days."
+      : "Your account does not have enough Pinterest data yet, so this uses typical results for " + $("niche").value.toLowerCase() + " accounts. It switches to your own numbers as data comes in.";
+  }
+
+  function renderScoreboard() {
+    var act = actualsByStrategy();
+    var eff = effective();
+    var rows = F.STRATEGIES.map(function (st) {
+      var r = runForecast(st.id, act);
+      return { st: st, r: r, a: act[st.id] || { pins: 0, impressions: 0, clicks: 0 } };
+    });
+    var bestId = rows.slice().sort(function (x, y) { return y.r.summary.avg30 - x.r.summary.avg30; })[0].st.id;
+    var maxB = Math.max.apply(null, rows.map(function (x) { return x.r.summary.best30; })) || 1;
+    var body = $("sbBody");
+    body.innerHTML = "";
+    rows.forEach(function (x) {
+      var tr = document.createElement("tr");
+      if (x.st.id === bestId) tr.className = "best";
+      tr.style.cursor = "pointer";
+      tr.title = "Use " + x.st.name;
+      tr.onclick = function () { setMode(x.st.id); };
+      var sm = x.r.summary;
+      var ctr = x.a.impressions ? (x.a.clicks / x.a.impressions * 100).toFixed(2) + "%" : "-";
+      var w = sm.worst30 / maxB * 100, a = sm.avg30 / maxB * 100, b = sm.best30 / maxB * 100;
+      tr.innerHTML =
+        '<td><div class="sname"></div><div class="sdesc"></div></td>' +
+        '<td><span class="n">' + x.a.pins + '</span></td>' +
+        '<td><span class="n">' + (x.a.pins ? F.fmt(x.a.impressions) : '<span class="muted">No pins yet</span>') + '</span></td>' +
+        '<td><span class="n">' + (x.a.pins ? F.fmt(x.a.clicks) : "-") + '</span></td>' +
+        '<td><span class="n">' + ctr + '</span></td>' +
+        '<td><div class="range"><i style="left:' + w.toFixed(1) + '%;width:' + Math.max(2, b - w).toFixed(1) + '%"></i><b style="left:calc(' + a.toFixed(1) + '% - 2px)"></b></div>' +
+        '<div class="range-lbl"><span>' + F.fmt(sm.worst30) + '</span><span><b>' + F.fmt(sm.avg30) + '</b> avg</span><span>' + F.fmt(sm.best30) + '</span></div></td>';
+      var nm = tr.querySelector(".sname");
+      nm.textContent = x.st.name;
+      if (x.st.id === eff.id) { var r1 = document.createElement("span"); r1.className = "badge-run"; r1.textContent = eff.auto ? "Auto pick" : "Running"; nm.appendChild(r1); }
+      if (x.st.id === bestId) { var b1 = document.createElement("span"); b1.className = "badge-best"; b1.textContent = "Best bet"; nm.appendChild(b1); }
+      tr.querySelector(".sdesc").textContent = x.st.short;
+      body.appendChild(tr);
+    });
+  }
+
+  async function loadPinStats() {
+    var ids = drafts.filter(function (d) { return d.status === "published" && d.pin_id; }).map(function (d) { return d.pin_id; }).slice(0, 50);
+    if (!ids.length) { renderScoreboard(); return; }
+    try {
+      var r = await api("/api/pin-stats", { ids: ids });
+      actuals = r.stats || {};
+    } catch (e) {}
+    renderStratPills();
+    renderStrategySelect();
+    renderScoreboard();
+    renderForecast(true);
+  }
+  $("sbRefresh").addEventListener("click", function () { loadPinStats(); flash("Results refreshed from Pinterest.", "ok"); });
+
+  $("ppd").addEventListener("input", function () {
+    settings.ppd = Number($("ppd").value);
+    $("ppdVal").textContent = settings.ppd;
+    $("ppd").style.setProperty("--fill", ((settings.ppd - 1) / 9 * 100) + "%");
+    saveSettings();
+    renderForecast(true);
+    renderScoreboard();
+  });
+
+  // tabs
+  function showTab(which) {
+    var fc = which === "fc";
+    $("tabFc").setAttribute("aria-selected", fc ? "true" : "false");
+    $("tabCreate").setAttribute("aria-selected", fc ? "false" : "true");
+    $("paneFc").hidden = !fc;
+    $("paneCreate").hidden = fc;
+    if (fc) renderForecast(!fcShown ? false : true);
+  }
+  $("tabFc").addEventListener("click", function () { showTab("fc"); });
+  $("tabCreate").addEventListener("click", function () { showTab("create"); });
+  $("useStrat").addEventListener("click", function () {
+    showTab("create");
+    window.scrollTo({ top: $("tabFc").getBoundingClientRect().top + window.scrollY - 90, behavior: "smooth" });
+    flash("Strategy set: " + F.byId(effective().id).name + ". Add a product to write drafts with it.", "ok");
+  });
+
+  function initStudio() {
+    loadSettings();
+    $("ppd").value = settings.ppd;
+    $("ppdVal").textContent = settings.ppd;
+    $("ppd").style.setProperty("--fill", ((settings.ppd - 1) / 9 * 100) + "%");
+    renderCountries();
+    updateAudience();
+    renderStratPills();
+    renderStrategySelect();
+    renderScoreboard();
+  }
+
+  // ---------- Connect view ----------
+  var connectBuilt = false;
+  function showConnect() {
+    $("appView").style.display = "none";
+    $("connectView").style.display = "grid";
+    renderAccount(null);
+    if (!connectBuilt) {
+      connectBuilt = true;
+      var b = $("cBoard");
+      G.fillBoard(b, 2);
+      // two extra columns for the wide background board
+      var extra = document.createElement("div");
+      extra.style.display = "contents";
+      G.fillBoard(extra, 4);
+      while (extra.firstChild) b.appendChild(extra.firstChild);
+      G.typeWords($("cRot"), ["Pinterest", "jewelry pins", "decor pins", "gift pins", "Pinterest"]);
+    }
+    // Logged in to GrowMyPin: go straight to Pinterest. New visitors sign up first.
+    api("/api/user/me?lite=1").then(function (u) {
+      if (u && u.user) $("connectBtn").href = "/api/auth/login?next=/app.html";
+    }).catch(function () {});
+  }
+
+  async function boot() {
+    load();
+    updatePreview();
+    var params = new URLSearchParams(location.search);
+    var err = params.get("error");
+    if (err === "denied") flash("Pinterest access was not granted. Click Connect Pinterest to try again.", "warn");
+    else if (err) flash("Pinterest did not finish connecting (" + err + "). Click Connect Pinterest to try again.", "err");
+    if (params.get("connected")) flash("Pinterest connected. Add your first product.", "ok");
+    if (err || params.get("connected")) history.replaceState(null, "", "/app.html");
+
+    try {
+      var me = await api("/api/me");
+      if (!me.connected) { showConnect(); return; }
+      boards = me.boards || [];
+      renderAccount(me.account);
+      renderBoards();
+      $("connectView").style.display = "none";
+      $("appView").style.display = "block";
+      renderQueue();
+      initStudio();
+      loadStats();
+      loadPinStats();
+    } catch (e) {
+      showConnect();
+    }
+  }
+
+  boot();
+})();
+</script>
+<script src="/gmp.js" defer></script>
+</body>
+</html>

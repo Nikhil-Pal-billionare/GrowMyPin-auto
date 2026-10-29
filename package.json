@@ -1,0 +1,13 @@
+{
+  "name": "growmypin-studio",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "description": "GrowMyPin Studio - AI pin drafts with user approval before publishing to Pinterest",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "web-push": "3.6.7"
+  }
+}
