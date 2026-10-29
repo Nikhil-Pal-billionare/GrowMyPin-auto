@@ -34,6 +34,35 @@
   .h-hello { padding: clamp(6px, 2vw, 14px) 4px; display: grid; align-content: center; gap: 10px; }
   .h-hello h1 { font-size: clamp(2rem, 5vw, 3.1rem); line-height: 1.04; }
   .h-hello p { color: var(--muted); font-size: 1.05rem; max-width: 52ch; }
+  .h-hello h1 em { font-style: normal; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  /* rotating motivation card */
+  .moti { position: relative; overflow: hidden; border-radius: 22px; padding: 16px 18px 14px; background: linear-gradient(135deg, #FFFFFF 0%, #F6FBF9 60%, #FFF7EA 100%); border: 1px solid var(--line); box-shadow: 0 20px 40px -32px rgba(36,41,47,.45); display: grid; gap: 10px; max-width: 620px; }
+  .moti-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .moti-k { display: inline-flex; align-items: center; gap: 7px; font-size: .74rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--green-text); }
+  .moti-k i { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: livePing 1.6s infinite; }
+  .moti-dots { display: flex; gap: 5px; }
+  .moti-dots button { width: 7px; height: 7px; padding: 0; border: 0; border-radius: 999px; background: #D9DCE5; cursor: pointer; transition: width .3s, background .3s; }
+  .moti-dots button.on { width: 20px; background: var(--green); }
+  .moti-body { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 12px; align-items: center; min-height: 74px; }
+  .moti-ic { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; background: var(--mint); color: var(--green-text); }
+  .moti-ic.warm { background: #FFF1DC; color: #B4601A; }
+  .moti-ic.vio { background: #EEEAFD; color: #5B4BC4; }
+  .moti-ic svg { width: 24px; height: 24px; }
+  .moti-tx b { display: block; font-family: var(--f-display); font-size: clamp(1.05rem, 2.3vw, 1.3rem); letter-spacing: -.02em; line-height: 1.2; color: var(--charcoal); }
+  .moti-tx span { display: block; margin-top: 3px; font-size: .9rem; color: var(--muted); line-height: 1.4; }
+  .moti-tx a { color: var(--green-text); font-weight: 700; }
+  .moti-in { animation: motiIn .55s cubic-bezier(.2,.8,.2,1); }
+  .moti-bar { height: 3px; border-radius: 3px; background: #EEF0F5; overflow: hidden; }
+  .moti-bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #F2A54A, #14B88F); }
+  .moti-bar i.run { animation: motiBar var(--t) linear forwards; }
+  .moti-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; max-width: 620px; }
+  .moti-stats div { border-radius: 16px; padding: 10px 12px; background: rgba(255,255,255,.75); border: 1px solid var(--line); display: grid; gap: 1px; }
+  .moti-stats b { font-family: var(--f-display); font-size: 1.15rem; letter-spacing: -.02em; color: var(--charcoal); }
+  .moti-stats small { font-size: .76rem; color: var(--muted); line-height: 1.3; }
+  @keyframes motiIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  @keyframes motiBar { from { width: 0; } to { width: 100%; } }
+  @media (max-width: 560px) { .moti-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; } .moti-stats b { font-size: 1rem; } .moti-stats div { padding: 9px 10px; } }
+  @media (prefers-reduced-motion: reduce) { .moti-in { animation: none; } .moti-bar i.run { animation: none; width: 100%; } }
   .h-setup { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center; }
   .ring { width: 92px; height: 92px; position: relative; }
   .ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
@@ -170,6 +199,12 @@
     <div class="h-hello">
       <h1 id="hi">Hi there</h1>
       <p id="hiSub">Here is your shop, your Pinterest and where they can go together.</p>
+      <div class="moti" id="moti" aria-live="polite">
+        <div class="moti-top"><span class="moti-k"><i></i><span id="motiK">For you today</span></span><div class="moti-dots" id="motiDots"></div></div>
+        <div class="moti-body" id="motiBody"></div>
+        <div class="moti-bar"><i id="motiBar"></i></div>
+      </div>
+      <div class="moti-stats" id="motiStats"></div>
     </div>
     <div class="h-card h-setup" aria-label="Your setup">
       <div class="ring"><svg viewBox="0 0 100 100"><circle class="bg" cx="50" cy="50" r="42"/><circle class="fg" id="ringFg" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="264"/></svg><b id="ringTxt">0%</b></div>
@@ -279,6 +314,7 @@
   document.addEventListener("click", async function (e) {
     var b = e.target.closest("[data-act]");
     if (!b) return;
+    if (b.tagName === "A") e.preventDefault();
     var act = b.getAttribute("data-act");
     if (act === "shop") { showShopForm(); $("storeCard").scrollIntoView({ behavior: "smooth", block: "center" }); }
     if (act === "niche") {
@@ -442,7 +478,7 @@
     var body = { action: "growth" };
     if (field === "niche") { body.niche = value; D.profile.niche = value; }
     if (field === "pins") { body.pins_count = value; D.profile.pins_count = value; }
-    renderGoal(); renderSetup();
+    renderGoal(); renderSetup(); renderMoti();
     try { await api("/api/user/hub", body); }
     catch (e) { $("setupMsg").textContent = e.message; }
   }
@@ -467,8 +503,106 @@
     $("editShop").onclick = function () { showShopForm(); };
   }
 
+  // ---------------- greeting + rotating motivation (changes with time of day and day) ----------------
+  function slot() { var h = new Date().getHours(); return h < 5 ? "night" : h < 12 ? "morning" : h < 17 ? "afternoon" : h < 21 ? "evening" : "night"; }
+  function greet() { return { morning: "Good morning", afternoon: "Good afternoon", evening: "Good evening", night: "Working late" }[slot()]; }
+  var IC = {
+    eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
+    up: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>',
+    bag: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1 12H6z"/><path d="M9 8V6a3 3 0 016 0v2"/></svg>',
+    gift: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8v13M3 12h18M12 8S10 3 7.5 4.5 9 8 12 8zm0 0s2-5 4.5-3.5S15 8 12 8z"/></svg>',
+    clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+    pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22v-6M8 3h8l-1 6 3 4H6l3-4z"/></svg>',
+    flag: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4h12l-2 4 2 4H5"/></svg>',
+    star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>'
+  };
+  function nyHour() {
+    try { return Number(new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", hour: "numeric", hour12: false }).format(new Date())) % 24; } catch (e) { return -1; }
+  }
+  function seasonMsg(m) {
+    if (m === 9 || m === 10) return { ic: "gift", c: "warm", t: "Holiday buyers are searching gifts right now", s: "Pinterest gift searches run weeks ahead of Black Friday and Christmas. Pins posted now catch that wave." };
+    if (m === 11) return { ic: "gift", c: "warm", t: "Last-minute gift hunters are on Pinterest", s: "December buyers want quick, ready gifts. Your shop can be the answer they save." };
+    if (m === 0) return { ic: "star", c: "vio", t: "New year, new buyers, new searches", s: "Fresh-start and home refresh searches jump in January. A great month to plant new pins." };
+    if (m === 1) return { ic: "gift", c: "warm", t: "Valentine's gift season is on", s: "Gifts for her, for him and for couples lead February searches." };
+    if (m >= 2 && m <= 4) return { ic: "gift", c: "warm", t: "Mother's Day and spring planning season", s: "Buyers plan spring gifts and home refreshes on Pinterest weeks in advance." };
+    if (m >= 5 && m <= 7) return { ic: "clock", c: "vio", t: "Plant pins now, harvest in the holidays", s: "Pins keep bringing views for months. Summer pins grow into the autumn and holiday rush." };
+    return { ic: "gift", c: "warm", t: "Early holiday planners have started", s: "September is when Pinterest users begin saving Christmas and gift ideas." };
+  }
+  function buildMoti() {
+    var pr = D.profile, pin = D.pinterest;
+    var inp = growthInput();
+    var P = GR.plan(inp), b = P.best;
+    var store = NAMES[inp.platform] || "Etsy";
+    var name = first() || "you";
+    var v3 = GR.total(b.views, 3), s3 = GR.total(b.visits, 3), sales6 = Math.round(GR.total(b.sales, 6));
+    var list = [];
+    if (pin.views30 != null) {
+      list.push({ ic: "eye", t: GR.fmt(pin.views30) + " views on your pins in the last 30 days", s: "That is " + GR.fmt(pin.views30) + " chances for a buyer to find your " + store + " shop, " + name + "." });
+      if (pin.views30 > 0) list.push({ ic: "up", t: "Next stop: " + GR.fmt(b.views[3]) + " views in month 3", s: "With " + b.name + ", your monthly views can grow from " + GR.fmt(pin.views30) + " to " + GR.fmt(b.views[3]) + "." });
+    } else if (pr.pinterest_url) {
+      list.push({ ic: "eye", t: "Your Pinterest is live, " + name, s: (pin.source === "profile" ? "Your latest pins are showing below. " : "") + "<a href=\"/api/auth/login?next=/home.html\">Connect Pinterest</a> to see your real monthly views here." });
+    } else {
+      list.push({ ic: "pin", t: "Add your Pinterest link to see your views", s: "Then this card shows how many people saw your pins this month. <a href=\"#\" data-act=\"shop\">Add it now</a>" });
+    }
+    var pc = pin.pin_count != null ? pin.pin_count : pr.pins_count;
+    if (pc) list.push({ ic: "pin", t: GR.fmtFull(pc) + " pins are working for you day and night", s: "Every pin is a small shop window. It keeps bringing views for months after you post it." });
+    list.push({ ic: "bag", c: "warm", t: GR.fmtFull(s3) + " " + store + " store visits are waiting in the next 3 months", s: "That is what " + (P.nicheKnown ? P.niche.toLowerCase() + " shops" : "shops like yours") + " can get with " + b.name + "." });
+    list.push({ ic: "up", t: GR.fmt(v3) + " Pinterest views in your first 3 months", s: "Patience first, then reward: month 3 alone can bring " + GR.fmt(b.views[3]) + " views." });
+    if (pr.target) {
+      var hit = 0; for (var i = 1; i <= 6; i++) if (b.sales[i] >= pr.target) { hit = i; break; }
+      list.push(hit
+        ? { ic: "flag", c: "vio", t: "Your " + pr.target + " sales a month goal: month " + hit, s: "That is when Pinterest alone can reach your goal with " + b.name + "." }
+        : { ic: "flag", c: "vio", t: "About " + Math.max(1, Math.round(b.sales[6])) + " sales in month 6, " + name, s: "Step by step towards your " + pr.target + " sales a month goal. More pins close the gap faster." });
+    }
+    if (sales6 > 0) list.push({ ic: "bag", c: "warm", t: "Around " + GR.fmtFull(sales6) + " sales in 6 months from Pinterest", s: "Real buyers who found your products on Pinterest and clicked to your " + store + " shop." });
+    list.push(seasonMsg(new Date().getMonth()));
+    var ny = nyHour();
+    if (ny >= 7 && ny <= 23) list.push({ ic: "clock", c: "vio", t: "It is " + (ny % 12 || 12) + (ny < 12 ? " am" : " pm") + " in New York right now", s: "US buyers are scrolling Pinterest. Your pins can be in front of them today." });
+    else list.push({ ic: "clock", c: "vio", t: "US buyers are asleep, your pins are not", s: "Pins posted now are ready when New York wakes up in a few hours." });
+    var wd = new Date().getDay();
+    if (wd === 0 || wd === 6) list.push({ ic: "star", t: "Weekend scrolling is on", s: "People plan buys on Pinterest over the weekend. Make sure your products are there." });
+    else list.push({ ic: "star", t: { morning: "Fresh day, fresh pins, " + name, afternoon: "Small steps today, big numbers in 3 months", evening: "Your shop grew a little more today", night: "Big shops are built one pin at a time" }[slot()], s: "Consistency wins on Pinterest. Every day of pins adds to next month's views." });
+    // order changes with the day and the time of day
+    var seed = new Date().toDateString() + "|" + slot(), h = 0;
+    for (var k = 0; k < seed.length; k++) h = (h * 31 + seed.charCodeAt(k)) >>> 0;
+    var first0 = list.shift();
+    for (var j = list.length - 1; j > 0; j--) { h = (h * 1103515245 + 12345) >>> 0; var r = h % (j + 1); var t = list[j]; list[j] = list[r]; list[r] = t; }
+    list.unshift(first0);
+    var stats = pin.views30 != null
+      ? [[GR.fmt(pin.views30), "Pinterest views, last 30 days"], [GR.fmt(b.views[3]), "monthly views by month 3"], [b.name, "best strategy now"]]
+      : [[GR.fmtFull(s3), store + " visits in 3 months"], [GR.fmt(v3), "views in 3 months"], [b.name, "best strategy now"]];
+    return { list: list, stats: stats };
+  }
+  var MT = { i: 0, timer: null, list: [], paused: false };
+  function showMoti(i) {
+    var L = MT.list; if (!L.length) return;
+    MT.i = (i + L.length) % L.length;
+    var m = L[MT.i];
+    $("motiBody").innerHTML = '<span class="moti-ic ' + (m.c || "") + '">' + IC[m.ic] + '</span><div class="moti-tx moti-in"><b>' + esc(m.t) + '</b><span>' + m.s + '</span></div>';
+    Array.prototype.forEach.call(document.querySelectorAll("#motiDots button"), function (d, k) { d.classList.toggle("on", k === MT.i); });
+    var bar = $("motiBar"); bar.classList.remove("run"); void bar.offsetWidth; bar.style.setProperty("--t", "7s"); if (!MT.paused) bar.classList.add("run");
+    clearTimeout(MT.timer);
+    if (!MT.paused) MT.timer = setTimeout(function () { showMoti(MT.i + 1); }, 7000);
+  }
+  function renderMoti() {
+    if (!$("moti")) return;
+    var r = buildMoti();
+    MT.list = r.list;
+    $("motiK").textContent = "Your news for " + ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][new Date().getDay()];
+    $("motiDots").innerHTML = r.list.map(function (x, k) { return '<button type="button" aria-label="Message ' + (k + 1) + '"></button>'; }).join("");
+    $("motiStats").innerHTML = r.stats.map(function (x) { return '<div><b>' + esc(x[0]) + '</b><small>' + esc(x[1]) + '</small></div>'; }).join("");
+    showMoti(MT.i || 0);
+  }
+  document.addEventListener("click", function (e) {
+    var d = e.target.closest("#motiDots button");
+    if (d) { var k = Array.prototype.indexOf.call(d.parentNode.children, d); showMoti(k); }
+  });
+  document.addEventListener("mouseover", function (e) { if (e.target.closest && e.target.closest("#moti") && !MT.paused) { MT.paused = true; clearTimeout(MT.timer); $("motiBar").classList.remove("run"); } });
+  document.addEventListener("mouseout", function (e) { if (e.target.closest && e.target.closest("#moti") && !(e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest("#moti"))) { MT.paused = false; showMoti(MT.i); } });
+
   function renderAll(again) {
-    $("hi").textContent = (first() ? "Hi " + first() + "," : "Hi,") + " here is your growth";
+    $("hi").innerHTML = esc(greet()) + (first() ? ", <em>" + esc(first()) + "</em>" : "") + "<br>here is your growth";
+    renderMoti();
     $("av").textContent = (first() || D.user.email || "G").charAt(0).toUpperCase();
     renderSetup(); renderOffer(); renderStore(); renderGoal(); renderPins(); renderPred();
     if (!again) wireSeg();
