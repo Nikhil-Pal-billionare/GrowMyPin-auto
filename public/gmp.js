@@ -257,6 +257,7 @@
     ".gmp-vp .nums{font-family:Montserrat,system-ui,sans-serif;font-weight:800;letter-spacing:-.04em;line-height:1;margin:6px 0 4px;font-size:clamp(2.2rem,9vw,3.3rem);background:linear-gradient(180deg,#FFF3C4 10%,#FFC75A 55%,#F29A2E);-webkit-background-clip:text;background-clip:text;color:transparent}" +
     ".gmp-vp .nums small{font-size:.45em;letter-spacing:0;vertical-align:.35em;margin:0 .25em;-webkit-text-fill-color:#A9C2BC}" +
     ".gmp-vp .u{font-size:.9rem;color:#CFE2DD}" +
+    ".gmp-vp .u2{margin-top:8px;font-size:.92rem;font-weight:700;color:#34D6A8}" +
     ".gmp-vp h3{margin:18px 0 6px;font-family:Montserrat,system-ui,sans-serif;font-size:1.35rem;letter-spacing:-.02em;color:#fff}" +
     ".gmp-vp svg{display:block;width:100%;height:auto;margin:4px 0 6px;overflow:visible}" +
     ".gmp-vp .note{font-size:.76rem;color:#7F9893;margin-bottom:16px}" +
@@ -296,7 +297,12 @@
       var g = (ME && ME.growth) || {};
       var p = GR.pickPlatform(g.platforms || []);
       var store = p ? GR.NAMES[p] : "online";
-      var m = GR.model(p || "etsy", (g.links || {})[p] || "", { target: g.target || 100, hasPin: !!g.has_pinterest });
+      var ps = g.pin_stats || {};
+      GR.setConfig(SET.growth);
+      var P = GR.plan({
+        niche: g.niche || "", platform: p || "etsy", pins: ps.pins != null ? ps.pins : g.pins_count,
+        hasPin: !!g.has_pinterest, current: ps.views30 || 0, seed: (g.links || {})[p] || "", target: g.target || 100
+      });
       var bg = document.createElement("div");
       bg.className = "gmp-vp-bg";
       bg.setAttribute("role", "dialog");
@@ -306,19 +312,21 @@
         '<button class="x" type="button" aria-label="Close">&times;</button>' +
         '<div class="k">Your Pinterest views can reach</div>' +
         '<div class="nums"><span class="a">0</span><small>to</small><span class="b">0</span></div>' +
-        '<div class="u">monthly views in 6 months</div>' +
+        '<div class="u">total Pinterest views in the next 6 months</div>' +
+        '<div class="u2"></div>' +
         '<h3></h3>' +
         '<svg role="img" aria-label="Your store visits rising over 6 months"></svg>' +
-        '<div class="note">Estimate for your shop, based on similar sellers posting pins every day.</div>' +
+        '<div class="note">Estimate for your shop, based on results of GrowMyPin client accounts. Not a guarantee.</div>' +
         '<div class="acts"><button class="yes" type="button"></button><button class="no" type="button"></button></div>' +
         '</div>';
       bg.querySelector("h3").textContent = tpl(SET.popup_title || "Increase your {store} store visits", { store: store });
       bg.querySelector(".yes").textContent = SET.popup_yes_btn || "I want to increase visits";
       bg.querySelector(".no").textContent = SET.popup_no_btn || "I'll do later";
       document.body.appendChild(bg);
-      GR.countUp(bg.querySelector(".a"), m.worst[6], 1400);
-      GR.countUp(bg.querySelector(".b"), m.best[6], 1800);
-      GR.drawRise(bg.querySelector("svg"), m, {});
+      GR.countUp(bg.querySelector(".a"), GR.total(P.worst.views, 6), 1400);
+      GR.countUp(bg.querySelector(".b"), GR.total(P.best.views, 6), 1800);
+      bg.querySelector(".u2").textContent = "and up to " + GR.fmtFull(GR.total(P.best.visits, 6)) + " " + (p ? store + " " : "") + "store visits with our Best strategy, " + P.best.name + ".";
+      GR.drawRise(bg.querySelector("svg"), P.best.visits, {});
       function close() { bg.remove(); document.removeEventListener("keydown", onKey); }
       function onKey(e) { if (e.key === "Escape") close(); }
       document.addEventListener("keydown", onKey);

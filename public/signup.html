@@ -181,6 +181,7 @@
   .opt.sel.pop { animation: bump .35s ease; }
   .opt .ic { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: rgba(255,255,255,.1); }
   .opt .ic svg { width: 22px; height: 22px; }
+  #optNiche .opt { min-height: 0; padding: 14px 16px; }
   .opt b { font-family: var(--f-display); font-size: 1.15rem; letter-spacing: -.02em; }
   .opt small { color: #A9C2BC; font-size: .85rem; line-height: 1.35; }
   .opt .s-tick { position: absolute; top: 14px; right: 14px; width: 24px; height: 24px; border-radius: 50%; border: 2px solid rgba(255,255,255,.3); display: grid; place-items: center; transition: all .25s; }
@@ -426,7 +427,7 @@
     <div class="quiz">
       <div class="quiz-top">
         <button class="back-n" type="button" id="qBack" hidden>Back</button>
-        <div class="lamps" id="lamps" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="lamps" id="lamps" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
       </div>
 
       <div class="qn" data-q="where">
@@ -439,6 +440,12 @@
         </div>
         <div class="nerr" id="nWhere" role="alert"></div>
         <div class="q-actions"><button class="btn btn-gold" type="button" id="whereNext">Continue</button></div>
+      </div>
+
+      <div class="qn" data-q="niche">
+        <h3>What do you sell?</h3>
+        <p class="s-sub">Your growth graph is built for your niche.</p>
+        <div class="opts" style="--cols:2" id="optNiche"></div>
       </div>
 
       <div class="qn" data-q="target">
@@ -508,22 +515,11 @@
     <div class="fc-head">
       <div>
         <h3 id="fcTitle">Your Pinterest growth graph</h3>
-        <p id="fcSub">Monthly Pinterest views we expect for your shop with GrowMyPin.</p>
+        <p id="fcSub">Built for your shop: your niche, your store and your goal. Tap any strategy to compare.</p>
       </div>
       <button class="x" type="button" id="fcClose" aria-label="Close">&times;</button>
     </div>
-    <div class="fc-bar">
-      <div class="s-tabs" id="fcTabs" role="tablist"></div>
-      <div class="s-seg" id="seg" role="group" aria-label="Time range"><span class="knob"></span><button type="button" class="on" data-r="3">3 months</button><button type="button" data-r="6">6 months</button></div>
-    </div>
-    <div class="fc-link" id="fcLink"></div>
-    <svg class="s-chart" id="chart" viewBox="0 0 640 300" role="img" aria-label="Growth graph"></svg>
-    <div class="fc-stats">
-      <div><b id="stViews">0</b><small id="stViewsL">monthly views by month 3</small></div>
-      <div><b id="stSales">0</b><small id="stSalesL">estimated sales in month 3</small></div>
-      <div class="gold"><b id="stGoal">0</b><small id="stGoalL">monthly views for your goal</small></div>
-    </div>
-    <p class="fc-note">Estimate based on similar shops posting optimized pins every day. Not a guarantee: real results depend on your products, photos, prices and Pinterest itself.</p>
+    <div id="fcW"></div>
     <div class="fc-actions">
       <a class="btn btn-primary" id="goConnect" href="/api/auth/login?next=/app.html">Connect Pinterest</a>
       <button class="btn btn-ghost" type="button" id="notifBtn">Get slot updates on this phone</button>
@@ -924,8 +920,8 @@
   }
 
   // ---------------- reserve quiz ----------------
-  var R = { platforms: [], target: 0, wait: 0, links: {}, hasPin: null, pinUrl: "" };
-  var ORDER = ["where", "target", "wait", "links", "pin", "phone"];
+  var R = { platforms: [], niche: "", target: 0, wait: 0, links: {}, hasPin: null, pinUrl: "" };
+  var ORDER = ["where", "niche", "target", "wait", "links", "pin", "phone"];
   var qi = 0, trail = [];
   var NAMES = { etsy: "Etsy", ebay: "eBay", shopify: "Shopify" };
   var EXAMPLES = { etsy: "etsy.com/shop/yourshop", ebay: "ebay.com/str/yourstore", shopify: "yourstore.com" };
@@ -967,8 +963,27 @@
   $("whereNext").addEventListener("click", function () {
     if (!R.platforms.length) { showErr($("nWhere"), "Pick at least one: Etsy, eBay or Shopify."); return; }
     buildLinkFields();
+    buildNiches();
     nextQ();
   });
+
+  // niche (single choice, list comes from Admin > Growth graph)
+  function buildNiches() {
+    var box = $("optNiche");
+    if (box.getAttribute("data-built")) return;
+    box.setAttribute("data-built", "1");
+    window.GMPGrowth.niches().forEach(function (n) {
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "opt"; b.setAttribute("data-v", n);
+      b.innerHTML = "<b></b>";
+      b.querySelector("b").textContent = n;
+      box.appendChild(b);
+    });
+    single("optNiche", function (v) {
+      R.niche = v;
+      setTimeout(function () { nextQ(); }, reduce ? 0 : 420);
+    });
+  }
 
   // single choice helper: auto moves on, never submits
   function single(boxId, onPick) {
@@ -1073,7 +1088,7 @@
     var phone = normPhone($("rPhone").value);
     try {
       await api("/api/user/hub", {
-        action: "reserve", platforms: R.platforms, target_sales: R.target, wait_months: R.wait,
+        action: "reserve", platforms: R.platforms, niche: R.niche, target_sales: R.target, wait_months: R.wait,
         links: R.links, has_pinterest: R.hasPin, pinterest_url: R.pinUrl, phone: phone
       });
       $("doneTo").textContent = phone;
@@ -1086,57 +1101,25 @@
     }
   });
 
-  // ---------------- forecast popup (model + chart live in /gmp-growth.js) ----------------
-  var FC = { tab: 0, range: 3, items: [] };
+  // ---------------- forecast popup (model + widget live in /gmp-growth.js) ----------------
   var GR = window.GMPGrowth;
-  var fmt = GR.fmt;
-
+  var FCW = null;
   function openForecast() {
-    FC.items = R.platforms.map(function (p) { return GR.model(p, R.links[p], { target: R.target, hasPin: R.hasPin }); });
-    var tabs = $("fcTabs");
-    tabs.innerHTML = "";
-    FC.items.forEach(function (it, i) {
-      var b = document.createElement("button");
-      b.type = "button"; b.className = "s-tab" + (i === 0 ? " on" : "");
-      b.setAttribute("role", "tab");
-      b.textContent = NAMES[it.p] + (it.link ? "" : " (estimate)");
-      b.addEventListener("click", function () { FC.tab = i; qsa(".s-tab", tabs).forEach(function (t, k) { t.classList.toggle("on", k === i); }); draw(); });
-      tabs.appendChild(b);
-    });
-    tabs.style.display = FC.items.length > 1 ? "" : "none";
-    FC.tab = 0;
+    var p = GR.pickPlatform(R.platforms) || "etsy";
+    var inp = { niche: R.niche, platform: p, pins: null, hasPin: !!R.hasPin, seed: R.links[p] || user.email || "", target: R.target };
     $("fcPop").classList.add("on");
-    draw();
+    if (!FCW) FCW = GR.mount($("fcW"), inp, { edit: true, onChange: function (f, v) {
+      var body = { action: "growth" };
+      if (f === "niche") { body.niche = v; R.niche = v; } else body.pins_count = v;
+      api("/api/user/hub", body).catch(function () {});
+    } });
+    else FCW.update(inp);
     setTimeout(function () { $("fcClose").focus({ preventScroll: true }); }, 100);
   }
   $("openFc").addEventListener("click", openForecast);
   $("fcClose").addEventListener("click", function () { $("fcPop").classList.remove("on"); });
   $("fcPop").addEventListener("click", function (e) { if (e.target === this) this.classList.remove("on"); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") $("fcPop").classList.remove("on"); });
-  qsa("#seg button").forEach(function (b) {
-    b.addEventListener("click", function () {
-      FC.range = Number(b.getAttribute("data-r"));
-      qsa("#seg button").forEach(function (x) { x.classList.toggle("on", x === b); });
-      $("seg").classList.toggle("r6", FC.range === 6);
-      draw();
-    });
-  });
-
-  function draw() {
-    var it = FC.items[FC.tab];
-    if (!it) return;
-    var n = FC.range;
-    $("fcLink").textContent = it.link ? it.link : "No link added, so this uses an average " + NAMES[it.p] + " shop.";
-    GR.drawChart($("chart"), it, { range: n, target: R.target, wait: R.wait });
-    var sl = GR.sales(it, n);
-    GR.countUp($("stViews"), it.avg[n], 1200);
-    $("stViewsL").textContent = "monthly views by month " + n;
-    $("stSales").textContent = sl.lo + " to " + sl.hi;
-    $("stSalesL").textContent = "estimated sales in month " + n + " (" + NAMES[it.p] + ")";
-    GR.countUp($("stGoal"), it.goalViews, 1200);
-    $("stGoalL").textContent = "monthly views needed for " + R.target + " sales a month";
-    $("fcSub").textContent = "Monthly Pinterest views we expect for your " + NAMES[it.p] + " shop over " + n + " months.";
-  }
 
   // ---------------- notifications ----------------
   $("notifBtn").addEventListener("click", async function () {
@@ -1227,7 +1210,7 @@
     var hash = (location.hash || "").replace("#", "");
     try {
       var me = await api("/api/user/me?lite=1");
-      if (me.settings) { for (var k in me.settings) ST[k] = me.settings[k]; }
+      if (me.settings) { for (var k in me.settings) ST[k] = me.settings[k]; window.GMPGrowth.setConfig(ST.growth); }
       if (me.user) {
         user = me.user;
         if (hash === "preview" && me.is_admin) { openOffer(true); return; }
