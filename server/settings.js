@@ -357,6 +357,9 @@ export function publicSettings(s) {
   Object.keys(DEFAULTS).forEach(function (k) { out[k] = s[k]; });
   // prices are not public: they go only to people who connected Pinterest (see /api/user/home)
   delete out.plans;
+  let host = "";
+  try { host = process.env.SITE_URL ? new URL(process.env.SITE_URL).host : ""; } catch (e) { host = ""; }
+  out.site_host = host;
   out.offer_active = active;
   out.server_time = new Date(now).toISOString();
   return out;

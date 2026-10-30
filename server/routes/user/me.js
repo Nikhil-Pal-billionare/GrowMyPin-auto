@@ -4,7 +4,7 @@
 // ?msg=<id> also returns that one message even if it was already seen.
 
 import { sendJson, getSession, pinterest } from "../../lib.js";
-import { getUser, db } from "../../app.js";
+import { getUser, refreshUser, db } from "../../app.js";
 import { getProfile, isAdminEmail, vapidPublic, nowIso } from "../../growth.js";
 import { getSettings, publicSettings } from "../../settings.js";
 import { billingState } from "../../billing.js";
@@ -14,7 +14,7 @@ export default async function handler(req, res) {
     const url = new URL(req.url, "http://localhost");
     const lite = url.searchParams.get("lite") === "1";
     const msgId = (url.searchParams.get("msg") || "").replace(/[^0-9a-f-]/gi, "").slice(0, 40);
-    const u = getUser(req);
+    const u = refreshUser(req, res) || getUser(req);
 
     let pin = null;
     if (!lite) {

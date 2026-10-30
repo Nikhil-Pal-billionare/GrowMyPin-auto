@@ -448,10 +448,22 @@
     });
   }
 
+  // Vercel preview links (growmypin-auto-abc123-xyz.vercel.app) keep their own login, so people
+  // were asked to log in again. Send them to the main site address (SITE_URL in Vercel).
+  function mainHost(site) {
+    var h = location.hostname, main = String(site || "").toLowerCase();
+    if (!main || main === location.host || !/\.vercel\.app$/.test(h)) return false;
+    var preview = /-git-/.test(h) || /^[a-z0-9-]+-[a-z0-9]{8,}-[a-z0-9-]+\.vercel\.app$/.test(h);
+    if (!preview) return false;
+    location.replace("https://" + main + location.pathname + location.search + location.hash);
+    return true;
+  }
+
   function loadMe(msgId) {
     var q = "/api/user/me?lite=1" + (msgId ? "&msg=" + encodeURIComponent(msgId) : "");
     return api(q).then(function (me) {
       if (!me) return;
+      if (me.settings && mainHost(me.settings.site_host)) return;
       SET = me.settings || {};
       window.GMPSettings = SET;
       if (!me.user) { ribbon(false); return; }

@@ -101,6 +101,10 @@ Live on Vercel (Hobby plan). Owner edits code via GitHub web/mobile UI, so all c
   install app, WhatsApp help, admin, policies, log out).
 - Home sections reachable by hash: #performance #pins #store #goal #plans. /api/user/me now also returns billing.
 
+## v1.6.1 Stay logged in (30 Oct 2026)
+- Login cookie lasts 365 days and is renewed once a day on any visit (refreshUser in server/app.js, called by /api/user/me).
+- Vercel preview links redirect to the SITE_URL host (gmp.js mainHost), because each preview URL had its own login.
+
 ## Admin (/admin)
 - Access: SUPER_ADMIN_EMAIL (Vercel env, owner, full access) + emails in table admin_emails (view only).
   Anyone else gets the normal 404 page. Admin emails cannot be created via public signup.

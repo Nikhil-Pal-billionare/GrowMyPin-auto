@@ -29,12 +29,24 @@ export function getUser(req) {
   return u;
 }
 
+// Stay logged in for a year on this device. Every visit (gmp.js -> /api/user/me) renews it,
+// so people who use the Studio are never asked to log in again.
+const LOGIN_DAYS = 365;
+
 export function setUser(res, user) {
-  const days = 30;
-  const u = { id: user.id, email: user.email, name: user.name || "", whatsapp: user.whatsapp || "", exp: Date.now() + days * 86400000 };
+  const days = LOGIN_DAYS;
+  const u = { id: user.id, email: user.email, name: user.name || "", whatsapp: user.whatsapp || "", iat: Date.now(), exp: Date.now() + days * 86400000 };
   addCookie(res, cookieStr(USER_COOKIE, seal(u), days * 86400));
   // Readable hint (no data inside) so the landing page can jump straight to /home.html.
   addCookie(res, "gmp_in=1; Path=/; Secure; SameSite=Lax; Max-Age=" + days * 86400);
+  return u;
+}
+
+// Renews the login cookie (at most once a day) so an active person never gets logged out.
+export function refreshUser(req, res) {
+  const u = getUser(req);
+  if (!u) return null;
+  if (!u.iat || Date.now() - u.iat > 86400000) return setUser(res, u);
   return u;
 }
 
