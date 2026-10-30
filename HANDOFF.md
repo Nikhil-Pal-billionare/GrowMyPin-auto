@@ -52,6 +52,17 @@ Live on Vercel (Hobby plan). Owner edits code via GitHub web/mobile UI, so all c
 - Admin > Growth graph tab: ranking per niche, numbers per niche, add/remove niches, names, pins bonus, stores, live preview.
 - profiles: niche, pins_count, pin_stats (run supabase.sql v1.3 part). hub action "growth".
 
+## v1.3.1 (30 Oct 2026)
+- Repo: github.com/Nikhil-Pal-billionare/GrowMyPin-auto (main), live at growmypin-auto.vercel.app.
+- Forecast widget is LIGHT mode. Graph = 2 colors: Patience (orange, first month(s)) and Reward (green). Other strategies are grey lines.
+- Popups (visits popup in gmp.js, signup forecast popup) and the home Diwali offer banner use a purple night sky
+  with stars, sky lanterns and small fireworks: window.GMPSky(element) in gmp.js.
+- Home hero: time-based greeting with first name, rotating "Your news for <day>" card (Pinterest views if connected,
+  forecast, sales goal, season, New York time), 3 stat tiles, floating pin tiles, scroll reveals, confetti at 100% setup.
+- /api/auth/login: if PINTEREST_APP_ID / PINTEREST_APP_SECRET / PINTEREST_REDIRECT_URI missing, user goes back
+  with ?pinterest=soon and home shows a friendly message + Pinterest link box (no raw JSON error).
+- PINTEREST_REDIRECT_URI = https://growmypin-auto.vercel.app/api/auth/callback (also add in Pinterest app > Configure > Redirect URIs).
+
 ## Admin (/admin)
 - Access: SUPER_ADMIN_EMAIL (Vercel env, owner, full access) + emails in table admin_emails (view only).
   Anyone else gets the normal 404 page. Admin emails cannot be created via public signup.
