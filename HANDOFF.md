@@ -114,6 +114,7 @@ Live on Vercel (Hobby plan). Owner edits code via GitHub web/mobile UI, so all c
   Stored in site_settings.data.banners (normalizeBanners in server/settings.js).
 - Headline: "We grow your Etsy/Shopify store visits with Pinterest and blog traffic." (smaller font).
   All landing "Connect Pinterest" buttons now say "Grow visits".
+- Landing right-side board + Draft/Approved card use real pin photos (public/showcase/*.jpg, 520px). Editable in Admin > Banners > Landing page pins (image, pin title, caption, tag); stored in site_settings.data.showcase, sent with /api/banners.
 - Signup password: diyas removed, 4-bar meter Weak / Average / Strong / Best with a tip.
 
 ## Admin (/admin)

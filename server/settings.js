@@ -279,6 +279,32 @@ export function normalizeBanners(b) {
   return out;
 }
 
+// ---------------- Landing page pins (right side animation, Admin > Banners) ----------------
+// Real pin images in the moving board + the "Draft -> Approved" card. title = the pin title typed in the card,
+// name = short caption under the pin, tag = small label. image = /showcase/... (in the repo) or an https link.
+export const DEFAULT_SHOWCASE = {
+  items: [
+    { image: "/showcase/ring.jpg", title: "Oval moissanite engagement ring gift idea for her", name: "Engagement rings", tag: "Jewelry" },
+    { image: "/showcase/runner.jpg", title: "Luxury hand-tufted stair runner for a grand entrance", name: "Stair runner", tag: "Home decor" },
+    { image: "/showcase/bracelet.jpg", title: "Minimalist silver bracelet, an everyday gift for her", name: "Silver bracelet", tag: "Jewelry" },
+    { image: "/showcase/poster.jpg", title: "Virat Kohli framed wall poster for cricket fans", name: "Wall art", tag: "Gifts" },
+    { image: "/showcase/haircare.jpg", title: "Natural hair care routine for stronger, shinier hair", name: "Hair care", tag: "Wellness" },
+    { image: "/showcase/crochet.jpg", title: "Adorable crochet deer amigurumi pattern PDF", name: "Crochet patterns", tag: "DIY" }
+  ]
+};
+export function normalizeShowcase(v) {
+  const src = v && typeof v === "object" && Array.isArray(v.items) ? v.items : DEFAULT_SHOWCASE.items;
+  const items = [];
+  src.slice(0, 16).forEach(function (it) {
+    if (!it) return;
+    const raw = String(it.image || "").trim().slice(0, 500);
+    const image = /^\/showcase\/[A-Za-z0-9_.-]+$/.test(raw) || /^https:\/\/[^\s"'<>()]+$/i.test(raw) ? raw : "";
+    if (!image) return;
+    items.push({ image: image, title: planText(it.title, 80) || "Pin draft", name: planText(it.name, 30) || "Pin", tag: planText(it.tag, 16) });
+  });
+  return { items: items.length ? items : DEFAULT_SHOWCASE.items.slice() };
+}
+
 export const DEFAULTS = {
   // Offer shown right after sign up
   offer_enabled: true,
@@ -322,7 +348,10 @@ export const DEFAULTS = {
   plans: DEFAULT_PLANS,
 
   // Landing page banners (Admin > Banners)
-  banners: DEFAULT_BANNERS
+  banners: DEFAULT_BANNERS,
+
+  // Landing page pins in the right side animation (Admin > Banners)
+  showcase: DEFAULT_SHOWCASE
 };
 
 const TEXT_LIMITS = {
@@ -349,6 +378,7 @@ export async function getSettings(fresh) {
   cache.growth = normalizeGrowth(data.growth);
   cache.plans = normalizePlans(data.plans);
   cache.banners = normalizeBanners(data.banners);
+  cache.showcase = normalizeShowcase(data.showcase);
   cacheAt = Date.now();
   return cache;
 }
@@ -395,6 +425,7 @@ export function cleanSettings(input) {
   }
   if (b.growth !== undefined) out.growth = normalizeGrowth(b.growth);
   if (b.banners !== undefined) out.banners = normalizeBanners(b.banners);
+  if (b.showcase !== undefined) out.showcase = normalizeShowcase(b.showcase);
   if (b.plans !== undefined) {
     out.plans = normalizePlans(b.plans);
     if (!out.plans.items.some(function (x) { return x.on; })) return { ok: false, error: "Keep at least one plan on." };

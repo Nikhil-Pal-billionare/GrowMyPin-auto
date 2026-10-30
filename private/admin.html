@@ -266,6 +266,16 @@
   .bn-img img { width: 56px; height: 44px; object-fit: cover; border-radius: 10px; border: 1px solid var(--line); }
   .bn-up { position: relative; overflow: hidden; }
   .bn-up input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .sc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+  .sc-card { border: 1px solid var(--line); border-radius: 18px; padding: 10px; display: grid; gap: 8px; background: #FCFCFE; align-content: start; }
+  .sc-card .ph { position: relative; aspect-ratio: 2 / 3; border-radius: 12px; overflow: hidden; background: #EEF0F5; }
+  .sc-card .ph img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .sc-card .ph .bn-up { position: absolute; left: 8px; bottom: 8px; }
+  .sc-card label { font-size: .78rem !important; }
+  .sc-card .row3 { display: flex; gap: 6px; }
+  .sc-card .row3 button { flex: 1; border: 1.5px solid var(--line); background: #fff; border-radius: 10px; padding: 6px 4px; cursor: pointer; font-weight: 800; font-size: .76rem; color: var(--char); }
+  .sc-card .row3 button.del { color: var(--rose); }
+  .sc-card .row3 button:disabled { opacity: .4; cursor: default; }
   .bn-prev { position: sticky; top: 74px; z-index: 4; background: var(--bg); padding: 4px 0 10px; }
   /* plans + payments */
   .pl-tbl { min-width: 640px; }
@@ -479,6 +489,11 @@
       <section class="card fset">
         <div class="card-h" style="margin:0"><h2>Banners</h2><button class="btn btn-g btn-sm" type="button" id="bnAdd">+ Add banner</button></div>
         <div class="bn-list" id="bnList"></div>
+      </section>
+      <section class="card fset">
+        <div class="card-h" style="margin:0"><h2>Landing page pins (right side animation)</h2><button class="btn btn-g btn-sm" type="button" id="scAdd">+ Add pin</button></div>
+        <p class="hint">Real pin images in the moving board next to the headline, and in the "Draft &rarr; Approved" card. Use tall pin images (2 : 3, for example 1000 x 1500 px). <b>Pin title</b> is typed in the Draft card, <b>caption</b> shows under the pin, <b>tag</b> is the small label. Keep 6 or more for a full board.</p>
+        <div class="sc-list" id="scList"></div>
       </section>
       <div class="savebar">
         <span class="sub" id="bnMsg" style="color:#D9DCE5">Changes go live for everyone right after you save.</span>
@@ -1255,26 +1270,70 @@
     bnRender(); bnDirty();
     var last = document.querySelector("#bnList .bn-card:last-child [data-k=title]"); if (last) { last.focus(); last.select(); }
   };
-  $("bnDefaults").onclick = function () { BN.b = clone(BN.def); bnRender(); $("bnMsg").textContent = "Default banners filled in. Press Save banners to make them live."; };
+  $("bnDefaults").onclick = function () { BN.b = clone(BN.def); BN.sc = clone(BN.scDef); bnRender(); scRender(); $("bnMsg").textContent = "Default banners filled in. Press Save banners to make them live."; };
   $("bnSave").onclick = async function () {
-    bnRead();
+    bnRead(); scRead();
     var bad = BN.b.items.filter(function (x) { return !String(x.title || "").trim(); }).length;
     if (bad) { toast("Every banner needs a big title.", true); return; }
+    if (BN.sc.items.some(function (x) { return !x.image; })) { toast("Every landing page pin needs an image (or delete it).", true); return; }
     var btn = this; btn.disabled = true; btn.textContent = "Saving";
     try {
-      var r = await api("/api/admin/settings", { banners: BN.b });
+      var r = await api("/api/admin/settings", { banners: BN.b, showcase: BN.sc });
       BN.b = clone(r.settings.banners); bnRender();
+      BN.sc = clone(r.settings.showcase); scRender();
       toast("Banners saved. Live on the landing page in about 30 seconds.");
       $("bnMsg").textContent = "Saved.";
     } catch (err) { toast(err.message, true); }
     finally { btn.disabled = false; btn.textContent = "Save banners"; }
   };
+  // landing page pins (right side animation)
+  function scRender() {
+    var dis = BN.canEdit ? "" : " disabled", L = BN.sc.items;
+    $("scAdd").disabled = !BN.canEdit;
+    $("scList").innerHTML = L.map(function (x, i) {
+      return '<div class="sc-card" data-i="' + i + '"><div class="ph">' + (x.image ? '<img src="' + esc(x.image) + '" alt="">' : "") +
+        '<span class="btn btn-g btn-sm bn-up">' + (x.image ? "Change image" : "Upload image") + '<input type="file" accept="image/png,image/jpeg,image/webp" data-scup="1"' + dis + '></span></div>' +
+        '<label>Pin title (typed in Draft card)<input type="text" data-k="title" maxlength="80" value="' + esc(x.title || "") + '"' + dis + '></label>' +
+        '<div class="row2"><label>Caption<input type="text" data-k="name" maxlength="30" value="' + esc(x.name || "") + '"' + dis + '></label>' +
+        '<label>Tag<input type="text" data-k="tag" maxlength="16" value="' + esc(x.tag || "") + '"' + dis + '></label></div>' +
+        '<label>Image link <small>or upload above</small><input type="text" data-k="image" maxlength="500" value="' + esc(x.image || "") + '"' + dis + '></label>' +
+        '<div class="row3"><button type="button" data-scmv="-1"' + (i === 0 || !BN.canEdit ? " disabled" : "") + '>Left</button><button type="button" data-scmv="1"' + (i === L.length - 1 || !BN.canEdit ? " disabled" : "") + '>Right</button><button type="button" class="del" data-scdel="1"' + (L.length <= 1 || !BN.canEdit ? " disabled" : "") + '>Delete</button></div></div>';
+    }).join("");
+  }
+  function scRead() {
+    Array.prototype.forEach.call(document.querySelectorAll("#scList .sc-card"), function (c) {
+      var x = BN.sc.items[Number(c.getAttribute("data-i"))];
+      c.querySelectorAll("[data-k]").forEach(function (el) { x[el.getAttribute("data-k")] = el.value; });
+    });
+  }
+  $("scList").addEventListener("input", function (e) { if (e.target.type !== "file") { scRead(); bnDirty(); } });
+  $("scList").addEventListener("change", async function (e) {
+    if (e.target.getAttribute("data-k") === "image") { scRead(); scRender(); return; }
+    var f = e.target.closest("[data-scup]"); if (!f || !f.files || !f.files[0]) return;
+    var i = Number(f.closest(".sc-card").getAttribute("data-i"));
+    $("bnMsg").textContent = "Uploading image...";
+    try {
+      var r = await api("/api/admin/upload", { image: await bnShrink(f.files[0]) });
+      scRead(); BN.sc.items[i].image = r.url; scRender(); bnDirty();
+      toast("Image uploaded. Press Save banners to make it live.");
+    } catch (err) { toast(err.message, true); $("bnMsg").textContent = "Upload failed."; }
+  });
+  $("scList").addEventListener("click", function (e) {
+    var c = e.target.closest(".sc-card"); if (!c) return;
+    var i = Number(c.getAttribute("data-i")), L = BN.sc.items;
+    var mv = e.target.closest("[data-scmv]");
+    if (mv) { scRead(); var j = i + Number(mv.getAttribute("data-scmv")); var t = L[i]; L[i] = L[j]; L[j] = t; scRender(); bnDirty(); }
+    if (e.target.closest("[data-scdel]") && window.confirm("Delete this pin from the landing page?")) { scRead(); L.splice(i, 1); scRender(); bnDirty(); }
+  });
+  $("scAdd").onclick = function () { scRead(); BN.sc.items.push({ image: "", title: "New pin title", name: "Caption", tag: "" }); scRender(); bnDirty(); };
+
   async function loadBanners() {
     try {
       var r = await api("/api/admin/settings");
       SETS = r;
       BN.b = clone(r.settings.banners); BN.def = clone(r.defaults.banners); BN.canEdit = !!r.can_edit;
-      bnRender();
+      BN.sc = clone(r.settings.showcase); BN.scDef = clone(r.defaults.showcase);
+      bnRender(); scRender();
     } catch (e) { toast("Could not load banners: " + e.message, true); }
   }
 

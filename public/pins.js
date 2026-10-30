@@ -17,8 +17,51 @@
     { k: "t-cup", tag: "Wellness", name: "Herbal tea" }
   ];
 
+  // Real pin photos for the landing board (Admin > Banners > Landing page pins can change them).
+  var SHOWCASE = [
+    { image: "/showcase/ring.jpg", title: "Oval moissanite engagement ring gift idea for her", name: "Engagement rings", tag: "Jewelry" },
+    { image: "/showcase/runner.jpg", title: "Luxury hand-tufted stair runner for a grand entrance", name: "Stair runner", tag: "Home decor" },
+    { image: "/showcase/bracelet.jpg", title: "Minimalist silver bracelet, an everyday gift for her", name: "Silver bracelet", tag: "Jewelry" },
+    { image: "/showcase/poster.jpg", title: "Virat Kohli framed wall poster for cricket fans", name: "Wall art", tag: "Gifts" },
+    { image: "/showcase/haircare.jpg", title: "Natural hair care routine for stronger, shinier hair", name: "Hair care", tag: "Wellness" },
+    { image: "/showcase/crochet.jpg", title: "Adorable crochet deer amigurumi pattern PDF", name: "Crochet patterns", tag: "DIY" }
+  ];
+  (function () {
+    var st = document.createElement("style");
+    st.textContent = ".t-photo .art{background:#EEF0F5}.t-photo .art img,.tilefill.t-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}";
+    document.head.appendChild(st);
+  })();
+  function photoTile(item) {
+    var w = document.createElement("div");
+    w.className = "tilefill t-photo";
+    var im = document.createElement("img");
+    im.src = item.image; im.alt = ""; im.decoding = "async";
+    w.appendChild(im);
+    return w;
+  }
+  function photoPin(item, h) {
+    var p = document.createElement("div");
+    p.className = "pin t-photo";
+    var a = document.createElement("div");
+    a.className = "art";
+    a.style.setProperty("--h", (h || 220) + "px");
+    var im = document.createElement("img");
+    im.src = item.image; im.alt = ""; im.loading = "lazy"; im.decoding = "async";
+    a.appendChild(im);
+    p.appendChild(a);
+    var cap = document.createElement("div");
+    cap.className = "cap";
+    var b = document.createElement("b");
+    b.textContent = item.name || "Pin";
+    cap.appendChild(b);
+    if (item.tag) { var tg = document.createElement("i"); tg.textContent = item.tag; cap.appendChild(tg); }
+    p.appendChild(cap);
+    return p;
+  }
+
   // A tile that fills its parent (for previews, cards, modal piles).
   function tile(i) {
+    if (i && typeof i === "object" && i.image) return photoTile(i);
     var t = TILES[Math.abs(i || 0) % TILES.length];
     var w = document.createElement("div");
     w.className = "tilefill " + t.k;
@@ -75,7 +118,27 @@
     return p;
   }
 
-  // Fill a .board with 3 rising columns (content duplicated for a seamless loop).
+  // Fill a .board with 3 rising columns of real pin photos (content duplicated for a seamless loop).
+  function fillPhotoBoard(board, items) {
+    var list = items && items.length ? items : SHOWCASE;
+    var hs = [[250, 210, 270, 230], [230, 270, 200, 250], [270, 220, 250, 210]];
+    board.innerHTML = "";
+    var n = list.length;
+    for (var c = 0; c < 3; c++) {
+      var col = document.createElement("div");
+      col.className = "col";
+      var tr = document.createElement("div");
+      tr.className = "track";
+      var picks = [];
+      for (var k = 0; k < 4; k++) picks.push(list[(c * 2 + k) % n]);
+      for (var rep = 0; rep < 2; rep++) {
+        for (var j = 0; j < 4; j++) tr.appendChild(photoPin(picks[j], hs[c][j]));
+      }
+      col.appendChild(tr);
+      board.appendChild(col);
+    }
+  }
+
   function fillBoard(board, seed) {
     var hs = [[230, 170, 200, 190], [250, 180, 160, 220], [190, 240, 170, 200]];
     var texts = [
@@ -218,7 +281,8 @@
 
   window.GMP = {
     reduce: reduce, fine: fine, TILES: TILES, tile: tile, pin: pin, textPin: textPin,
-    fillBoard: fillBoard, countUp: countUp, onView: onView, typeWords: typeWords
+    fillBoard: fillBoard, fillPhotoBoard: fillPhotoBoard, SHOWCASE: SHOWCASE, photoTile: photoTile,
+    countUp: countUp, onView: onView, typeWords: typeWords
   };
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initMotion);

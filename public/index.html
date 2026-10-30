@@ -393,17 +393,21 @@
   function $(id) { return document.getElementById(id); }
   function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
 
-  G.fillBoard($("board"), 0);
+  // real pin photos (Admin > Banners > Landing page pins); /gmp-banners.js sends custom ones with "gmp:showcase"
+  var SHOW = window.GMPShowcase || G.SHOWCASE;
+  G.fillPhotoBoard($("board"), SHOW);
   G.typeWords($("rot"), ["Etsy", "Shopify"]);
 
   // ---------- Approve sequence ----------
-  var DRAFTS = [
-    { t: 0, title: "Oval moissanite engagement ring gift idea for her" },
-    { t: 1, title: "Cozy bedroom decor ideas for small apartments" },
-    { t: 2, title: "Easy crochet granny square pattern for beginners" },
-    { t: 3, title: "Christmas gift ideas for mom she will love" },
-    { t: 6, title: "Calming herbal tea blend for cozy winter nights" }
-  ];
+  function draftsFrom(list) { return list.map(function (x) { return { t: x, title: x.title }; }); }
+  var DRAFTS = draftsFrom(SHOW);
+  window.addEventListener("gmp:showcase", function (e) {
+    var list = e.detail || [];
+    if (!list.length || JSON.stringify(list) === JSON.stringify(SHOW)) return;
+    SHOW = list;
+    G.fillPhotoBoard($("board"), SHOW);
+    DRAFTS = draftsFrom(SHOW);
+  });
   var wrap = $("boardWrap"), review = $("review"), thumb = $("rvThumb"), titleEl = $("rvTitle");
   var chip = $("rvChip"), approveBtn = $("rvApprove"), cursor = $("cursor"), hl = $("hlWord");
   var fa = $("floatA"), fT = $("fT"), fS = $("fS"), draftNo = $("draftNo");
@@ -420,7 +424,7 @@
     thumb.insertBefore(G.tile(d.t), thumb.firstChild);
     chip.className = "st pending";
     chip.textContent = "To review";
-    draftNo.textContent = "Draft " + ((i % 4) + 1) + " of 4";
+    draftNo.textContent = "Draft " + ((i % DRAFTS.length) + 1) + " of " + DRAFTS.length;
     review.classList.remove("stamped");
     titleEl.textContent = "";
   }

@@ -206,7 +206,14 @@
     if (given) render(given);
     else {
       host.innerHTML = '<div class="gbn-skel" aria-hidden="true"></div>';
-      fetch("/api/banners", { credentials: "same-origin" }).then(function (r) { return r.json(); }).then(render).catch(function () { render({ items: [] }); });
+      fetch("/api/banners", { credentials: "same-origin" }).then(function (r) { return r.json(); }).then(function (d) {
+        render(d);
+        // landing page pins (right side animation) come in the same answer
+        if (d && d.showcase && d.showcase.length) {
+          window.GMPShowcase = d.showcase;
+          try { window.dispatchEvent(new CustomEvent("gmp:showcase", { detail: d.showcase })); } catch (e) {}
+        }
+      }).catch(function () { render({ items: [] }); });
     }
     return ctl;
   }

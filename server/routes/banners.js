@@ -20,7 +20,7 @@ export default async function handler(req, res) {
     res.setHeader("Cache-Control", "public, max-age=0, s-maxage=30, stale-while-revalidate=300");
     res.statusCode = 200;
     res.setHeader("Content-Type", "application/json");
-    res.end(JSON.stringify({ interval: b.interval || 5, items: items, offer_end: live.offer_active ? s.offer_end : null }));
+    res.end(JSON.stringify({ interval: b.interval || 5, items: items, offer_end: live.offer_active ? s.offer_end : null, showcase: (s.showcase && s.showcase.items) || [] }));
   } catch (e) {
     console.error("banners", e.message);
     sendJson(res, 200, { interval: 5, items: [] });
