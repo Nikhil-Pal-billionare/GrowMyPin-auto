@@ -31,8 +31,23 @@
   }
   function touch() { try { localStorage.setItem("gmp_sid", JSON.stringify({ id: sid, t: Date.now() })); } catch (e) {} }
 
+  // signals that help the server tell real people from bots (no personal data)
+  var staff = false;
+  try { staff = isAdminPage || localStorage.getItem("gmp_staff") === "1"; if (isAdminPage) localStorage.setItem("gmp_staff", "1"); } catch (e) {}
+  function signals() {
+    var o = {};
+    try { o.wd = navigator.webdriver === true; } catch (e) {}
+    try { o.sw = screen.width || 0; o.sh = screen.height || 0; } catch (e) {}
+    try { o.lang = (navigator.languages || []).length; } catch (e) {}
+    try { o.tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch (e) {}
+    if (staff) o.staff = true;
+    return o;
+  }
   function send(kind) {
-    var body = JSON.stringify({ vid: vid, sid: sid, kind: kind, path: path, ref: document.referrer || "" });
+    var data = { vid: vid, sid: sid, kind: kind, path: path, ref: document.referrer || "" };
+    var sg = signals();
+    for (var k in sg) data[k] = sg[k];
+    var body = JSON.stringify(data);
     try {
       if (navigator.sendBeacon && navigator.sendBeacon("/api/track", new Blob([body], { type: "application/json" }))) return;
     } catch (e) {}
@@ -52,6 +67,17 @@
     document.addEventListener(ev, function once() { document.removeEventListener(ev, once, true); setTimeout(engage, 400); }, true);
   });
   document.addEventListener("visibilitychange", touch);
+
+  // real person = real mouse movement, scroll, tap or key press (bots almost never do these)
+  var human = false, moves = 0;
+  function isHuman(e) {
+    if (human || (e && e.isTrusted === false)) return;
+    if (e && e.type === "mousemove") { moves++; if (moves < 4) return; }
+    human = true;
+    send("human");
+    ["mousemove", "touchstart", "wheel", "scroll", "keydown"].forEach(function (ev) { window.removeEventListener(ev, isHuman, true); });
+  }
+  ["mousemove", "touchstart", "wheel", "scroll", "keydown"].forEach(function (ev) { window.addEventListener(ev, isHuman, { capture: true, passive: true }); });
 
   // ---------------- helpers ----------------
   function css(txt) {
@@ -432,7 +458,7 @@
       ME = me;
       window.GMPMe = me;
       vapid = me.vapid || "";
-      if (me.is_admin) addAdminLink();
+      if (me.is_admin) { addAdminLink(); try { localStorage.setItem("gmp_staff", "1"); } catch (e) {} }
       var list = (me.messages || []).slice().reverse(); // oldest first
       if (msgId) list.sort(function (a, b) { return a.id === msgId ? -1 : (b.id === msgId ? 1 : 0); });
       list.forEach(function (m) {

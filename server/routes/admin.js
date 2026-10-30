@@ -48,8 +48,12 @@ async function data(req, res) {
       "slot_reservations(id,platforms,target_sales,wait_months,links,has_pinterest,pinterest_url,phone,created_at)," +
       "push_subscriptions(count)&order=created_at.desc&limit=2000");
   }
+  let mode = url.searchParams.get("mode") || "real";
+  if (["real", "bot", "staff", "all"].indexOf(mode) < 0) mode = "real";
   const jobs = [
-    db("rpc/gmp_admin_stats", { method: "POST", body: { days: days } }),
+    // v1.5 splits real people / bots / staff; older database without it: old function (everyone)
+    db("rpc/gmp_admin_stats", { method: "POST", body: { days: days, view_mode: mode } })
+      .catch(function () { return db("rpc/gmp_admin_stats", { method: "POST", body: { days: days } }); }),
     people("niche,pins_count,pin_stats,").catch(function () { return people(""); })
   ];
   if (a.isSuper) {

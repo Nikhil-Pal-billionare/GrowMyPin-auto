@@ -88,6 +88,11 @@ create table if not exists public.page_views (
 );
 create index if not exists page_views_time_idx on public.page_views (created_at desc);
 create index if not exists page_views_sid_idx on public.page_views (sid);
+-- v1.5 real people vs bots
+alter table public.page_views add column if not exists bot boolean default false;   -- automated browser / crawler signals
+alter table public.page_views add column if not exists staff boolean default false; -- you or your admins
+alter table public.page_views add column if not exists tz text;                     -- browser time zone (Asia/Calcutta ...)
+create index if not exists page_views_vid_idx on public.page_views (vid);
 
 -- Who may open /admin. Add rows here (Table Editor or SQL). SUPER_ADMIN_EMAIL in Vercel is always admin.
 create table if not exists public.admin_emails (
@@ -177,15 +182,33 @@ insert into public.site_settings (id, data) values (1, '{}'::jsonb) on conflict 
 alter table public.site_settings enable row level security;
 
 -- Dashboard numbers (v1.2 adds "interested").
-create or replace function public.gmp_admin_stats(days int)
+-- view_mode: 'real' (real people only), 'bot' (bots + visitors who never moved/scrolled/tapped),
+--            'staff' (you and your admins), 'all'
+drop function if exists public.gmp_admin_stats(int);
+create or replace function public.gmp_admin_stats(days int, view_mode text default 'real')
 returns jsonb
 language sql
 stable
 set search_path = public
 as $fn$
-with pv as (
+with raw as (
   select * from public.page_views
   where created_at >= now() - make_interval(days => greatest(days, 1))
+),
+vids as (
+  select vid,
+         bool_or(coalesce(bot, false)) as is_bot,
+         bool_or(coalesce(staff, false)) as is_staff,
+         bool_or(kind = 'human') as is_human
+  from raw group by vid
+),
+cls as (
+  select vid, case when is_staff then 'staff' when is_bot or not is_human then 'bot' else 'real' end as c
+  from vids
+),
+pv as (
+  select raw.* from raw join cls using (vid)
+  where view_mode = 'all' or cls.c = view_mode
 ),
 views as (select * from pv where kind = 'view'),
 sess as (
@@ -200,6 +223,11 @@ prof as (
   where created_at >= now() - make_interval(days => greatest(days, 1))
 )
 select jsonb_build_object(
+  'mode', view_mode,
+  'split', (select jsonb_build_object(
+              'real', count(*) filter (where c = 'real'),
+              'bot', count(*) filter (where c = 'bot'),
+              'staff', count(*) filter (where c = 'staff')) from cls),
   'pageviews', (select count(*) from views),
   'visitors', (select count(distinct vid) from views),
   'sessions', (select count(*) from sess where n_views > 0),
@@ -230,8 +258,8 @@ select jsonb_build_object(
                 from (select coalesce(country, '??') country, count(distinct vid) n from views group by 1 order by n desc limit 10) x)
 );
 $fn$;
-revoke all on function public.gmp_admin_stats(int) from public, anon, authenticated;
-grant execute on function public.gmp_admin_stats(int) to service_role;
+revoke all on function public.gmp_admin_stats(int, text) from public, anon, authenticated;
+grant execute on function public.gmp_admin_stats(int, text) to service_role;
 
 
 -- =====================================================================

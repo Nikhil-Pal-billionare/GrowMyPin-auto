@@ -85,6 +85,14 @@ Live on Vercel (Hobby plan). Owner edits code via GitHub web/mobile UI, so all c
 - Not automatic yet: view level charges (collect with a Razorpay link). billing.html still says milestones are
   charged once; update it to monthly levels before going live.
 
+## v1.5 Real people vs bots (30 Oct 2026)
+- gmp.js sends signals (navigator.webdriver, screen size, languages, time zone) and a "human" event on the first
+  real mouse movement / scroll / tap / key press. /admin and admin logins mark the browser as staff (gmp_staff).
+- /api/track flags bot (UA list incl. HeadlessChrome/crawlers, webdriver, no Accept-Language, no real screen) and staff.
+- gmp_admin_stats(days, view_mode): visitor = real (human event, no bot signal), bot (bot signal or never interacted),
+  staff. Dashboard has Real people / Bots / You and team / Everyone switch with counts. Run v1.5 part of supabase.sql.
+- Visits before this change had no human check, so they show under Bots.
+
 ## Admin (/admin)
 - Access: SUPER_ADMIN_EMAIL (Vercel env, owner, full access) + emails in table admin_emails (view only).
   Anyone else gets the normal 404 page. Admin emails cannot be created via public signup.

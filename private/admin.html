@@ -239,6 +239,16 @@
   @media (max-width: 1100px) { .gr-grid { grid-template-columns: 1fr; } .gr-prev { position: static; } }
   @media (max-width: 560px) { .gr-prev .row4, .gr-pct { grid-template-columns: repeat(2, minmax(0, 1fr)); } .gr-names .gn { grid-template-columns: 1fr; } .gr-r { grid-template-columns: 1fr auto; } .gr-r .gr-b { grid-column: 1 / -1; justify-self: start; } }
   @media (max-width: 1100px) { .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); } .set-grid { grid-template-columns: 1fr; } .grid4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  /* real people vs bots */
+  .who-bar { display: flex; gap: 10px 16px; align-items: center; flex-wrap: wrap; }
+  .wb-seg { display: inline-flex; gap: 4px; padding: 4px; border-radius: 999px; background: #fff; border: 1px solid var(--line); flex-wrap: wrap; }
+  .wb-seg button { border: 0; background: none; font: inherit; font-weight: 700; font-size: .86rem; color: var(--muted); padding: 7px 13px; border-radius: 999px; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; }
+  .wb-seg button b { font-family: var(--fd); color: var(--char); }
+  .wb-seg button.on { background: var(--char); color: #fff; }
+  .wb-seg button.on b { color: #fff; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .d-real { background: #14B88F; } .d-bot { background: #E0405F; } .d-staff { background: #6B5BD6; }
+  #modeNote { flex: 1; min-width: 220px; font-size: .82rem; }
   /* plans + payments */
   .pl-tbl { min-width: 640px; }
   .pl-tbl td { vertical-align: middle; padding: 8px 6px; }
@@ -307,6 +317,15 @@
   </nav>
 
   <div class="pane" id="pane-dash" style="display:grid;gap:18px">
+  <section class="who-bar" aria-label="Who is visiting">
+    <div class="wb-seg" id="modeSeg" role="tablist" aria-label="Show visits from">
+      <button type="button" class="on" data-mode="real"><i class="dot d-real"></i>Real people <b id="cReal">-</b></button>
+      <button type="button" data-mode="bot"><i class="dot d-bot"></i>Bots <b id="cBot">-</b></button>
+      <button type="button" data-mode="staff"><i class="dot d-staff"></i>You and team <b id="cStaff">-</b></button>
+      <button type="button" data-mode="all">Everyone</button>
+    </div>
+    <p class="sub" id="modeNote">Real people = moved the mouse, scrolled, tapped or typed, with no robot signals. Bots and scanners never do that.</p>
+  </section>
   <section class="kpis" id="kpis" aria-label="Key numbers">
     <div class="kpi dark"><b id="kVisitors" class="skel">000</b><span>Visitors</span><small id="kViews">page views</small></div>
     <div class="kpi"><b id="kSessions" class="skel">000</b><span>Visits</span><small>sessions</small></div>
@@ -597,7 +616,8 @@
 <script>
 (function () {
   function $(id) { return document.getElementById(id); }
-  var S = { data: null, days: 30, filter: "all", q: "", shown: 60, isSuper: false, composeTo: null, image: "" };
+  try { localStorage.setItem("gmp_staff", "1"); } catch (e) {} // your own visits never count as real people
+  var S = { mode: "real", data: null, days: 30, filter: "all", q: "", shown: 60, isSuper: false, composeTo: null, image: "" };
   var STATUS = { submitted: "Form submitted", reserved: "Clicked reserve", regret: "I'll regret", pending: "Not answered" };
   var PLAT = { etsy: "Etsy", ebay: "eBay", shopify: "Shopify" };
 
@@ -636,7 +656,7 @@
   async function load() {
     $("updated").textContent = "Loading";
     try {
-      var d = await api("/api/admin/data?days=" + S.days);
+      var d = await api("/api/admin/data?days=" + S.days + "&mode=" + S.mode);
       S.data = d;
       S.isSuper = !!(d.me && d.me.is_super);
       $("who").textContent = d.me ? d.me.email : "";
@@ -654,6 +674,14 @@
   function renderAll() {
     var st = S.data.stats || {};
     document.querySelectorAll(".skel").forEach(function (el) { el.classList.remove("skel"); });
+    var sp = st.split || null;
+    $("cReal").textContent = sp ? fmt(sp.real) : "?"; $("cBot").textContent = sp ? fmt(sp.bot) : "?"; $("cStaff").textContent = sp ? fmt(sp.staff) : "?";
+    $("modeNote").textContent = !sp ? "Run the v1.5 part of supabase.sql to split real people from bots. Showing everyone for now." :
+      ({ real: "Real people = moved the mouse, scrolled, tapped or typed, with no robot signals. Visits before 30 Oct 2026 had no such check, so they show under Bots.",
+         bot: "Crawlers, scanners and automated browsers, plus visitors who never moved, scrolled or tapped. Mostly US/EU servers.",
+         staff: "You and your admins (anyone who opened /admin on that browser or is logged in as admin).",
+         all: "Everything, including bots and your own visits." })[S.mode];
+    $("kVisitors").nextElementSibling.textContent = { real: "Real visitors", bot: "Bot visitors", staff: "Your visits", all: "All visitors" }[sp ? S.mode : "all"];
     $("kVisitors").textContent = fmt(st.visitors);
     $("kViews").textContent = fmt(st.pageviews) + " page views";
     $("kSessions").textContent = fmt(st.sessions);
@@ -1444,6 +1472,12 @@
 
   // ---------------- misc ----------------
   $("range").onchange = function () { S.days = Number(this.value); load(); };
+  $("modeSeg").addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-mode]"); if (!b) return;
+    S.mode = b.getAttribute("data-mode");
+    Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) { x.classList.toggle("on", x === b); });
+    load();
+  });
   $("refresh").onclick = load;
   $("logout").onclick = async function () { try { await fetch("/api/user/logout", { method: "POST", credentials: "same-origin" }); } catch (e) {} location.href = "/"; };
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") { closeComposer(); closeDrawer(); } });
