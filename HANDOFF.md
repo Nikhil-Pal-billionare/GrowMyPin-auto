@@ -117,6 +117,16 @@ Live on Vercel (Hobby plan). Owner edits code via GitHub web/mobile UI, so all c
 - Landing right-side board + Draft/Approved card use real pin photos (public/showcase/*.jpg, 520px). Editable in Admin > Banners > Landing page pins (image, pin title, caption, tag); stored in site_settings.data.showcase, sent with /api/banners.
 - Signup password: diyas removed, 4-bar meter Weak / Average / Strong / Best with a tip.
 
+## v1.8 SEO pages (30 Oct 2026)
+- /how-we-work and /how-we-do-marketing (public/how-we-work.html, public/how-we-do-marketing.html, style public/seo.css).
+  Clean URLs via vercel.json rewrites; /howwework, /howwedomarketing and the .html URLs 301 to the clean URL.
+  Each page: canonical to https://growmypin.in/..., Open Graph, JSON-LD (Article, BreadcrumbList, FAQPage), table of contents,
+  CTA boxes to /signup.html (create account) and /signup.html#login. Content: 2,000+ words, 13-15 H2 sections, FAQ.
+- public/robots.txt and public/sitemap.xml (https://growmypin.in/sitemap.xml). Landing: new title/description, canonical,
+  OG, Organization + WebSite + Service JSON-LD, footer + process-section links to the SEO pages.
+- Next SEO pages (later): Pinterest strategies that raise outbound clicks now, Pinterest is a long-term game,
+  how to find fresh content ideas every time. Add each to sitemap.xml and footer.
+
 ## Admin (/admin)
 - Access: SUPER_ADMIN_EMAIL (Vercel env, owner, full access) + emails in table admin_emails (view only).
   Anyone else gets the normal 404 page. Admin emails cannot be created via public signup.

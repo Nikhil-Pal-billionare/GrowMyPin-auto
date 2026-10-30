@@ -1,16 +1,82 @@
 {
   "functions": {
-    "api/router.js": { "maxDuration": 60, "includeFiles": "private/**" }
+    "api/router.js": {
+      "maxDuration": 60,
+      "includeFiles": "private/**"
+    }
   },
   "rewrites": [
-    { "source": "/admin", "destination": "/api/router?__r=admin/page" },
-    { "source": "/admin/", "destination": "/api/router?__r=admin/page" },
-    { "source": "/api/:path*", "destination": "/api/router?__r=:path*" }
+    {
+      "source": "/how-we-work",
+      "destination": "/how-we-work.html"
+    },
+    {
+      "source": "/how-we-do-marketing",
+      "destination": "/how-we-do-marketing.html"
+    },
+    {
+      "source": "/admin",
+      "destination": "/api/router?__r=admin/page"
+    },
+    {
+      "source": "/admin/",
+      "destination": "/api/router?__r=admin/page"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "/api/router?__r=:path*"
+    }
   ],
   "headers": [
-    { "source": "/sw.js", "headers": [ { "key": "Cache-Control", "value": "no-cache" }, { "key": "Service-Worker-Allowed", "value": "/" } ] }
+    {
+      "source": "/sw.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        },
+        {
+          "key": "Service-Worker-Allowed",
+          "value": "/"
+        }
+      ]
+    },
+    {
+      "source": "/sitemap.xml",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/xml; charset=utf-8"
+        }
+      ]
+    }
   ],
   "crons": [
-    { "path": "/api/report/cron", "schedule": "0 6 * * *" }
+    {
+      "path": "/api/report/cron",
+      "schedule": "0 6 * * *"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/howwework",
+      "destination": "/how-we-work",
+      "permanent": true
+    },
+    {
+      "source": "/how-we-work.html",
+      "destination": "/how-we-work",
+      "permanent": true
+    },
+    {
+      "source": "/howwedomarketing",
+      "destination": "/how-we-do-marketing",
+      "permanent": true
+    },
+    {
+      "source": "/how-we-do-marketing.html",
+      "destination": "/how-we-do-marketing",
+      "permanent": true
+    }
   ]
 }
