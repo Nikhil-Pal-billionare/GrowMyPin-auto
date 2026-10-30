@@ -469,7 +469,7 @@
     <div style="display:grid;gap:18px">
       <section class="card fset">
         <div class="card-h" style="margin:0"><h2>Landing page banners</h2><span class="pill off" id="bnPill">Off</span></div>
-        <p class="hint">These swipe by themselves at the top of the landing page (the first screen everyone sees). People can also swipe them left and right with a finger or mouse. Add as many as you want. Shortcuts: <code>{offer}</code> offer name, <code>{percent}</code> discount.</p>
+        <p class="hint">Image banners like Flipkart / Amazon at the top of the landing page. Phone shows 1 banner at a time, computer shows 2 side by side. They swipe by themselves and people can swipe left and right. Tapping a banner opens its link. <b>Best image size: 1200 x 600 px (2 : 1)</b>, keep important text in the middle. No image? A colored text banner is shown instead. Shortcuts: <code>{offer}</code> offer name, <code>{percent}</code> discount.</p>
         <div class="row2">
           <label class="sw">Banners are on <input type="checkbox" id="bnOn"></label>
           <label>Swipe every (seconds) <small>default 5</small><input type="number" id="bnIv" min="2" max="30" step="0.5" value="5"></label>
@@ -1178,15 +1178,17 @@
         '<div class="bn-head"><b>Banner ' + (i + 1) + '</b><label class="bn-sw"><input type="checkbox" data-k="on"' + (x.on ? " checked" : "") + dis + '>Show</label>' +
         '<label class="bn-sw"><input type="checkbox" data-k="offer_only"' + (x.offer_only ? " checked" : "") + dis + '>Only while offer is live</label><span class="sp"></span>' +
         '<button type="button" data-mv="-1"' + (i === 0 || !BN.canEdit ? " disabled" : "") + ' aria-label="Move up">Up</button><button type="button" data-mv="1"' + (i === b.items.length - 1 || !BN.canEdit ? " disabled" : "") + ' aria-label="Move down">Down</button><button type="button" class="del" data-del="1"' + dis + '>Delete</button></div>' +
+        '<div class="bn-img"><label>Banner image (covers the whole banner) <small>1200 x 600 px. Upload, or paste an https image link</small><input type="text" data-k="image" maxlength="500" value="' + esc(x.image || "") + '" placeholder="https://...jpg"' + dis + '></label>' +
+        (x.image ? '<img src="' + esc(x.image) + '" alt="">' : '<span></span>') +
+        '<span class="btn btn-g btn-sm bn-up">Upload image<input type="file" accept="image/png,image/jpeg,image/webp" data-up="1"' + dis + '></span></div>' +
+        '<label>Link when someone taps the banner <small>/signup.html, #process, /report.html or https://...</small><input type="text" data-k="link" maxlength="300" value="' + esc(x.link || "") + '" placeholder="/signup.html"' + dis + '></label>' +
+        '<label>Title <small>' + (x.image ? "not shown on image banners, used for Google and screen readers" : "big text on the banner") + '</small><input type="text" data-k="title" maxlength="90" value="' + esc(x.title || "") + '"' + dis + '></label>' +
+        '<details' + (x.image ? "" : " open") + '><summary style="cursor:pointer;font-weight:700;font-size:.84rem;color:var(--muted)">Text banner options (used only when there is no image)</summary><div style="display:grid;gap:10px;margin-top:10px">' +
         '<div class="row2"><label>Color style<select data-k="theme"' + dis + '>' + BN_THEMES.map(function (t) { return '<option value="' + t[0] + '"' + (x.theme === t[0] ? " selected" : "") + '>' + t[1] + '</option>'; }).join("") + '</select></label>' +
         '<label>Small heading <small>optional</small><input type="text" data-k="kicker" maxlength="40" value="' + esc(x.kicker || "") + '"' + dis + '></label></div>' +
-        '<label>Big title<input type="text" data-k="title" maxlength="90" value="' + esc(x.title || "") + '"' + dis + '></label>' +
         '<label>Text <small>optional</small><input type="text" data-k="text" maxlength="160" value="' + esc(x.text || "") + '"' + dis + '></label>' +
-        '<div class="row2"><label>Button text <small>optional</small><input type="text" data-k="btn" maxlength="28" value="' + esc(x.btn || "") + '"' + dis + '></label>' +
-        '<label>Button link <small>/signup.html, #process or https://...</small><input type="text" data-k="link" maxlength="300" value="' + esc(x.link || "") + '"' + dis + '></label></div>' +
-        '<div class="bn-img"><label>Image <small>optional, https link or upload</small><input type="text" data-k="image" maxlength="500" value="' + esc(x.image || "") + '" placeholder="https://..."' + dis + '></label>' +
-        (x.image ? '<img src="' + esc(x.image) + '" alt="">' : '<span></span>') +
-        '<span class="btn btn-g btn-sm bn-up">Upload<input type="file" accept="image/png,image/jpeg,image/webp" data-up="1"' + dis + '></span></div>' +
+        '<label>Button text <small>optional, the whole banner is clickable anyway</small><input type="text" data-k="btn" maxlength="28" value="' + esc(x.btn || "") + '"' + dis + '></label>' +
+        '</div></details>' +
         '</div>';
     }).join("") || '<p class="hint">No banners yet. Press + Add banner.</p>';
     var on = b.enabled && b.items.some(function (x) { return x.on; });
@@ -1203,6 +1205,7 @@
     });
   }
   function bnDirty() { $("bnMsg").textContent = "Not saved yet. Press Save banners to make it live."; }
+  $("bnList").addEventListener("change", function (e) { if (e.target.getAttribute && e.target.getAttribute("data-k") === "image") { bnRead(); bnRender(); } });
   $("bnList").addEventListener("input", function (e) { if (e.target.type === "file") return; bnRead(); bnDirty(); bnPreview(); var c = e.target.closest(".bn-card"); if (c && e.target.getAttribute("data-k") === "on") c.classList.toggle("off", !e.target.checked); });
   $("bnOn").addEventListener("change", function () { bnRead(); bnDirty(); });
   $("bnIv").addEventListener("input", function () { bnRead(); bnDirty(); bnPreview(); });

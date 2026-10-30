@@ -106,7 +106,7 @@ Live on Vercel (Hobby plan). Owner edits code via GitHub web/mobile UI, so all c
 - Vercel preview links redirect to the SITE_URL host (gmp.js mainHost), because each preview URL had its own login.
 
 ## v1.7 Landing banners, new headline, password meter (30 Oct 2026)
-- Landing hero: auto-swiping banner carousel above the headline (public/gmp-banners.js, auto-mounts #heroBanners,
+- Landing hero: Flipkart/Amazon style image carousel above the headline (image covers the whole banner, 1200 x 600 px, whole banner is one link; phone 1 per view, 768px+ 2 per view) (public/gmp-banners.js, auto-mounts #heroBanners,
   data from GET /api/banners). Swipe by finger or mouse, arrows on computers, dots with a timer bar, pauses on hover.
 - Admin > Banners: add / edit / reorder / delete any number of banners (max 20): color style (night, green, gold,
   light, dark), small heading, title, text, button text + link, image (https link or upload -> Supabase storage
