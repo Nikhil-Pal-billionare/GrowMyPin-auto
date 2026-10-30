@@ -243,6 +243,41 @@ alter table public.profiles add column if not exists niche text;             -- 
 alter table public.profiles add column if not exists pins_count int;         -- pins on their Pinterest (they told us)
 alter table public.profiles add column if not exists pin_stats jsonb;        -- last real numbers from the Pinterest API
 
+-- =====================================================================
+-- v1.4  Plans + Razorpay payments. Safe to run again.
+--       (Plan prices and view levels live in site_settings.data.plans,
+--        you edit them in Admin > Plans.)
+-- =====================================================================
+create table if not exists public.payments (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null,
+  email text,
+  name text,
+  phone text,
+  plan_id text not null,
+  plan_name text,
+  months int not null default 1,
+  amount int not null,                       -- in paise (Rs 1499 = 149900)
+  currency text not null default 'INR',
+  status text not null default 'created',    -- created | paid
+  method text,                               -- upi, card, netbanking ...
+  razorpay_order_id text unique not null,
+  razorpay_payment_id text,
+  test_mode boolean default false,
+  period_start timestamptz,
+  period_end timestamptz,
+  created_at timestamptz not null default now(),
+  paid_at timestamptz
+);
+create index if not exists payments_user_idx on public.payments (user_id, created_at desc);
+create index if not exists payments_status_idx on public.payments (status, created_at desc);
+alter table public.payments enable row level security;
+
+alter table public.profiles add column if not exists plan_id text;            -- m1, m3, m6, m12
+alter table public.profiles add column if not exists plan_name text;
+alter table public.profiles add column if not exists plan_until timestamptz;  -- plan is active until this time
+alter table public.profiles add column if not exists plan_started_at timestamptz;
+
 -- Tell the API about the new tables and function right away.
 notify pgrst, 'reload schema';
 

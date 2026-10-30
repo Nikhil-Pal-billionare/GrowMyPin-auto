@@ -63,6 +63,28 @@ Live on Vercel (Hobby plan). Owner edits code via GitHub web/mobile UI, so all c
   with ?pinterest=soon and home shows a friendly message + Pinterest link box (no raw JSON error).
 - PINTEREST_REDIRECT_URI = https://growmypin-auto.vercel.app/api/auth/callback (also add in Pinterest app > Configure > Redirect URIs).
 
+## v1.4 Plans + Razorpay (30 Oct 2026)
+- Plans: Monthly Rs 1499 (old price Rs 2999 struck), 3 months Rs 2999, 6 months Rs 5999, 1 year Rs 11999,
+  plus view levels (25K Rs 1499, 50K Rs 2500, 1L Rs 4000, 2L+ Rs 5500 a month). All editable in Admin > Plans and payments.
+  Stored in site_settings.data.plans (server/settings.js DEFAULT_PLANS + normalizePlans). No Rs 4000 month-1 charge.
+- Plans are shown ONLY after Pinterest is connected. /api/user/home returns `plans` only when connected
+  (or for an admin with ?plans=preview). Prices are removed from publicSettings, so no page leaks them before.
+- Home reveal popup (public/gmp-plans.js, night sky): 1 Connected (real views + pins) -> 2 3-month growth
+  (patience -> reward) -> 3 plan cards + view levels + Razorpay pay -> 4 You're in (confetti). Shown once per
+  person, and again on every ?connected=1. Light plan section #planBox on home below the forecast.
+- Signup "Connect Pinterest" now returns to /home.html (the reveal), not /app.html.
+- Razorpay: server/billing.js + server/routes/pay.js. /api/pay/order (amount from settings, never the browser),
+  /api/pay/verify (HMAC signature + fetch payment from Razorpay, capture if only authorized), /api/pay/status.
+  Late payments (window closed) are picked up on next home load (?paycheck=1) via reconcileUser().
+  Plan stacks: a new plan starts when the current one ends. profiles.plan_id/plan_name/plan_until.
+- Env: RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET (rzp_test_ first, then rzp_live_). Without them the pay button
+  shows "opens very soon" + WhatsApp link.
+- SQL: run v1.4 part of supabase.sql (payments table + profile plan columns).
+- Admin > Plans and payments: edit plans/levels, preview (/home.html?plans=preview, &open=1 for plans only),
+  revenue, paid orders, active plans, "opened checkout but did not pay" hot leads with WhatsApp links.
+- Not automatic yet: view level charges (collect with a Razorpay link). billing.html still says milestones are
+  charged once; update it to monthly levels before going live.
+
 ## Admin (/admin)
 - Access: SUPER_ADMIN_EMAIL (Vercel env, owner, full access) + emails in table admin_emails (view only).
   Anyone else gets the normal 404 page. Admin emails cannot be created via public signup.

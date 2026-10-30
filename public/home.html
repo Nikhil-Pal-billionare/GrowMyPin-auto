@@ -291,6 +291,8 @@
   </section>
 
 
+  <div id="planBox" hidden></div>
+
   <section class="h-row">
     <div class="h-card" id="storeCard">
       <div class="h-head"><div><h2>Your store</h2><p class="h-muted">Buyers from Pinterest land here.</p></div><button class="linkish" type="button" id="editShop" hidden>Edit</button></div>
@@ -324,6 +326,7 @@
 
 <script src="/pins.js"></script>
 <script src="/gmp-growth.js"></script>
+<script src="/gmp-plans.js"></script>
 <script>
 (function () {
   function $(id) { return document.getElementById(id); }
@@ -560,9 +563,44 @@
     if (!GW) GW = GR.mount($("gwBox"), inp, { edit: true, onChange: saveGrowth });
     else GW.update(inp);
     var store = D.profile.platforms && D.profile.platforms.length ? NAMES[inp.platform] : "online";
-    $("ctaBtn").textContent = "Increase my " + store + " store visits";
-    if (D.profile.interest_at) setInterestDone();
+    if ($("ctaBtn") && !D.plans) $("ctaBtn").textContent = "Increase my " + store + " store visits";
+    if (D.profile.interest_at && !D.plans) setInterestDone();
   }
+  // ---------------- plans (only after Pinterest is connected, from /gmp-plans.js) ----------------
+  function planCtx() {
+    return {
+      plans: D.plans, billing: D.billing || {}, user: D.user, pinterest: D.pinterest,
+      P: GR.plan(growthInput()), store: storeName(), preview: !!D.plans_preview,
+      onPaid: function (b) { D.billing = b; renderPlans(); }
+    };
+  }
+  function renderPlans() {
+    var box = $("planBox");
+    if (!box || !window.GMPPlans) return;
+    if (!D.plans) { box.hidden = true; box.innerHTML = ""; return; }
+    window.GMPPlans.section(box, planCtx());
+    var cta = $("predCta");
+    if (D.billing && D.billing.active) {
+      cta.innerHTML = '<p class="h-ok"><b>Your ' + esc(D.billing.plan_name) + ' plan is active.</b>Approve your pins and we keep growing these numbers.</p><a class="btn btn-primary" href="/app.html">Open Pin Studio</a>';
+    } else {
+      $("ctaTxt").innerHTML = "<b>Your Pinterest is connected.</b>Pick a plan and we run the Best strategy on your account.";
+      $("ctaBtn").textContent = "See my plans";
+      $("ctaBtn").onclick = function () { box.scrollIntoView({ behavior: "smooth", block: "start" }); };
+    }
+  }
+  function maybeReveal() {
+    if (!D.plans || !window.GMPPlans) return;
+    var q = location.search;
+    var key = "gmp_reveal_" + (D.user.email || "");
+    var seen = false;
+    try { seen = !!localStorage.getItem(key); } catch (e) {}
+    var force = /[?&]connected=1/.test(q) || /[?&]plans=preview/.test(q) || /[?&]open=1/.test(q);
+    if (D.billing && D.billing.active && !/[?&]plans=preview/.test(q)) return;
+    if (!force && seen) return;
+    try { localStorage.setItem(key, String(Date.now())); } catch (e) {}
+    setTimeout(function () { window.GMPPlans.reveal(planCtx(), /[?&]open=1/.test(q) ? 3 : 1); }, 700);
+  }
+
   function setInterestDone() {
     $("predCta").innerHTML = '<p class="h-ok"><b>You are on the list.</b>We will run the Best strategy on your shop. Our team will WhatsApp you within 24 hours.</p>' +
       (ST.sales_whatsapp ? '<a class="btn btn-primary" target="_blank" rel="noopener" href="https://wa.me/' + ST.sales_whatsapp.replace(/\D/g, "") + '?text=' + encodeURIComponent("Hi GrowMyPin, I want to increase my store visits.") + '">Chat now on WhatsApp</a>' : "");
@@ -738,11 +776,16 @@
     $("av").textContent = (first() || D.user.email || "G").charAt(0).toUpperCase();
     renderSetup(); renderOffer(); renderStore(); renderGoal(); renderPins(); renderPred();
     if (!again) wireSeg();
+    renderPlans();
   }
 
   (async function boot() {
     try {
-      D = await api("/api/user/home");
+      var qs = [];
+      if (/[?&]plans=preview/.test(location.search)) qs.push("plans=preview");
+      try { if (localStorage.getItem("gmp_pay_pending")) qs.push("paycheck=1"); } catch (e) {}
+      D = await api("/api/user/home" + (qs.length ? "?" + qs.join("&") : ""));
+      if (D.billing && D.billing.active) { try { localStorage.removeItem("gmp_pay_pending"); } catch (e) {} }
     } catch (e) {
       if (e.status === 401) { document.cookie = "gmp_in=; Max-Age=0; path=/"; location.replace("/signup.html#login"); return; }
       $("main").innerHTML = '<div class="h-card" style="text-align:center"><h2>Could not load your home</h2><p class="h-muted" style="margin:8px 0 14px">' + esc(e.message) + '</p><button class="btn btn-primary" onclick="location.reload()">Try again</button></div>';
@@ -753,6 +796,10 @@
     $("main").innerHTML = "";
     $("main").appendChild($("tpl").content.cloneNode(true));
     renderAll(false);
+    maybeReveal();
+    if (/[?&]connected=1/.test(location.search)) {
+      try { history.replaceState(null, "", location.pathname + location.hash); } catch (e) {}
+    }
     // came back from "Connect Pinterest" while Pinterest connect is not open yet
     if (/[?&]pinterest=soon/.test(location.search)) {
       try { history.replaceState(null, "", location.pathname + location.hash); } catch (e) {}

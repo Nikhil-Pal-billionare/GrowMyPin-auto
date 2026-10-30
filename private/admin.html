@@ -239,6 +239,19 @@
   @media (max-width: 1100px) { .gr-grid { grid-template-columns: 1fr; } .gr-prev { position: static; } }
   @media (max-width: 560px) { .gr-prev .row4, .gr-pct { grid-template-columns: repeat(2, minmax(0, 1fr)); } .gr-names .gn { grid-template-columns: 1fr; } .gr-r { grid-template-columns: 1fr auto; } .gr-r .gr-b { grid-column: 1 / -1; justify-self: start; } }
   @media (max-width: 1100px) { .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); } .set-grid { grid-template-columns: 1fr; } .grid4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  /* plans + payments */
+  .pl-tbl { min-width: 640px; }
+  .pl-tbl td { vertical-align: middle; padding: 8px 6px; }
+  .pl-tbl input[type=text], .pl-tbl input[type=number] { border: 1.5px solid var(--line); border-radius: 10px; padding: 8px 9px; width: 100%; background: #fff; font: inherit; }
+  .pl-tbl input:disabled { background: #F5F6F9; color: var(--muted); }
+  .pl-tbl .ck { width: 18px; height: 18px; accent-color: var(--green); }
+  .pl-per { font-size: .78rem; color: var(--muted); white-space: nowrap; }
+  .lv-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; align-items: end; }
+  .lv-row button { border: 1.5px solid var(--line); background: #fff; border-radius: 10px; padding: 9px 11px; cursor: pointer; font-weight: 800; color: var(--rose); }
+  .pay-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+  .b-paid { background: #E6F6F0; color: #0B7A69; } .b-created { background: #EEF0F5; color: #59606E; } .b-test { background: #EEEAFD; color: #5B4BC4; }
+  .rzp-state { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  @media (max-width: 760px) { .pay-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (max-width: 860px) { .grid2 { grid-template-columns: 1fr; } .modal { grid-template-columns: 1fr; } .phone { min-height: 0; } .who { display: none; } }
   @media (max-width: 560px) {
     .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -288,6 +301,7 @@
   <nav class="tabsbar" id="tabsbar" aria-label="Admin sections">
     <button type="button" class="on" data-tab="dash">Dashboard</button>
     <button type="button" data-tab="growth">Growth graph</button>
+    <button type="button" data-tab="plans">Plans and payments</button>
     <button type="button" data-tab="settings">Settings</button>
     <button type="button" data-tab="admins" hidden>Admins</button>
   </nav>
@@ -409,6 +423,55 @@
     <div class="savebar" style="margin-top:18px">
       <span class="sub" id="grMsg">Changes go live on every user's graph right after you save.</span>
       <div class="tools"><button class="btn btn-g btn-sm" type="button" id="grReset">Reset to default numbers</button><button class="btn btn-gold" type="button" id="grSave">Save growth graph</button></div>
+    </div>
+  </div>
+
+  <div class="pane" id="pane-plans" hidden>
+    <div style="display:grid;gap:18px">
+      <section class="card fset">
+        <div class="card-h" style="margin:0"><h2>Payments (Razorpay)</h2><div class="rzp-state" id="rzpState"></div></div>
+        <div class="pay-kpis">
+          <div class="kpi dark"><b id="pkRev">-</b><span>Revenue</span><small>paid, live mode</small></div>
+          <div class="kpi"><b id="pkPaid">-</b><span>Paid orders</span><small id="pkPaidS">live mode</small></div>
+          <div class="kpi"><b id="pkActive">-</b><span>Active plans</span><small>right now</small></div>
+          <div class="kpi"><b id="pkOpen">-</b><span>Opened checkout</span><small>did not pay yet</small></div>
+        </div>
+        <div class="tbl-wrap"><table class="pl-tbl">
+          <thead><tr><th>Date</th><th>Person</th><th>Plan</th><th>Amount</th><th>Status</th><th>Paid with</th><th>Plan till</th><th>Razorpay ID</th></tr></thead>
+          <tbody id="payBody"><tr><td colspan="8" class="sub">Loading</td></tr></tbody>
+        </table></div>
+        <p class="hint">"Opened checkout" people are hot leads: they saw the price and opened Razorpay but did not finish. WhatsApp them.</p>
+      </section>
+
+      <form id="plForm" novalidate style="display:grid;gap:18px">
+        <section class="card fset">
+          <div class="card-h" style="margin:0"><h2>Plans</h2><span class="pill off" id="plPill">Off</span></div>
+          <p class="hint">Plans show only AFTER a person connects Pinterest (popup with their real numbers, then their 3 month growth, then these plans). Prices are in rupees. "Old price" is shown with a line through it (leave 0 for none).</p>
+          <label class="sw">Plans are on <input type="checkbox" id="plOn"></label>
+          <div class="tbl-wrap"><table class="pl-tbl">
+            <thead><tr><th>On</th><th>Plan name</th><th>Price</th><th>Old price</th><th>Tag on card</th><th>View levels</th><th>Highlight</th><th></th></tr></thead>
+            <tbody id="plRows"></tbody>
+          </table></div>
+          <div class="row2">
+            <label>Headline above the plans<input type="text" id="plHead" maxlength="90"></label>
+            <label>Line next to view levels<input type="text" id="plNote" maxlength="200"></label>
+          </div>
+        </section>
+        <section class="card fset">
+          <h2>View levels (charge per month for the views level the account is in)</h2>
+          <div id="lvRows" style="display:grid;gap:8px"></div>
+          <button class="btn btn-g btn-sm" type="button" id="lvAdd" style="justify-self:start">+ Add level</button>
+          <p class="hint">Example: 50,000 views and Rs 2,500 means a month with 50K+ views has a Rs 2,500 level charge. Shown on the plans so people know it before paying. Level charges are collected by you (Razorpay link) for now, not automatically.</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <a class="btn btn-g btn-sm" href="/home.html?plans=preview" target="_blank" rel="noopener">Preview the popup (as a user)</a>
+            <a class="btn btn-g btn-sm" href="/home.html?plans=preview&amp;open=1" target="_blank" rel="noopener">Preview plans only</a>
+          </div>
+        </section>
+        <div class="savebar">
+          <span class="sub" id="plMsg" style="color:#D9DCE5">Changes go live for everyone right after you save.</span>
+          <div class="tools"><button class="btn btn-g btn-sm" type="button" id="plDefaults">Use default plans</button><button class="btn btn-gold" type="submit" id="plSave">Save plans</button></div>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -938,14 +1001,15 @@
   // ---------------- tabs ----------------
   function showTab(t) {
     Array.prototype.forEach.call(document.querySelectorAll("#tabsbar button"), function (b) { b.classList.toggle("on", b.getAttribute("data-tab") === t); });
-    ["dash", "growth", "settings", "admins"].forEach(function (k) { $("pane-" + k).hidden = k !== t; });
-    document.querySelector(".title-row h1").textContent = { dash: "Dashboard", growth: "Growth graph", settings: "Settings", admins: "Admins" }[t];
+    ["dash", "growth", "plans", "settings", "admins"].forEach(function (k) { $("pane-" + k).hidden = k !== t; });
+    document.querySelector(".title-row h1").textContent = { dash: "Dashboard", growth: "Growth graph", plans: "Plans and payments", settings: "Settings", admins: "Admins" }[t];
     $("updated").style.display = t === "dash" ? "" : "none";
     document.querySelector(".title-row .tools").style.display = t === "dash" ? "" : "none";
     $("range").style.display = t === "dash" ? "" : "none";
     if (t === "settings") loadSettings();
     if (t === "growth") loadGrowth();
     if (t === "admins") loadAdmins();
+    if (t === "plans") loadPlans();
     try { history.replaceState(null, "", "#" + t); } catch (e) {}
   }
   $("tabsbar").addEventListener("click", function (e) { var b = e.target.closest("button[data-tab]"); if (b) showTab(b.getAttribute("data-tab")); });
@@ -1020,6 +1084,105 @@
     } catch (err) { toast(err.message, true); }
     finally { btn.disabled = false; btn.textContent = "Save settings"; }
   });
+
+  // ---------------- plans + payments ----------------
+  var PL = { p: null, def: null, canEdit: false };
+  function rs(n) { return "Rs " + Math.round(Number(n) || 0).toLocaleString("en-IN"); }
+  function plRender() {
+    var p = PL.p, dis = PL.canEdit ? "" : " disabled";
+    $("plOn").checked = !!p.enabled; $("plOn").disabled = !PL.canEdit;
+    $("plHead").value = p.headline || ""; $("plNote").value = p.note || "";
+    $("plHead").disabled = $("plNote").disabled = !PL.canEdit;
+    $("plRows").innerHTML = p.items.map(function (it, i) {
+      var per = it.months > 1 ? rs(it.price / it.months) + " / month" : "";
+      return '<tr data-i="' + i + '"><td><input class="ck" type="checkbox" data-k="on"' + (it.on ? " checked" : "") + dis + '></td>' +
+        '<td><input type="text" data-k="name" maxlength="30" value="' + esc(it.name) + '"' + dis + '><div class="pl-per">' + it.months + ' month' + (it.months > 1 ? "s" : "") + '</div></td>' +
+        '<td><input type="number" data-k="price" min="1" value="' + it.price + '"' + dis + '><div class="pl-per">' + per + '</div></td>' +
+        '<td><input type="number" data-k="compare" min="0" value="' + (it.compare || 0) + '"' + dis + '></td>' +
+        '<td><input type="text" data-k="tag" maxlength="24" value="' + esc(it.tag || "") + '" placeholder="optional"' + dis + '></td>' +
+        '<td><input class="ck" type="checkbox" data-k="levels"' + (it.levels ? " checked" : "") + dis + '></td>' +
+        '<td><input class="ck" type="radio" name="plFeat" value="' + it.id + '"' + (p.featured === it.id ? " checked" : "") + dis + '></td><td></td></tr>';
+    }).join("");
+    $("lvRows").innerHTML = p.levels.map(function (l, i) {
+      return '<div class="lv-row" data-i="' + i + '"><label>Monthly views from<input type="number" data-k="views" min="1000" step="1000" value="' + l.views + '"' + dis + '></label>' +
+        '<label>Charge (Rs per month)<input type="number" data-k="charge" min="0" value="' + l.charge + '"' + dis + '></label>' +
+        '<button type="button" data-rm="' + i + '" aria-label="Remove level"' + dis + '>&times;</button></div>';
+    }).join("") || '<p class="hint">No levels. Plans will show without view level charges.</p>';
+    $("lvAdd").disabled = !PL.canEdit; $("plSave").disabled = !PL.canEdit; $("plDefaults").disabled = !PL.canEdit;
+    var on = p.enabled && p.items.some(function (x) { return x.on; });
+    $("plPill").className = "pill " + (on ? "live" : "off"); $("plPill").textContent = on ? "Live after Pinterest connect" : "Off";
+    if (!PL.canEdit) $("plMsg").textContent = "View only. Only the owner can change plans.";
+  }
+  function plRead() {
+    var p = PL.p;
+    p.enabled = $("plOn").checked;
+    p.headline = $("plHead").value; p.note = $("plNote").value;
+    Array.prototype.forEach.call(document.querySelectorAll("#plRows tr"), function (tr) {
+      var it = p.items[Number(tr.getAttribute("data-i"))];
+      tr.querySelectorAll("[data-k]").forEach(function (el) {
+        var k = el.getAttribute("data-k");
+        it[k] = el.type === "checkbox" ? el.checked : (el.type === "number" ? Number(el.value) : el.value);
+      });
+    });
+    var f = document.querySelector('input[name="plFeat"]:checked'); if (f) p.featured = f.value;
+    p.levels = Array.prototype.map.call(document.querySelectorAll("#lvRows .lv-row"), function (r) {
+      return { views: Number(r.querySelector('[data-k="views"]').value), charge: Number(r.querySelector('[data-k="charge"]').value) };
+    });
+  }
+  $("plForm").addEventListener("input", function () { $("plMsg").textContent = "Not saved yet. Press Save plans to make it live."; });
+  $("lvAdd").onclick = function () { plRead(); var last = PL.p.levels[PL.p.levels.length - 1]; PL.p.levels.push({ views: last ? last.views * 2 : 25000, charge: last ? last.charge : 999 }); plRender(); };
+  $("lvRows").addEventListener("click", function (e) { var b = e.target.closest("[data-rm]"); if (!b) return; plRead(); PL.p.levels.splice(Number(b.getAttribute("data-rm")), 1); plRender(); $("plMsg").textContent = "Not saved yet. Press Save plans to make it live."; });
+  $("plDefaults").onclick = function () { PL.p = clone(PL.def); plRender(); $("plMsg").textContent = "Default plans filled in. Press Save plans to make them live."; };
+  $("plForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    plRead();
+    var btn = $("plSave"); btn.disabled = true; btn.textContent = "Saving";
+    try {
+      var r = await api("/api/admin/settings", { plans: PL.p });
+      PL.p = clone(r.settings.plans); plRender();
+      toast("Plans saved. Live for everyone who connects Pinterest.");
+      $("plMsg").textContent = "Saved.";
+    } catch (err) { toast(err.message, true); }
+    finally { btn.disabled = false; btn.textContent = "Save plans"; }
+  });
+  async function loadPlans() {
+    try {
+      var r = await api("/api/admin/settings");
+      SETS = r;
+      PL.p = clone(r.settings.plans); PL.def = clone(r.defaults.plans); PL.canEdit = !!r.can_edit;
+      plRender();
+    } catch (e) { toast("Could not load plans: " + e.message, true); }
+    loadPayments();
+  }
+  async function loadPayments() {
+    try {
+      var r = await api("/api/admin/payments");
+      var st = [];
+      st.push(r.ready ? '<span class="pill live">Razorpay keys added</span>' : '<span class="pill off">Razorpay keys missing in Vercel</span>');
+      if (r.ready) st.push(r.test_mode ? '<span class="pill sched">TEST mode</span>' : '<span class="pill live">LIVE mode</span>');
+      if (r.missing_sql) st.push('<span class="pill sched">Run v1.4 of supabase.sql</span>');
+      $("rzpState").innerHTML = st.join("");
+      var pays = r.payments || [];
+      var live = pays.filter(function (x) { return x.status === "paid" && !x.test_mode; });
+      var testPaid = pays.filter(function (x) { return x.status === "paid" && x.test_mode; }).length;
+      $("pkRev").textContent = rs(live.reduce(function (a, x) { return a + x.amount / 100; }, 0));
+      $("pkPaid").textContent = live.length;
+      $("pkPaidS").textContent = testPaid ? "+ " + testPaid + " test" : "live mode";
+      $("pkActive").textContent = (r.active || []).length;
+      var paidUsers = {}; pays.forEach(function (x) { if (x.status === "paid") paidUsers[x.user_id] = 1; });
+      var open = {}; pays.forEach(function (x) { if (x.status === "created" && !paidUsers[x.user_id]) open[x.user_id] = 1; });
+      $("pkOpen").textContent = Object.keys(open).length;
+      $("payBody").innerHTML = pays.length ? pays.map(function (x) {
+        var wa = x.phone ? '<a class="plat" target="_blank" rel="noopener" href="https://wa.me/' + String(x.phone).replace(/\D/g, "") + '">WhatsApp</a>' : "";
+        return '<tr><td>' + esc(full(x.paid_at || x.created_at)) + '</td>' +
+          '<td><div class="nm">' + esc(x.name || "-") + '</div><div class="em">' + esc(x.email || "") + '</div>' + wa + '</td>' +
+          '<td>' + esc(x.plan_name || x.plan_id) + '</td><td><b>' + rs(x.amount / 100) + '</b></td>' +
+          '<td><span class="badge b-' + (x.status === "paid" ? "paid" : "created") + '">' + (x.status === "paid" ? "Paid" : "Opened, not paid") + '</span>' + (x.test_mode ? ' <span class="badge b-test">test</span>' : "") + '</td>' +
+          '<td>' + esc(x.method || "") + '</td><td>' + esc(x.period_end ? new Date(x.period_end).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "") + '</td>' +
+          '<td class="em">' + esc(x.razorpay_payment_id || x.razorpay_order_id) + '</td></tr>';
+      }).join("") : '<tr><td colspan="8" class="sub">No payments yet.' + (r.missing_sql ? " Run the v1.4 part of supabase.sql first." : "") + '</td></tr>';
+    } catch (e) { $("payBody").innerHTML = '<tr><td colspan="8" class="sub">' + esc(e.message) + '</td></tr>'; }
+  }
 
   // ---------------- growth graph ----------------
   var GRS = { g: null, def: null, niche: "", rankFor: "_all", canEdit: false, widget: null, dirty: false };
@@ -1287,7 +1450,7 @@
   setInterval(function () { if (document.visibilityState === "visible" && !$("composer").classList.contains("on")) load(); }, 120000);
   load().then(function () {
     var startTab = (location.hash || "").replace("#", "");
-    if (startTab === "settings" || startTab === "growth" || (startTab === "admins" && S.isSuper)) showTab(startTab);
+    if (startTab === "settings" || startTab === "growth" || startTab === "plans" || (startTab === "admins" && S.isSuper)) showTab(startTab);
   });
 })();
 </script>

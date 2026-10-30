@@ -23,6 +23,7 @@ import reportGet from "../server/routes/report/get.js";
 import reportCron from "../server/routes/report/cron.js";
 import track from "../server/routes/track.js";
 import admin from "../server/routes/admin.js";
+import pay from "../server/routes/pay.js";
 
 const ROUTES = {
   "auth/login": authLogin,
@@ -49,7 +50,11 @@ const ROUTES = {
   "admin/data": function (req, res) { return admin(req, res, "data"); },
   "admin/message": function (req, res) { return admin(req, res, "message"); },
   "admin/settings": function (req, res) { return admin(req, res, "settings"); },
-  "admin/admins": function (req, res) { return admin(req, res, "admins"); }
+  "admin/admins": function (req, res) { return admin(req, res, "admins"); },
+  "admin/payments": function (req, res) { return admin(req, res, "payments"); },
+  "pay/order": function (req, res) { return pay(req, res, "order"); },
+  "pay/verify": function (req, res) { return pay(req, res, "verify"); },
+  "pay/status": function (req, res) { return pay(req, res, "status"); }
 };
 
 export default async function handler(req, res) {

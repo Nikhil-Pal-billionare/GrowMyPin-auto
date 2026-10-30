@@ -143,6 +143,78 @@ export function normalizeGrowth(g) {
   return out;
 }
 
+// ---------------- Plans + view levels (Admin > Plans) ----------------
+// Plans are shown ONLY after the person connects Pinterest (home page reveal), never before.
+// price / compare are in rupees. compare = the old price shown with a line through it (0 = none).
+// levels: the person pays the level charge for the monthly views level they are in (view-based charge).
+export const DEFAULT_PLANS = {
+  enabled: true,
+  items: [
+    { id: "m1", on: true, name: "Monthly", months: 1, price: 1499, compare: 2999, tag: "Diwali price", levels: true },
+    { id: "m3", on: true, name: "3 months", months: 3, price: 2999, compare: 0, tag: "Recommended", levels: true },
+    { id: "m6", on: true, name: "6 months", months: 6, price: 5999, compare: 0, tag: "", levels: true },
+    { id: "m12", on: true, name: "1 year", months: 12, price: 11999, compare: 0, tag: "Best value", levels: true }
+  ],
+  featured: "m3",
+  levels: [
+    { views: 25000, charge: 1499 },
+    { views: 50000, charge: 2500 },
+    { views: 100000, charge: 4000 },
+    { views: 200000, charge: 5500 }
+  ],
+  headline: "Turn this forecast into real store visits",
+  note: "You pay a level charge only when your monthly Pinterest views reach that level."
+};
+const PLAN_IDS = ["m1", "m3", "m6", "m12"];
+
+function planText(s, max) {
+  return String(s == null ? "" : s).replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, "\"")
+    .replace(/[\u2013\u2014\u2212]/g, "-").replace(/\u2026/g, "...").replace(/[^\x20-\x7E]/g, "")
+    .replace(/\s+/g, " ").trim().slice(0, max);
+}
+
+export function normalizePlans(p) {
+  const d = DEFAULT_PLANS;
+  const src = p && typeof p === "object" ? p : {};
+  const out = { enabled: src.enabled === undefined ? d.enabled : src.enabled === true, items: [], levels: [] };
+  const given = Array.isArray(src.items) ? src.items : [];
+  PLAN_IDS.forEach(function (id) {
+    const def = d.items.find(function (x) { return x.id === id; });
+    const it = given.find(function (x) { return x && x.id === id; }) || def;
+    const price = Math.round(Number(it.price));
+    const compare = Math.round(Number(it.compare));
+    out.items.push({
+      id: id,
+      on: it.on === undefined ? true : it.on === true,
+      name: planText(it.name, 30) || def.name,
+      months: def.months,
+      price: price >= 1 && price <= 500000 ? price : def.price,
+      compare: compare > 0 && compare <= 1000000 ? compare : 0,
+      tag: planText(it.tag, 24),
+      levels: it.levels === undefined ? true : it.levels === true
+    });
+  });
+  out.featured = PLAN_IDS.indexOf(src.featured) > -1 ? src.featured : d.featured;
+  const lv = Array.isArray(src.levels) ? src.levels : d.levels;
+  const seen = {};
+  lv.slice(0, 8).forEach(function (l) {
+    if (!l) return;
+    const v = Math.round(Number(l.views)), c = Math.round(Number(l.charge));
+    if (!(v >= 1000 && v <= 100000000) || !(c >= 0 && c <= 500000) || seen[v]) return;
+    seen[v] = 1;
+    out.levels.push({ views: v, charge: c });
+  });
+  out.levels.sort(function (a, b) { return a.views - b.views; });
+  out.headline = planText(src.headline, 90) || d.headline;
+  out.note = planText(src.note, 200) || d.note;
+  return out;
+}
+
+export function findPlan(plans, id) {
+  const p = (plans && plans.items || []).find(function (x) { return x.id === id; });
+  return p && p.on ? p : null;
+}
+
 export const DEFAULTS = {
   // Offer shown right after sign up
   offer_enabled: true,
@@ -180,7 +252,10 @@ export const DEFAULTS = {
   pins_from_profile_link: true,
 
   // Growth graph numbers, strategy ranking, pins bonus (Admin > Growth graph)
-  growth: DEFAULT_GROWTH
+  growth: DEFAULT_GROWTH,
+
+  // Plans and view levels (Admin > Plans). Never sent to browsers before Pinterest is connected.
+  plans: DEFAULT_PLANS
 };
 
 const TEXT_LIMITS = {
@@ -205,6 +280,7 @@ export async function getSettings(fresh) {
   }
   cache = Object.assign({}, DEFAULTS, data);
   cache.growth = normalizeGrowth(data.growth);
+  cache.plans = normalizePlans(data.plans);
   cacheAt = Date.now();
   return cache;
 }
@@ -250,6 +326,10 @@ export function cleanSettings(input) {
     out.sales_whatsapp = d ? "+" + d : "";
   }
   if (b.growth !== undefined) out.growth = normalizeGrowth(b.growth);
+  if (b.plans !== undefined) {
+    out.plans = normalizePlans(b.plans);
+    if (!out.plans.items.some(function (x) { return x.on; })) return { ok: false, error: "Keep at least one plan on." };
+  }
   const required = ["offer_name", "offer_reserve_btn", "offer_regret_btn", "ribbon_btn", "popup_yes_btn", "popup_no_btn"];
   for (const k of required) {
     if (out[k] !== undefined && !out[k]) return { ok: false, error: "Please fill " + k.replace(/_/g, " ") + "." };
@@ -275,6 +355,8 @@ export function publicSettings(s) {
   const active = !!s.offer_enabled && (!(start > 0) || now >= start) && (!(end > 0) || now <= end);
   const out = {};
   Object.keys(DEFAULTS).forEach(function (k) { out[k] = s[k]; });
+  // prices are not public: they go only to people who connected Pinterest (see /api/user/home)
+  delete out.plans;
   out.offer_active = active;
   out.server_time = new Date(now).toISOString();
   return out;

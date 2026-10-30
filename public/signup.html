@@ -528,7 +528,7 @@
     </div>
     <div id="fcW"></div>
     <div class="fc-actions">
-      <a class="btn btn-primary" id="goConnect" href="/api/auth/login?next=/app.html">Connect Pinterest</a>
+      <a class="btn btn-primary" id="goConnect" href="/api/auth/login?next=/home.html">Connect Pinterest</a>
       <button class="btn btn-ghost" type="button" id="notifBtn">Get slot updates on this phone</button>
       <a class="btn btn-ghost" href="/home.html">Go to my home</a>
     </div>
@@ -563,8 +563,8 @@
   function qsa(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
 
   var params = new URLSearchParams(location.search);
-  var NEXT = params.get("next") || "/app.html";
-  if (!/^\/[A-Za-z0-9_.\-\/?=&]*$/.test(NEXT) || NEXT.indexOf("//") > -1) NEXT = "/app.html";
+  var NEXT = params.get("next") || "/home.html";
+  if (!/^\/[A-Za-z0-9_.\-\/?=&]*$/.test(NEXT) || NEXT.indexOf("//") > -1) NEXT = "/home.html";
 
   async function api(path, body) {
     var opts = { credentials: "same-origin", headers: {} };

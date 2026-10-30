@@ -8,7 +8,8 @@
 
 import { sendJson, getSession, pinterest } from "../../lib.js";
 import { getUser, db } from "../../app.js";
-import { getProfile, upsertProfile } from "../../growth.js";
+import { getProfile, upsertProfile, isAdminEmail } from "../../growth.js";
+import { publicPlans, billingState, reconcileUser } from "../../billing.js";
 import { getSettings, publicSettings } from "../../settings.js";
 
 function ymd(d) { return d.toISOString().slice(0, 10); }
@@ -70,6 +71,7 @@ export default async function handler(req, res) {
     const u = getUser(req);
     if (!u) return sendJson(res, 401, { error: "Please log in." });
     const settings = await getSettings();
+    const url = new URL(req.url, "http://localhost");
 
     let p = await getProfile(u.id);
     if (!p) {
@@ -119,6 +121,20 @@ export default async function handler(req, res) {
       }
     }
 
+    // Plans: only after Pinterest is connected (the moment the person sees their real numbers).
+    // Admins can preview them any time with /home.html?plans=preview.
+    let plans = null;
+    let previewPlans = false;
+    if (url.searchParams.get("plans") === "preview") {
+      const a = await isAdminEmail(u.email).catch(function () { return { admin: false }; });
+      previewPlans = !!a.admin;
+    }
+    if (pin.connected || previewPlans) plans = publicPlans(settings);
+    // paid but closed the Razorpay window early: pick the payment up now
+    if (url.searchParams.get("paycheck") === "1") {
+      try { if (await reconcileUser(u.id)) p = await getProfile(u.id) || p; } catch (e) { /* v1.4 SQL not run yet */ }
+    }
+
     res.setHeader("Cache-Control", "private, no-store");
     sendJson(res, 200, {
       user: { name: p.name || u.name || "", email: u.email, phone: p.phone || u.whatsapp || "" },
@@ -136,6 +152,9 @@ export default async function handler(req, res) {
         created_at: p.created_at || null
       },
       pinterest: pin,
+      plans: plans,
+      plans_preview: previewPlans && !pin.connected,
+      billing: billingState(p),
       settings: publicSettings(settings)
     });
   } catch (e) {

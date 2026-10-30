@@ -10,10 +10,12 @@
 // POST /api/admin/settings        -> save settings (super only)
 // GET  /api/admin/admins          -> admin list (super only)
 // POST /api/admin/admins          -> { action: "add", email, password?, note } or { action: "remove", email } (super only)
+// GET  /api/admin/payments        -> Razorpay payments + active plans (any admin can view)
 
 import { sendJson } from "../lib.js";
 import { db, sbAuth, cleanEmail, authError } from "../app.js";
 import { getSettings, cleanSettings, saveSettings, publicSettings, DEFAULTS } from "../settings.js";
+import { razorpayReady, isTestMode } from "../billing.js";
 import {
   adminLevel, privateFile, send404Page, sendNotFoundJson,
   uploadImage, pushTo, cleanUrl, superEmail
@@ -199,6 +201,23 @@ async function admins(req, res) {
   sendJson(res, 200, { owner: superEmail(), admins: rows || [] });
 }
 
+async function payments(req, res) {
+  const a = await adminLevel(req);
+  if (!a) return sendNotFoundJson(res);
+  let rows = [], active = [], missing = false;
+  try {
+    const out = await Promise.all([
+      db("payments?select=id,user_id,email,name,phone,plan_id,plan_name,months,amount,currency,status,method,razorpay_order_id,razorpay_payment_id,test_mode,created_at,paid_at,period_end&order=created_at.desc&limit=500"),
+      db("profiles?select=id,email,name,phone,plan_id,plan_name,plan_until&plan_until=gt." + new Date().toISOString() + "&order=plan_until.asc&limit=1000")
+    ]);
+    rows = out[0] || [];
+    active = out[1] || [];
+  } catch (e) {
+    missing = true;
+  }
+  sendJson(res, 200, { ready: razorpayReady(), test_mode: isTestMode(), missing_sql: missing, payments: rows, active: active });
+}
+
 export default async function handler(req, res, sub) {
   try {
     if (sub === "page") return await page(req, res);
@@ -206,6 +225,7 @@ export default async function handler(req, res, sub) {
     if (sub === "message") return await message(req, res);
     if (sub === "settings") return await settings(req, res);
     if (sub === "admins") return await admins(req, res);
+    if (sub === "payments") return await payments(req, res);
     return sendNotFoundJson(res);
   } catch (e) {
     console.error("admin", e.message, JSON.stringify(e.detail || {}).slice(0, 400));
