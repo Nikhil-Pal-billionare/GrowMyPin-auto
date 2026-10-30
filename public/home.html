@@ -753,6 +753,15 @@
     $("main").innerHTML = "";
     $("main").appendChild($("tpl").content.cloneNode(true));
     renderAll(false);
+    // came back from "Connect Pinterest" while Pinterest connect is not open yet
+    if (/[?&]pinterest=soon/.test(location.search)) {
+      try { history.replaceState(null, "", location.pathname + location.hash); } catch (e) {}
+      showShopForm();
+      var pb = $("storeCard"); if (pb) pb.scrollIntoView({ behavior: "smooth", block: "center" });
+      var fp = $("fPin"); if (fp) setTimeout(function () { fp.focus({ preventScroll: true }); }, 600);
+      var em = $("shopErr");
+      if (em) { em.style.color = "#0B7A69"; em.textContent = "Direct Pinterest connect opens very soon. For now, paste your Pinterest profile link here and we will show your pins and graph from it."; }
+    }
   })();
 })();
 </script>
