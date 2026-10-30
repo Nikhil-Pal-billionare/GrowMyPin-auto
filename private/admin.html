@@ -249,6 +249,24 @@
   .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
   .d-real { background: #14B88F; } .d-bot { background: #E0405F; } .d-staff { background: #6B5BD6; }
   #modeNote { flex: 1; min-width: 220px; font-size: .82rem; }
+  /* banners */
+  .bn-list { display: grid; gap: 12px; }
+  .bn-card { border: 1px solid var(--line); border-radius: 18px; padding: 14px; display: grid; gap: 10px; background: #FCFCFE; }
+  .bn-card.off { opacity: .6; }
+  .bn-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .bn-head b { font-family: var(--fd); }
+  .bn-head .sp { flex: 1; }
+  .bn-head button { border: 1.5px solid var(--line); background: #fff; border-radius: 10px; padding: 6px 10px; cursor: pointer; font-weight: 800; font-size: .8rem; color: var(--char); }
+  .bn-head button.del { color: var(--rose); }
+  .bn-head button:disabled { opacity: .4; cursor: default; }
+  .bn-sw { display: inline-flex; align-items: center; gap: 6px; font-size: .8rem; font-weight: 700; color: var(--muted); }
+  .bn-sw input { width: 18px; height: 18px; accent-color: var(--green); }
+  .fset select { border: 1.5px solid var(--line); border-radius: 12px; padding: 10px 12px; background: #fff; font: inherit; width: 100%; }
+  .bn-img { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: end; }
+  .bn-img img { width: 56px; height: 44px; object-fit: cover; border-radius: 10px; border: 1px solid var(--line); }
+  .bn-up { position: relative; overflow: hidden; }
+  .bn-up input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .bn-prev { position: sticky; top: 74px; z-index: 4; background: var(--bg); padding: 4px 0 10px; }
   /* plans + payments */
   .pl-tbl { min-width: 640px; }
   .pl-tbl td { vertical-align: middle; padding: 8px 6px; }
@@ -274,6 +292,7 @@
   }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 </style>
+<script src="/gmp-banners.js" defer></script>
 </head>
 <body>
 <header>
@@ -312,6 +331,7 @@
     <button type="button" class="on" data-tab="dash">Dashboard</button>
     <button type="button" data-tab="growth">Growth graph</button>
     <button type="button" data-tab="plans">Plans and payments</button>
+    <button type="button" data-tab="banners">Banners</button>
     <button type="button" data-tab="settings">Settings</button>
     <button type="button" data-tab="admins" hidden>Admins</button>
   </nav>
@@ -442,6 +462,28 @@
     <div class="savebar" style="margin-top:18px">
       <span class="sub" id="grMsg">Changes go live on every user's graph right after you save.</span>
       <div class="tools"><button class="btn btn-g btn-sm" type="button" id="grReset">Reset to default numbers</button><button class="btn btn-gold" type="button" id="grSave">Save growth graph</button></div>
+    </div>
+  </div>
+
+  <div class="pane" id="pane-banners" hidden>
+    <div style="display:grid;gap:18px">
+      <section class="card fset">
+        <div class="card-h" style="margin:0"><h2>Landing page banners</h2><span class="pill off" id="bnPill">Off</span></div>
+        <p class="hint">These swipe by themselves at the top of the landing page (the first screen everyone sees). People can also swipe them left and right with a finger or mouse. Add as many as you want. Shortcuts: <code>{offer}</code> offer name, <code>{percent}</code> discount.</p>
+        <div class="row2">
+          <label class="sw">Banners are on <input type="checkbox" id="bnOn"></label>
+          <label>Swipe every (seconds) <small>default 5</small><input type="number" id="bnIv" min="2" max="30" step="0.5" value="5"></label>
+        </div>
+        <div class="bn-prev"><div class="lbl" style="font-size:.76rem;font-weight:800;color:var(--muted);margin:0 0 6px">LIVE PREVIEW</div><div id="bnPreview"></div></div>
+      </section>
+      <section class="card fset">
+        <div class="card-h" style="margin:0"><h2>Banners</h2><button class="btn btn-g btn-sm" type="button" id="bnAdd">+ Add banner</button></div>
+        <div class="bn-list" id="bnList"></div>
+      </section>
+      <div class="savebar">
+        <span class="sub" id="bnMsg" style="color:#D9DCE5">Changes go live for everyone right after you save.</span>
+        <div class="tools"><a class="btn btn-g btn-sm" href="/?landing=1" target="_blank" rel="noopener">Open landing page</a><button class="btn btn-g btn-sm" type="button" id="bnDefaults">Use default banners</button><button class="btn btn-gold" type="button" id="bnSave">Save banners</button></div>
+      </div>
     </div>
   </div>
 
@@ -1029,8 +1071,8 @@
   // ---------------- tabs ----------------
   function showTab(t) {
     Array.prototype.forEach.call(document.querySelectorAll("#tabsbar button"), function (b) { b.classList.toggle("on", b.getAttribute("data-tab") === t); });
-    ["dash", "growth", "plans", "settings", "admins"].forEach(function (k) { $("pane-" + k).hidden = k !== t; });
-    document.querySelector(".title-row h1").textContent = { dash: "Dashboard", growth: "Growth graph", plans: "Plans and payments", settings: "Settings", admins: "Admins" }[t];
+    ["dash", "growth", "plans", "banners", "settings", "admins"].forEach(function (k) { $("pane-" + k).hidden = k !== t; });
+    document.querySelector(".title-row h1").textContent = { dash: "Dashboard", growth: "Growth graph", plans: "Plans and payments", banners: "Banners", settings: "Settings", admins: "Admins" }[t];
     $("updated").style.display = t === "dash" ? "" : "none";
     document.querySelector(".title-row .tools").style.display = t === "dash" ? "" : "none";
     $("range").style.display = t === "dash" ? "" : "none";
@@ -1038,6 +1080,7 @@
     if (t === "growth") loadGrowth();
     if (t === "admins") loadAdmins();
     if (t === "plans") loadPlans();
+    if (t === "banners") loadBanners();
     try { history.replaceState(null, "", "#" + t); } catch (e) {}
   }
   $("tabsbar").addEventListener("click", function (e) { var b = e.target.closest("button[data-tab]"); if (b) showTab(b.getAttribute("data-tab")); });
@@ -1112,6 +1155,125 @@
     } catch (err) { toast(err.message, true); }
     finally { btn.disabled = false; btn.textContent = "Save settings"; }
   });
+
+  // ---------------- landing page banners ----------------
+  var BN = { b: null, def: null, canEdit: false, prev: null };
+  var BN_THEMES = [["night", "Night sky (purple, stars)"], ["green", "Green (brand)"], ["gold", "Gold (warm)"], ["light", "Light"], ["dark", "Dark"]];
+  function bnFill(t) { var s = (SETS && SETS.settings) || {}; return String(t || "").replace(/\{offer\}/g, s.offer_name || "Offer").replace(/\{percent\}/g, s.offer_percent || ""); }
+  function bnPreview() {
+    if (!window.GMPBanners) return;
+    var data = { interval: Number($("bnIv").value) || 5, items: BN.b.items.filter(function (x) { return x.on && x.title; }).map(function (x) {
+      return { theme: x.theme, kicker: bnFill(x.kicker), title: bnFill(x.title), text: bnFill(x.text), btn: bnFill(x.btn), link: x.link || "#", image: x.image };
+    }) };
+    if (!BN.prev) BN.prev = window.GMPBanners.mount($("bnPreview"), data); else BN.prev.update(data);
+    if (!data.items.length) $("bnPreview").innerHTML = '<p class="hint">No banners are on. The landing page shows no carousel.</p>';
+    $("bnPreview").hidden = false;
+  }
+  function bnRender() {
+    var b = BN.b, dis = BN.canEdit ? "" : " disabled";
+    $("bnOn").checked = !!b.enabled; $("bnIv").value = b.interval || 5;
+    $("bnOn").disabled = $("bnIv").disabled = $("bnAdd").disabled = $("bnSave").disabled = $("bnDefaults").disabled = !BN.canEdit;
+    $("bnList").innerHTML = b.items.map(function (x, i) {
+      return '<div class="bn-card' + (x.on ? "" : " off") + '" data-i="' + i + '">' +
+        '<div class="bn-head"><b>Banner ' + (i + 1) + '</b><label class="bn-sw"><input type="checkbox" data-k="on"' + (x.on ? " checked" : "") + dis + '>Show</label>' +
+        '<label class="bn-sw"><input type="checkbox" data-k="offer_only"' + (x.offer_only ? " checked" : "") + dis + '>Only while offer is live</label><span class="sp"></span>' +
+        '<button type="button" data-mv="-1"' + (i === 0 || !BN.canEdit ? " disabled" : "") + ' aria-label="Move up">Up</button><button type="button" data-mv="1"' + (i === b.items.length - 1 || !BN.canEdit ? " disabled" : "") + ' aria-label="Move down">Down</button><button type="button" class="del" data-del="1"' + dis + '>Delete</button></div>' +
+        '<div class="row2"><label>Color style<select data-k="theme"' + dis + '>' + BN_THEMES.map(function (t) { return '<option value="' + t[0] + '"' + (x.theme === t[0] ? " selected" : "") + '>' + t[1] + '</option>'; }).join("") + '</select></label>' +
+        '<label>Small heading <small>optional</small><input type="text" data-k="kicker" maxlength="40" value="' + esc(x.kicker || "") + '"' + dis + '></label></div>' +
+        '<label>Big title<input type="text" data-k="title" maxlength="90" value="' + esc(x.title || "") + '"' + dis + '></label>' +
+        '<label>Text <small>optional</small><input type="text" data-k="text" maxlength="160" value="' + esc(x.text || "") + '"' + dis + '></label>' +
+        '<div class="row2"><label>Button text <small>optional</small><input type="text" data-k="btn" maxlength="28" value="' + esc(x.btn || "") + '"' + dis + '></label>' +
+        '<label>Button link <small>/signup.html, #process or https://...</small><input type="text" data-k="link" maxlength="300" value="' + esc(x.link || "") + '"' + dis + '></label></div>' +
+        '<div class="bn-img"><label>Image <small>optional, https link or upload</small><input type="text" data-k="image" maxlength="500" value="' + esc(x.image || "") + '" placeholder="https://..."' + dis + '></label>' +
+        (x.image ? '<img src="' + esc(x.image) + '" alt="">' : '<span></span>') +
+        '<span class="btn btn-g btn-sm bn-up">Upload<input type="file" accept="image/png,image/jpeg,image/webp" data-up="1"' + dis + '></span></div>' +
+        '</div>';
+    }).join("") || '<p class="hint">No banners yet. Press + Add banner.</p>';
+    var on = b.enabled && b.items.some(function (x) { return x.on; });
+    $("bnPill").className = "pill " + (on ? "live" : "off"); $("bnPill").textContent = on ? "Live on landing page" : "Off";
+    if (!BN.canEdit) $("bnMsg").textContent = "View only. Only the owner can change banners.";
+    bnPreview();
+  }
+  function bnRead() {
+    BN.b.enabled = $("bnOn").checked;
+    BN.b.interval = Number($("bnIv").value) || 5;
+    Array.prototype.forEach.call(document.querySelectorAll("#bnList .bn-card"), function (c) {
+      var x = BN.b.items[Number(c.getAttribute("data-i"))];
+      c.querySelectorAll("[data-k]").forEach(function (el) { var k = el.getAttribute("data-k"); x[k] = el.type === "checkbox" ? el.checked : el.value; });
+    });
+  }
+  function bnDirty() { $("bnMsg").textContent = "Not saved yet. Press Save banners to make it live."; }
+  $("bnList").addEventListener("input", function (e) { if (e.target.type === "file") return; bnRead(); bnDirty(); bnPreview(); var c = e.target.closest(".bn-card"); if (c && e.target.getAttribute("data-k") === "on") c.classList.toggle("off", !e.target.checked); });
+  $("bnOn").addEventListener("change", function () { bnRead(); bnDirty(); });
+  $("bnIv").addEventListener("input", function () { bnRead(); bnDirty(); bnPreview(); });
+  $("bnList").addEventListener("click", function (e) {
+    var c = e.target.closest(".bn-card"); if (!c) return;
+    var i = Number(c.getAttribute("data-i"));
+    var mv = e.target.closest("[data-mv]");
+    if (mv) { bnRead(); var j = i + Number(mv.getAttribute("data-mv")); var t = BN.b.items[i]; BN.b.items[i] = BN.b.items[j]; BN.b.items[j] = t; bnRender(); bnDirty(); }
+    if (e.target.closest("[data-del]")) { if (!confirmDel(i)) return; bnRead(); BN.b.items.splice(i, 1); bnRender(); bnDirty(); }
+  });
+  function confirmDel(i) { var x = BN.b.items[i]; return !x.title || window.confirm("Delete banner " + (i + 1) + ' "' + x.title + '"?'); }
+  $("bnList").addEventListener("change", async function (e) {
+    var f = e.target.closest("[data-up]"); if (!f || !f.files || !f.files[0]) return;
+    var c = f.closest(".bn-card"), i = Number(c.getAttribute("data-i"));
+    var file = f.files[0];
+    if (file.size > 12 * 1024 * 1024) { toast("Image is too big. Use one under 12 MB.", true); return; }
+    $("bnMsg").textContent = "Uploading image...";
+    try {
+      var data = await bnShrink(file);
+      var r = await api("/api/admin/upload", { image: data });
+      bnRead(); BN.b.items[i].image = r.url; bnRender(); bnDirty();
+      toast("Image uploaded. Press Save banners to make it live.");
+    } catch (err) { toast(err.message, true); $("bnMsg").textContent = "Upload failed."; }
+  });
+  // make big photos small before upload (max 1600 px wide, JPEG)
+  function bnShrink(file) {
+    return new Promise(function (ok, bad) {
+      var rd = new FileReader();
+      rd.onerror = function () { bad(new Error("Could not read the image.")); };
+      rd.onload = function () {
+        var im = new Image();
+        im.onerror = function () { bad(new Error("This file is not an image.")); };
+        im.onload = function () {
+          var k = Math.min(1, 1600 / im.width), cv = document.createElement("canvas");
+          cv.width = Math.round(im.width * k); cv.height = Math.round(im.height * k);
+          cv.getContext("2d").drawImage(im, 0, 0, cv.width, cv.height);
+          ok(cv.toDataURL("image/jpeg", 0.86));
+        };
+        im.src = rd.result;
+      };
+      rd.readAsDataURL(file);
+    });
+  }
+  $("bnAdd").onclick = function () {
+    bnRead();
+    BN.b.items.push({ id: "b" + Date.now().toString(36), on: true, theme: "green", offer_only: false, kicker: "", title: "New banner title", text: "", btn: "Grow visits", link: "/signup.html", image: "" });
+    bnRender(); bnDirty();
+    var last = document.querySelector("#bnList .bn-card:last-child [data-k=title]"); if (last) { last.focus(); last.select(); }
+  };
+  $("bnDefaults").onclick = function () { BN.b = clone(BN.def); bnRender(); $("bnMsg").textContent = "Default banners filled in. Press Save banners to make them live."; };
+  $("bnSave").onclick = async function () {
+    bnRead();
+    var bad = BN.b.items.filter(function (x) { return !String(x.title || "").trim(); }).length;
+    if (bad) { toast("Every banner needs a big title.", true); return; }
+    var btn = this; btn.disabled = true; btn.textContent = "Saving";
+    try {
+      var r = await api("/api/admin/settings", { banners: BN.b });
+      BN.b = clone(r.settings.banners); bnRender();
+      toast("Banners saved. Live on the landing page in about 30 seconds.");
+      $("bnMsg").textContent = "Saved.";
+    } catch (err) { toast(err.message, true); }
+    finally { btn.disabled = false; btn.textContent = "Save banners"; }
+  };
+  async function loadBanners() {
+    try {
+      var r = await api("/api/admin/settings");
+      SETS = r;
+      BN.b = clone(r.settings.banners); BN.def = clone(r.defaults.banners); BN.canEdit = !!r.can_edit;
+      bnRender();
+    } catch (e) { toast("Could not load banners: " + e.message, true); }
+  }
 
   // ---------------- plans + payments ----------------
   var PL = { p: null, def: null, canEdit: false };
@@ -1484,7 +1646,7 @@
   setInterval(function () { if (document.visibilityState === "visible" && !$("composer").classList.contains("on")) load(); }, 120000);
   load().then(function () {
     var startTab = (location.hash || "").replace("#", "");
-    if (startTab === "settings" || startTab === "growth" || startTab === "plans" || (startTab === "admins" && S.isSuper)) showTab(startTab);
+    if (startTab === "settings" || startTab === "growth" || startTab === "plans" || startTab === "banners" || (startTab === "admins" && S.isSuper)) showTab(startTab);
   });
 })();
 </script>

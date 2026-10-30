@@ -205,6 +205,19 @@ async function admins(req, res) {
   sendJson(res, 200, { owner: superEmail(), admins: rows || [] });
 }
 
+// POST /api/admin/upload { image: "data:image/png;base64,..." } -> { url }  (owner only, banner images)
+async function upload(req, res) {
+  const a = await adminLevel(req);
+  if (!a || !a.isSuper) return sendNotFoundJson(res);
+  if (req.method !== "POST") return sendJson(res, 405, { error: "POST only" });
+  try {
+    const url = await uploadImage((req.body || {}).image);
+    return sendJson(res, 200, { url: url });
+  } catch (e) {
+    return sendJson(res, 400, { error: e.message });
+  }
+}
+
 async function payments(req, res) {
   const a = await adminLevel(req);
   if (!a) return sendNotFoundJson(res);
@@ -230,6 +243,7 @@ export default async function handler(req, res, sub) {
     if (sub === "settings") return await settings(req, res);
     if (sub === "admins") return await admins(req, res);
     if (sub === "payments") return await payments(req, res);
+    if (sub === "upload") return await upload(req, res);
     return sendNotFoundJson(res);
   } catch (e) {
     console.error("admin", e.message, JSON.stringify(e.detail || {}).slice(0, 400));

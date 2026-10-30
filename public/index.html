@@ -21,6 +21,15 @@
   .float-a { left: auto; right: -16px; top: 38%; }
   .phases .phase-item p { max-width: 40ch; }
 </style>
+<style>
+  /* landing banners + smaller headline */
+  .hero-banners { grid-column: 1 / -1; min-width: 0; }
+  .hero-banners[hidden] { display: none; }
+  .hero .hero-copy h1 { font-size: clamp(2rem, 4.3vw, 3.25rem); line-height: 1.06; }
+  .hero .hero-copy h1 .rot { color: var(--green-text); }
+  @media (max-width: 920px) { .hero-banners { order: -1; } }
+</style>
+<script src="/gmp-banners.js" defer></script>
 </head>
 <body>
 <div class="lg-bg" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
@@ -40,7 +49,7 @@
       <a href="#access">Your data</a>
       <a href="#faq">FAQ</a>
     </nav>
-    <a class="btn btn-primary magnet" href="/signup.html"><span class="long">Connect Pinterest</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <a class="btn btn-primary magnet" href="/signup.html"><span>Grow visits</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
   </div>
 </header>
 
@@ -48,20 +57,21 @@
 <section class="hero" id="hero">
   <div class="blobs" aria-hidden="true"><i></i><i></i><i></i></div>
   <div class="wrap">
+    <div class="hero-banners" id="heroBanners" aria-label="Offers and news"></div>
     <div class="hero-copy">
-      <span class="eyebrow fade-in">GrowMyPin Studio for Etsy and Shopify sellers</span>
+      <span class="eyebrow fade-in">GrowMyPin for Etsy and Shopify sellers</span>
       <h1>
-        <span class="w" style="--i:0">AI</span> <span class="w" style="--i:1">drafts</span> <span class="w" style="--i:2">your</span> <span class="w" style="--i:3"><span class="rot" id="rot">product</span></span> <span class="w" style="--i:4">pins.</span> <span class="w" style="--i:5">Nothing</span> <span class="w" style="--i:6">goes</span> <span class="w" style="--i:7">live</span> <span class="w" style="--i:8">until</span> <span class="w" style="--i:9">you</span> <span class="w hl" id="hlWord" style="--i:10">approve.<svg viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M2 9 C 50 2, 120 2, 198 7"/></svg></span>
+        <span class="w" style="--i:0">We</span> <span class="w" style="--i:1">grow</span> <span class="w" style="--i:2">your</span> <span class="w" style="--i:3"><span class="rot" id="rot">Etsy</span></span> <span class="w" style="--i:4">store</span> <span class="w hl" id="hlWord" style="--i:5">visits<svg viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M2 9 C 50 2, 120 2, 198 7"/></svg></span> <span class="w" style="--i:6">with</span> <span class="w" style="--i:7">Pinterest</span> <span class="w" style="--i:8">and</span> <span class="w" style="--i:9">blog</span> <span class="w" style="--i:10">traffic.</span>
       </h1>
-      <p class="lede fade-in">Add a listing and the Studio writes Pinterest pin drafts for it: titles, descriptions and alt text tuned for this season's searches. You edit, approve the ones you like, and only those get published to your board.</p>
+      <p class="lede fade-in">We create Pinterest pins and blog posts for your products, publish them where buyers are already searching, and send that traffic straight to your Etsy or Shopify listings. You approve everything before it goes live.</p>
       <div class="hero-ctas fade-in d2">
-        <a class="btn btn-primary magnet" href="/signup.html">Connect Pinterest <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="btn btn-primary magnet" href="/signup.html">Grow visits <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         <a class="btn btn-ghost" href="#demo">Try it without login</a>
       </div>
       <div class="chips fade-in d3">
-        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Every pin needs your approval</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Pinterest + blog traffic</span>
         <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Official Pinterest sign in</span>
-        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Disconnect any time</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>You approve every post</span>
       </div>
     </div>
 
@@ -347,14 +357,14 @@
   <div class="wrap">
     <span class="eyebrow">Ready when you are</span>
     <h2>Your first pins can be ready in <span class="mk">two minutes.</span></h2>
-    <p>Connect Pinterest, add one product and review your drafts. Nothing is posted until you say so.</p>
+    <p>Sign up, connect Pinterest and add one product. We start sending traffic to your store, and nothing is posted until you say so.</p>
     <div class="hero-ctas">
-      <a class="btn btn-primary magnet" href="/signup.html">Connect Pinterest <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a class="btn btn-primary magnet" href="/signup.html">Grow visits <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       <a class="btn btn-ghost" href="/privacy.html">Read the privacy policy</a>
     </div>
   </div>
 </section>
-<a class="btn btn-primary sticky-cta" id="stickyCta" href="/signup.html">Connect Pinterest <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+<a class="btn btn-primary sticky-cta" id="stickyCta" href="/signup.html">Grow visits <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
 </main>
 
 <footer>
@@ -384,7 +394,7 @@
   function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
 
   G.fillBoard($("board"), 0);
-  G.typeWords($("rot"), ["jewelry", "home decor", "crochet", "fashion", "wellness", "gift", "product"]);
+  G.typeWords($("rot"), ["Etsy", "Shopify"]);
 
   // ---------- Approve sequence ----------
   var DRAFTS = [

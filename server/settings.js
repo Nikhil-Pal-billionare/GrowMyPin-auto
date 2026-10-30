@@ -215,6 +215,70 @@ export function findPlan(plans, id) {
   return p && p.on ? p : null;
 }
 
+// ---------------- Landing page banners (Admin > Banners) ----------------
+// Auto-swiping banners at the top of the landing page. Add as many as you want (max 20).
+// theme: night (purple sky), green, gold, light, dark. offer_only: show only while the offer is live.
+// Text shortcuts: {offer} offer name, {percent} discount.
+export const BANNER_THEMES = ["night", "green", "gold", "light", "dark"];
+export const DEFAULT_BANNERS = {
+  enabled: true,
+  interval: 5,
+  items: [
+    { id: "b1", on: true, theme: "night", offer_only: true, kicker: "{offer}", title: "Up to {percent}% off GrowMyPin plans", text: "Reserve your slot today. The offer price is locked for you once you sign up.", btn: "Reserve my slot", link: "/signup.html", image: "" },
+    { id: "b2", on: true, theme: "green", offer_only: false, kicker: "Pinterest + blogs", title: "More buyers for your Etsy and Shopify store", text: "We send real traffic from Pinterest and blog posts straight to your product listings.", btn: "Grow visits", link: "/signup.html", image: "" },
+    { id: "b3", on: true, theme: "light", offer_only: false, kicker: "Free in 2 minutes", title: "See your 6 month growth forecast", text: "Tell us what you sell and get a personal Pinterest views and store visits forecast.", btn: "Get my forecast", link: "/signup.html", image: "" },
+    { id: "b4", on: true, theme: "gold", offer_only: false, kicker: "You stay in control", title: "Nothing goes live until you approve", text: "Every pin and blog post waits for your OK before it is published.", btn: "See how it works", link: "#process", image: "" }
+  ]
+};
+
+function bannerLink(v) {
+  const s = planText(v, 300);
+  if (!s) return "";
+  if (/^#[A-Za-z0-9_-]{1,60}$/.test(s)) return s;
+  if (/^\/[A-Za-z0-9_.\-\/?=&#%]*$/.test(s) && s.indexOf("//") !== 0) return s;
+  if (/^https:\/\/[^\s"'<>]+$/i.test(s)) return s;
+  if (/^https:\/\/wa\.me\//i.test(s)) return s;
+  return "";
+}
+function bannerImage(v) {
+  const s = String(v || "").trim().slice(0, 500);
+  return /^https:\/\/[^\s"'<>()]+$/i.test(s) ? s : "";
+}
+
+export function normalizeBanners(b) {
+  const d = DEFAULT_BANNERS;
+  const src = b && typeof b === "object" ? b : {};
+  const iv = Number(src.interval);
+  const out = {
+    enabled: src.enabled === undefined ? d.enabled : src.enabled === true,
+    interval: iv >= 2 && iv <= 30 ? Math.round(iv * 2) / 2 : d.interval,
+    items: []
+  };
+  const list = Array.isArray(src.items) ? src.items : d.items;
+  const seen = {};
+  list.slice(0, 20).forEach(function (it, i) {
+    if (!it || typeof it !== "object") return;
+    let id = String(it.id || "").replace(/[^A-Za-z0-9_-]/g, "").slice(0, 20) || ("b" + Date.now().toString(36) + i);
+    if (seen[id]) id = id + "_" + i;
+    seen[id] = 1;
+    const title = planText(it.title, 90);
+    if (!title) return;
+    out.items.push({
+      id: id,
+      on: it.on === undefined ? true : it.on === true,
+      theme: BANNER_THEMES.indexOf(it.theme) > -1 ? it.theme : "green",
+      offer_only: it.offer_only === true,
+      kicker: planText(it.kicker, 40),
+      title: title,
+      text: planText(it.text, 160),
+      btn: planText(it.btn, 28),
+      link: bannerLink(it.link),
+      image: bannerImage(it.image)
+    });
+  });
+  return out;
+}
+
 export const DEFAULTS = {
   // Offer shown right after sign up
   offer_enabled: true,
@@ -255,7 +319,10 @@ export const DEFAULTS = {
   growth: DEFAULT_GROWTH,
 
   // Plans and view levels (Admin > Plans). Never sent to browsers before Pinterest is connected.
-  plans: DEFAULT_PLANS
+  plans: DEFAULT_PLANS,
+
+  // Landing page banners (Admin > Banners)
+  banners: DEFAULT_BANNERS
 };
 
 const TEXT_LIMITS = {
@@ -281,6 +348,7 @@ export async function getSettings(fresh) {
   cache = Object.assign({}, DEFAULTS, data);
   cache.growth = normalizeGrowth(data.growth);
   cache.plans = normalizePlans(data.plans);
+  cache.banners = normalizeBanners(data.banners);
   cacheAt = Date.now();
   return cache;
 }
@@ -326,6 +394,7 @@ export function cleanSettings(input) {
     out.sales_whatsapp = d ? "+" + d : "";
   }
   if (b.growth !== undefined) out.growth = normalizeGrowth(b.growth);
+  if (b.banners !== undefined) out.banners = normalizeBanners(b.banners);
   if (b.plans !== undefined) {
     out.plans = normalizePlans(b.plans);
     if (!out.plans.items.some(function (x) { return x.on; })) return { ok: false, error: "Keep at least one plan on." };

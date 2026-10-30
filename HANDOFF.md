@@ -105,6 +105,17 @@ Live on Vercel (Hobby plan). Owner edits code via GitHub web/mobile UI, so all c
 - Login cookie lasts 365 days and is renewed once a day on any visit (refreshUser in server/app.js, called by /api/user/me).
 - Vercel preview links redirect to the SITE_URL host (gmp.js mainHost), because each preview URL had its own login.
 
+## v1.7 Landing banners, new headline, password meter (30 Oct 2026)
+- Landing hero: auto-swiping banner carousel above the headline (public/gmp-banners.js, auto-mounts #heroBanners,
+  data from GET /api/banners). Swipe by finger or mouse, arrows on computers, dots with a timer bar, pauses on hover.
+- Admin > Banners: add / edit / reorder / delete any number of banners (max 20): color style (night, green, gold,
+  light, dark), small heading, title, text, button text + link, image (https link or upload -> Supabase storage
+  bucket gmp-messages via /api/admin/upload), "only while offer is live". Swipe time in seconds (default 5).
+  Stored in site_settings.data.banners (normalizeBanners in server/settings.js).
+- Headline: "We grow your Etsy/Shopify store visits with Pinterest and blog traffic." (smaller font).
+  All landing "Connect Pinterest" buttons now say "Grow visits".
+- Signup password: diyas removed, 4-bar meter Weak / Average / Strong / Best with a tip.
+
 ## Admin (/admin)
 - Access: SUPER_ADMIN_EMAIL (Vercel env, owner, full access) + emails in table admin_emails (view only).
   Anyone else gets the normal 404 page. Admin emails cannot be created via public signup.

@@ -24,6 +24,7 @@ import reportCron from "../server/routes/report/cron.js";
 import track from "../server/routes/track.js";
 import admin from "../server/routes/admin.js";
 import pay from "../server/routes/pay.js";
+import banners from "../server/routes/banners.js";
 
 const ROUTES = {
   "auth/login": authLogin,
@@ -52,6 +53,8 @@ const ROUTES = {
   "admin/settings": function (req, res) { return admin(req, res, "settings"); },
   "admin/admins": function (req, res) { return admin(req, res, "admins"); },
   "admin/payments": function (req, res) { return admin(req, res, "payments"); },
+  "admin/upload": function (req, res) { return admin(req, res, "upload"); },
+  "banners": banners,
   "pay/order": function (req, res) { return pay(req, res, "order"); },
   "pay/verify": function (req, res) { return pay(req, res, "verify"); },
   "pay/status": function (req, res) { return pay(req, res, "status"); }
