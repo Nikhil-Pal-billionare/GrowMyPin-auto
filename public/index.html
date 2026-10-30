@@ -156,7 +156,7 @@
       <div class="demo-form glass reveal">
         <div class="fld">
           <label for="dName">Your product</label>
-          <input id="dName" value="Handmade silver hoop earrings" maxlength="60">
+          <input id="dName" value="Oval moissanite engagement ring" maxlength="60">
         </div>
         <div class="fld">
           <span class="lbl">Niche</span>
@@ -565,6 +565,32 @@
     fashion: { word: "Outfit", board: "Winter outfit ideas", tiles: [5, 3, 5] },
     wellness: { word: "Wellness", board: "Natural wellness", tiles: [6, 3, 4] }
   };
+  // real pin photos for the demo drafts, picked by niche from the landing page pins (tag / caption / title)
+  var NICHE_MATCH = {
+    jewelry: /jewel|ring|bracelet|necklace|earring/i,
+    decor: /decor|home|rug|runner|wall|interior/i,
+    crochet: /diy|crochet|craft|pattern|knit|yarn/i,
+    fashion: /fashion|outfit|dress|bracelet/i,
+    wellness: /well|health|hair|beauty|skin|herbal/i
+  };
+  function nichePhotos(n) {
+    var all = SHOW && SHOW.length ? SHOW : G.SHOWCASE;
+    var re = NICHE_MATCH[n];
+    var hit = all.filter(function (x) { return re && re.test((x.tag || "") + " " + (x.name || "") + " " + (x.title || "")); });
+    if (!hit.length) hit = all;
+    // 3 drafts: use different photos when there are enough, then mix in others
+    var out = hit.slice(0, 3);
+    while (out.length < 3) out.push(hit[out.length % hit.length]);
+    return out;
+  }
+  // product name that matches the photos of each niche (used until the visitor types their own)
+  var NICHE_NAME = {
+    jewelry: "Oval moissanite engagement ring",
+    decor: "Hand-tufted wool stair runner",
+    crochet: "Crochet deer amigurumi pattern",
+    fashion: "Minimalist silver bracelet",
+    wellness: "Natural hair care oil"
+  };
   var niche = "jewelry";
   var dDrafts = $("dDrafts"), dSlots = $("dSlots"), dPub = $("dPub"), dPubN = $("dPubN");
   var demo = [];
@@ -598,10 +624,11 @@
     var nw = NICHES[niche].word;
     var month = new Date().getMonth();
     var season = month >= 9 || month <= 0 ? "Holiday" : (month <= 4 ? "Spring" : "Summer");
+    var ph = nichePhotos(niche);
     demo = [
-      { angle: "Gift angle", title: name + " Gift Idea for Her | " + season + " Gifts She Will Love", desc: "Looking for a gift that feels personal? " + name + " is a thoughtful pick she will actually use. Save it for your " + season.toLowerCase() + " gift list.", tile: NICHES[niche].tiles[0] },
-      { angle: "Seasonal", title: season + " " + nw + " Ideas | " + name, desc: "Fresh " + nw.toLowerCase() + " inspiration for the season. See how " + name.toLowerCase() + " fits right in.", tile: NICHES[niche].tiles[1] },
-      { angle: "Curiosity hook", title: "The " + nw + " Find Everyone Is Saving This Season", desc: "This one keeps showing up on boards for a reason. Meet " + name.toLowerCase() + ".", tile: NICHES[niche].tiles[2] }
+      { angle: "Gift angle", title: name + " Gift Idea for Her | " + season + " Gifts She Will Love", desc: "Looking for a gift that feels personal? " + name + " is a thoughtful pick she will actually use. Save it for your " + season.toLowerCase() + " gift list.", tile: ph[0] },
+      { angle: "Seasonal", title: season + " " + nw + " Ideas | " + name, desc: "Fresh " + nw.toLowerCase() + " inspiration for the season. See how " + name.toLowerCase() + " fits right in.", tile: ph[1] },
+      { angle: "Curiosity hook", title: "The " + nw + " Find Everyone Is Saving This Season", desc: "This one keeps showing up on boards for a reason. Meet " + name.toLowerCase() + ".", tile: ph[2] }
     ];
     demo.forEach(function (d) { d.status = "pending"; d.title = d.title.slice(0, 100); });
     renderDemo(true);
@@ -762,7 +789,12 @@
 
   Array.prototype.forEach.call($("dNiche").querySelectorAll("button"), function (b) {
     b.addEventListener("click", function () {
+      var oldName = NICHE_NAME[niche];
       niche = b.getAttribute("data-n");
+      // keep what the visitor typed; replace only our example name so title and photo match
+      var inp = $("dName"), cur = inp.value.trim();
+      var isExample = !cur || Object.keys(NICHE_NAME).some(function (k) { return NICHE_NAME[k].toLowerCase() === cur.toLowerCase(); }) || cur.toLowerCase() === String(oldName || "").toLowerCase();
+      if (isExample && NICHE_NAME[niche]) inp.value = NICHE_NAME[niche];
       Array.prototype.forEach.call($("dNiche").querySelectorAll("button"), function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
       makeDrafts();
     });
