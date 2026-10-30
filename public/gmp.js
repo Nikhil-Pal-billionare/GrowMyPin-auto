@@ -459,6 +459,7 @@
       window.GMPMe = me;
       vapid = me.vapid || "";
       if (me.is_admin) { addAdminLink(); try { localStorage.setItem("gmp_staff", "1"); } catch (e) {} }
+      loadNav();
       var list = (me.messages || []).slice().reverse(); // oldest first
       if (msgId) list.sort(function (a, b) { return a.id === msgId ? -1 : (b.id === msgId ? 1 : 0); });
       list.forEach(function (m) {
@@ -472,6 +473,14 @@
     }).catch(function () {});
   }
   window.GMPShowVisitsPopup = function () { showVisitsPopup(); };
+
+  // bottom menu bar (Home, Search, Performance, Profile, More) for logged-in people: /gmp-nav.js
+  function loadNav() {
+    if (isSignup || isAdminPage || /^\/(reset|404)(\.html)?$/.test(path) || window.GMPNav) return;
+    var sc = document.createElement("script");
+    sc.src = "/gmp-nav.js";
+    document.head.appendChild(sc);
+  }
 
   function boot() {
     var params = new URLSearchParams(location.search);

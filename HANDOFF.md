@@ -93,6 +93,14 @@ Live on Vercel (Hobby plan). Owner edits code via GitHub web/mobile UI, so all c
   staff. Dashboard has Real people / Bots / You and team / Everyone switch with counts. Run v1.5 part of supabase.sql.
 - Visits before this change had no human check, so they show under Bots.
 
+## v1.6 Bottom menu bar (30 Oct 2026)
+- public/gmp-nav.js, loaded by gmp.js for logged-in people on every page except signup, admin, reset, 404.
+- 5 tabs with small labels: Home (/home.html), Search (sheet: search pages + actions, "/" or Ctrl+K on computers),
+  Performance (scrolls to the growth graph, /home.html#performance from other pages; lights up while the graph is on screen),
+  Profile (sheet: Pinterest, plan, store, goal, WhatsApp, log out), More (Pin Studio, Plans, store, notifications,
+  install app, WhatsApp help, admin, policies, log out).
+- Home sections reachable by hash: #performance #pins #store #goal #plans. /api/user/me now also returns billing.
+
 ## Admin (/admin)
 - Access: SUPER_ADMIN_EMAIL (Vercel env, owner, full access) + emails in table admin_emails (view only).
   Anyone else gets the normal 404 page. Admin emails cannot be created via public signup.

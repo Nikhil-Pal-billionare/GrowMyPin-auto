@@ -7,6 +7,7 @@ import { sendJson, getSession, pinterest } from "../../lib.js";
 import { getUser, db } from "../../app.js";
 import { getProfile, isAdminEmail, vapidPublic, nowIso } from "../../growth.js";
 import { getSettings, publicSettings } from "../../settings.js";
+import { billingState } from "../../billing.js";
 
 export default async function handler(req, res) {
   try {
@@ -31,6 +32,7 @@ export default async function handler(req, res) {
 
     let offer = "pending";
     let growth = null;
+    let billing = null;
     let messages = [];
     let admin = { admin: false, isSuper: false };
     try {
@@ -44,6 +46,7 @@ export default async function handler(req, res) {
       const p = results[0];
       if (p) {
         offer = p.offer_status || "pending";
+        billing = billingState(p);
         growth = {
           platforms: p.platforms || [], links: p.shop_links || {}, pinterest_url: p.pinterest_url || "",
           has_pinterest: !!p.pinterest_url, target: p.target_sales || 0, wait: p.wait_months || 0,
@@ -69,6 +72,7 @@ export default async function handler(req, res) {
       is_super: admin.isSuper,
       messages: messages,
       growth: growth,
+      billing: billing,
       settings: settings,
       vapid: vapidPublic()
     });
