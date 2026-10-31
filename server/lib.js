@@ -9,7 +9,8 @@ export const OAUTH_BASE = "https://api.pinterest.com/v5";
 // https://api-sandbox.pinterest.com/v5 only if Pinterest tells you to use sandbox.
 export const API_BASE = process.env.PINTEREST_API_BASE || "https://api.pinterest.com/v5";
 
-export const SCOPES = "user_accounts:read,boards:read,pins:read,pins:write";
+// boards:write is needed: Pinterest refuses POST /pins without it (error "Missing: boards:write").
+export const SCOPES = "user_accounts:read,boards:read,boards:write,pins:read,pins:write";
 
 const SESSION_COOKIE = "gmp_session";
 export const STATE_COOKIE = "gmp_state";
