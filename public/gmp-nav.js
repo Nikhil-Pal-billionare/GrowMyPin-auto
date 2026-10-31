@@ -3,12 +3,14 @@
 //   Home         -> /home.html
 //   Search       -> search anything in the Studio (pages, actions, help)
 //   Performance  -> your growth graph + Pinterest views (/home.html#performance)
-//   Profile      -> your account, Pinterest, plan, store links, log out
+//   Profile      -> /profile.html (complete your profile, store, goal, Pinterest, plan, log out).
+//                   A ring around the icon shows how complete the profile is.
 //   More         -> Pin Studio, notifications, install app, WhatsApp help, policies
 (function () {
   if (window.GMPNav) return;
   var path = location.pathname || "/";
   var isHome = /^\/home(\.html)?$/.test(path);
+  var isProfile = /^\/profile(\.html)?$/.test(path);
   var RM = false;
   try { RM = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
 
@@ -59,6 +61,13 @@
     ".gnav span{font-size:clamp(.6rem,2.75vw,.7rem);font-weight:700;letter-spacing:-.01em;line-height:1.1;white-space:nowrap;max-width:100%}" +
     ".gnav .on{color:#0B7A69}.gnav .on svg{transform:translateY(-1px) scale(1.08)}" +
     ".gnav button:active svg,.gnav a:active svg{transform:scale(.88)}" +
+    ".gnav .pr{position:relative;display:grid;place-items:center;width:30px;height:30px;margin:-3px 0 -4px}" +
+    ".gnav .pr svg.rg{position:absolute;inset:0;width:30px;height:30px;transform:rotate(-90deg)}" +
+    ".gnav .pr svg.rg circle{fill:none;stroke-width:2.4}" +
+    ".gnav .pr svg.rg .t{stroke:#E1E4EB}" +
+    ".gnav .pr svg.rg .f{stroke:#14B88F;stroke-linecap:round;transition:stroke-dashoffset 1s cubic-bezier(.2,.8,.2,1)}" +
+    ".gnav .pr svg.ic{width:17px;height:17px}" +
+    ".gnav .pr.full svg.rg .f{stroke:#0F9682}" +
     ".gnav .dot{position:absolute;top:6px;right:calc(50% - 16px);width:8px;height:8px;border-radius:50%;background:#F29A2E;box-shadow:0 0 0 2px #fff}" +
     ".gnav :focus-visible{outline:3px solid #0F9682;outline-offset:-2px}" +
     // sheets
@@ -115,7 +124,7 @@
 
   // ---------------- home page helpers ----------------
   // sections on /home.html that other pages can jump to: /home.html#performance etc.
-  var SECTIONS = { performance: "predCard", pins: "pinCard", store: "storeCard", goal: "goalCard", plans: "planBox", setup: "steps" };
+  var SECTIONS = { performance: "predCard", pins: "pinCard", plans: "planBox" };
   function goSection(key) {
     if (!isHome) { location.href = "/home.html#" + key; return; }
     var tries = 0;
@@ -123,7 +132,6 @@
       var el = document.getElementById(SECTIONS[key] || "");
       if (el && !el.hidden && el.offsetParent !== null) {
         el.scrollIntoView({ behavior: RM ? "auto" : "smooth", block: "start" });
-        if (key === "store") { var b = document.getElementById("editShop"); if (b && !b.hidden) setTimeout(function () { b.click(); }, 500); }
         try { history.replaceState(null, "", "/home.html#" + key); } catch (e) {}
         return;
       }
@@ -178,9 +186,9 @@
       { k: "pins", t: "My Pinterest pins", s: "Your latest pins and last 30 days views", ic: "pin", c: "r", w: "pins pinterest my pins views impressions", act: true },
       { k: "studio", t: "Make new pins", s: "Pin Studio: AI drafts, you approve every pin", ic: "star", c: "w", href: "/app.html", w: "make create new pin studio ai draft publish post upload" },
       { k: "connect", t: "Connect Pinterest", s: "See your real views and pins here", ic: "link", href: "/api/auth/login?next=/home.html", w: "connect pinterest login link account" },
-      { k: "store", t: "My store links", s: "Etsy, Shopify or eBay links", ic: "store", c: "w", w: "store shop etsy shopify ebay link edit", act: true },
-      { k: "goal", t: "My sales goal", s: "Sales you want each month", ic: "goal", c: "v", w: "goal sales target month", act: true },
-      { k: "profile", t: "My profile", s: "Account, plan, Pinterest and log out", ic: "user", c: "v", w: "profile account email phone plan me settings", act: true },
+      { k: "store", t: "My store links", s: "Etsy, Shopify or eBay links", ic: "store", c: "w", href: "/profile.html#store", w: "store shop etsy shopify ebay link edit" },
+      { k: "goal", t: "My sales goal", s: "Sales you want each month", ic: "goal", c: "v", href: "/profile.html#goal", w: "goal sales target month" },
+      { k: "profile", t: "My profile", s: "Complete your profile, plan, Pinterest and log out", ic: "user", c: "v", href: "/profile.html", w: "profile account email phone plan me settings complete niche sell" },
       { k: "alerts", t: "Turn on notifications", s: "Get GrowMyPin updates on this phone", ic: "bell", c: "w", w: "notifications alerts push bell updates", act: true },
       { k: "install", t: "Install the app", s: "Add GrowMyPin to your home screen", ic: "phone", w: "install app home screen download add", act: true },
       { k: "terms", t: "Terms of Service", s: "The rules for using the Studio", ic: "doc", href: "/terms.html", w: "terms service rules legal" },
@@ -198,8 +206,8 @@
   window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); installEvt = e; });
 
   function run(k, noteEl) {
-    if (k === "performance" || k === "pins" || k === "store" || k === "goal" || k === "plans") { closeSheet(); goSection(k); return true; }
-    if (k === "profile") { openProfile(); return true; }
+    if (k === "performance" || k === "pins" || k === "plans") { closeSheet(); goSection(k); return true; }
+    if (k === "profile") { location.href = "/profile.html"; return true; }
     if (k === "logout") {
       fetch("/api/user/logout", { method: "POST", credentials: "same-origin" }).catch(function () {}).then(function () {
         try { document.cookie = "gmp_in=; Max-Age=0; path=/"; } catch (e) {}
@@ -264,37 +272,18 @@
     });
   }
 
-  // ---------------- Profile ----------------
-  function fmtDate(iso) { try { return new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }); } catch (e) { return ""; } }
-  function openProfile() {
-    setActive("profile");
-    var m = me(), u = m.user || {};
-    var name = u.name || (u.email || "").split("@")[0] || "You";
-    sheet("Profile", '<div class="pf"><div class="av" aria-hidden="true">' + esc(name.charAt(0).toUpperCase()) + '</div><div><b>' + esc(name) + '</b><span>' + esc(u.email || "") + '</span></div></div>' +
-      '<div class="lbl">Your account</div><div class="rows" id="gpRows"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>' +
-      '<div class="lbl">Account</div><div class="rows">' + row({ k: "logout", t: "Log out", s: "Sign out of this device", ic: "out", c: "r" }) + '</div>', function (box) {
-      box.addEventListener("click", function (e) {
-        var r = e.target.closest(".row"); if (!r) return;
-        if (r.tagName === "BUTTON") { e.preventDefault(); run(r.getAttribute("data-k")); }
-      });
-      api("/api/user/me").then(function (full) {
-        var g = full.growth || {}, pin = full.pinterest, b = full.billing || {};
-        var links = g.links || {}, names = { etsy: "Etsy", shopify: "Shopify", ebay: "eBay" };
-        var shops = Object.keys(links).filter(function (k) { return links[k]; });
-        var rows = [];
-        rows.push(pin ? { k: "pins", t: "Pinterest connected", s: "@" + pin.username + " - tap to see your pins", ic: "pin", c: "r" }
-                      : { t: "Connect Pinterest", s: "See your real views, pins and plans", ic: "link", href: "/api/auth/login?next=/home.html" });
-        if (b.active) rows.push({ k: "plans", t: b.plan_name + " plan active", s: "Till " + fmtDate(b.plan_until) + " (" + b.days_left + " days left)", ic: "tag", c: "v" });
-        else if (pin) rows.push({ k: "plans", t: "No plan yet", s: "Pick a plan and we start growing your account", ic: "tag", c: "v" });
-        rows.push({ k: "store", t: shops.length ? shops.map(function (k) { return names[k]; }).join(" + ") + " store" : "Add your store", s: shops.length ? "Tap to change your store links" : "Etsy, Shopify or eBay link", ic: "store", c: "w" });
-        rows.push({ k: "goal", t: g.target ? g.target + " sales a month" : "Set your sales goal", s: g.niche ? "You sell: " + g.niche : "Your monthly goal from Pinterest", ic: "goal", c: "v" });
-        if (full.user && full.user.whatsapp) rows.push({ k: "", t: "WhatsApp", s: full.user.whatsapp, ic: "chat" });
-        var el = box.querySelector("#gpRows");
-        if (el) el.innerHTML = rows.map(function (r) { return r.k === "" ? row(r).replace('<button class="row"', '<button class="row" disabled style="cursor:default"').replace(/<span class="go">[\s\S]*?<\/span><\/button>$/, "</button>") : row(r); }).join("");
-      }).catch(function () {
-        var el = box.querySelector("#gpRows"); if (el) el.innerHTML = '<div class="empty">Could not load your profile. Check your internet.</div>';
-      });
-    });
+  // ---------------- Profile (a page now: /profile.html) ----------------
+  function openProfile() { location.href = "/profile.html"; }
+  var PR_LEN = 2 * Math.PI * 13;
+  function setProfilePct(p) {
+    p = Math.max(0, Math.min(100, Math.round(Number(p) || 0)));
+    if (!bar) return;
+    var box = bar.querySelector(".pr"); if (!box) return;
+    var f = box.querySelector(".f");
+    f.setAttribute("stroke-dashoffset", String(PR_LEN - PR_LEN * p / 100));
+    box.classList.toggle("full", p === 100);
+    var a = bar.querySelector('[data-tab="profile"]');
+    if (a) a.setAttribute("aria-label", "Profile, " + p + "% complete");
   }
 
   // ---------------- More ----------------
@@ -326,6 +315,7 @@
   ];
   var bar = null;
   function currentTab() {
+    if (isProfile) return "profile";
     if (!isHome) return "";
     return perfVisible ? "performance" : "home";
   }
@@ -349,6 +339,7 @@
     bar.setAttribute("aria-label", "Main menu");
     bar.innerHTML = '<i class="ind" aria-hidden="true"></i>' + TABS.map(function (t) {
       if (t.k === "home") return '<a href="/home.html" data-tab="home">' + I[t.ic] + '<span>' + t.t + '</span></a>';
+      if (t.k === "profile") return '<a href="/profile.html" data-tab="profile" aria-label="Profile"><span class="pr"><svg class="rg" viewBox="0 0 30 30" aria-hidden="true"><circle class="t" cx="15" cy="15" r="13"/><circle class="f" cx="15" cy="15" r="13" stroke-dasharray="' + PR_LEN.toFixed(2) + '" stroke-dashoffset="' + PR_LEN.toFixed(2) + '"/></svg>' + I.user.replace("<svg ", '<svg class="ic" ') + '</span><span>' + t.t + '</span></a>';
       return '<button type="button" data-tab="' + t.k + '" aria-label="' + t.t + '">' + I[t.ic] + '<span>' + t.t + '</span></button>';
     }).join("");
     document.body.appendChild(bar);
@@ -360,13 +351,17 @@
         if (isHome) { e.preventDefault(); closeSheet(); window.scrollTo({ top: 0, behavior: RM ? "auto" : "smooth" }); try { history.replaceState(null, "", "/home.html"); } catch (er) {} }
         return;
       }
+      if (k === "profile") {
+        if (isProfile) { e.preventDefault(); closeSheet(); window.scrollTo({ top: 0, behavior: RM ? "auto" : "smooth" }); }
+        return;
+      }
       if (openSheet && b.classList.contains("on")) { closeSheet(); return; }
       if (k === "search") openSearch();
       if (k === "performance") { closeSheet(); setActive("performance"); goSection("performance"); }
-      if (k === "profile") openProfile();
       if (k === "more") openMore();
     });
     setActive(currentTab());
+    setProfilePct(me().profile_pct || 0);
     // on the home page, light up Performance while the growth graph is on screen
     if (isHome && "IntersectionObserver" in window) {
       var tries = 0;
@@ -385,6 +380,6 @@
     if (isHome && SECTIONS[h]) goSection(h);
   }
 
-  window.GMPNav = { mount: mount, search: openSearch, profile: openProfile, more: openMore, go: goSection };
+  window.GMPNav = { mount: mount, search: openSearch, profile: openProfile, more: openMore, go: goSection, setProfilePct: setProfilePct };
   mount();
 })();

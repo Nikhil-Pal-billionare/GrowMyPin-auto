@@ -5,6 +5,7 @@
 //   shop     { platforms, links, pinterest_url }         home page: save shop details
 //   interest { source }                                 "I want to increase visits"
 //   growth   { niche, pins_count }                      personal growth graph (what they sell, pins on Pinterest)
+//   goal     { target_sales }                           profile page: monthly sales goal
 //   seen     { ids: [...] }                             mark GrowMyPin messages as read
 //   push     { subscription }                           save this phone/browser for notifications
 //   unpush   { endpoint }                               remove it
@@ -161,6 +162,14 @@ export default async function handler(req, res) {
         return sendJson(res, 500, { error: "Could not save. (Admin: run the v1.3 part of supabase.sql.)" });
       }
       return sendJson(res, 200, Object.assign({ ok: true }, body));
+    }
+
+    // Profile page: monthly sales goal (one of TARGETS)
+    if (action === "goal") {
+      const target = Number(b.target_sales);
+      if (TARGETS.indexOf(target) < 0) return sendJson(res, 400, { error: "Pick how many sales you want per month." });
+      await db("profiles?id=eq." + u.id, { method: "PATCH", body: { target_sales: target }, prefer: "return=minimal" });
+      return sendJson(res, 200, { ok: true, target_sales: target });
     }
 
     if (action === "seen") {

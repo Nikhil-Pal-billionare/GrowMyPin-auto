@@ -231,6 +231,9 @@
   .gr-tbl .tot { font-weight: 800; color: var(--char); text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
   .gr-tbl tr.best td { background: #F1FBF7; }
   .gr-tools { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  #grTbl { min-width: 900px; }
+  #grTbl td input { width: 100%; min-width: 96px; padding: 8px 8px; text-align: right; font-variant-numeric: tabular-nums; }
+  #grTbl td:first-child { min-width: 120px; }
   .gr-pct { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
   .gr-pct label { font-size: .76rem !important; }
   .gr-add { display: flex; gap: 8px; }
@@ -414,57 +417,25 @@
     <div class="gr-grid">
       <div style="display:grid;gap:18px">
         <section class="card fset">
-          <div class="card-h" style="margin:0"><h2>1. Which strategy is best right now</h2></div>
-          <p class="hint">The numbers belong to the rank, not to the strategy. Move a strategy to <b>Best</b> and it gets the Best numbers on every user's graph. Change it any time.</p>
-          <label>Order for<select class="gr-sel" id="grRankFor"></select></label>
-          <label class="sw" id="grOwnWrap" hidden><span id="grOwnTxt">This niche has its own order</span><input type="checkbox" id="grOwn"></label>
-          <div class="gr-rank" id="grRank"></div>
+          <div class="card-h" style="margin:0"><h2>Monthly Pinterest views per niche</h2></div>
+          <p class="hint">One estimate per niche: Pinterest views in each month for an account that starts at zero. A seller who already has views sees their current monthly views plus these numbers. Sellers never see the niche, these numbers or how the graph is made.</p>
+          <div class="tbl-wrap"><table class="gr-tbl" id="grTbl"></table></div>
+          <div class="gr-add"><input type="text" id="grNewNiche" maxlength="30" placeholder="New niche, for example Pet Products"><button class="btn btn-g btn-sm" type="button" id="grAddNiche">Add niche</button></div>
+          <p class="hint">"Other" is used for anyone who has not told us what they sell, so it cannot be removed.</p>
         </section>
 
         <section class="card fset">
-          <div class="card-h" style="margin:0"><h2>2. Numbers per niche</h2></div>
-          <p class="hint">Type your real results. <b>Views</b> = Pinterest views in that month (monthly total). <b>Store visits</b> = Etsy store visits from Pinterest in that month. For a new account posting with GrowMyPin.</p>
-          <div class="chips" id="grNiches"></div>
-          <div class="gr-add"><input type="text" id="grNewNiche" maxlength="30" placeholder="New niche, for example Pet Products"><button class="btn btn-g btn-sm" type="button" id="grAddNiche">Add niche</button><button class="btn btn-g btn-sm" type="button" id="grDelNiche">Remove this niche</button></div>
-          <h2 style="font-size:1rem;margin-top:6px">Monthly Pinterest views</h2>
-          <div class="tbl-wrap"><table class="gr-tbl" id="grViews"></table></div>
-          <h2 style="font-size:1rem;margin-top:6px">Monthly Etsy store visits</h2>
-          <div class="tbl-wrap"><table class="gr-tbl" id="grVisits"></table></div>
-          <p class="hint">Only know the Best numbers? Type them, set the % for the lower ranks and press Fill.</p>
-          <div class="gr-pct" id="grPct"></div>
-          <div class="gr-tools">
-            <button class="btn btn-g btn-sm" type="button" id="grFill">Fill lower ranks from Best</button>
-            <button class="btn btn-g btn-sm" type="button" id="grCopyAll">Copy these numbers to all niches</button>
-          </div>
-        </section>
-
-        <section class="card fset">
-          <h2>3. Strategy names</h2>
-          <p class="hint">What users see on the graph. Name, and one short line.</p>
-          <div class="gr-names" id="grNames"></div>
-        </section>
-
-        <section class="card fset">
-          <h2>4. Pins already on their Pinterest</h2>
-          <p class="hint">More pins = higher graph. 100 = no change, 120 = 20% more views and visits.</p>
-          <div class="gr-pct" id="grPins"></div>
-        </section>
-
-        <section class="card fset">
-          <h2>5. Store type and variation</h2>
-          <p class="hint">Visits %: Etsy is your data (100). Sale %: how many store visits turn into a sale (used for the sales goal).</p>
-          <div id="grStores" style="display:grid;gap:8px"></div>
-          <label>Personal variation, plus or minus % <small>so two shops in one niche never get the exact same graph (0 to 20)</small><input type="number" id="grVary" min="0" max="20" step="1"></label>
+          <h2>Patience months</h2>
+          <p class="hint">How many first months show as Patience (orange) before Reward (green) on every graph.</p>
+          <label>Patience<select class="gr-sel" id="grPat"><option value="1">1 month</option><option value="2">2 months</option><option value="3">3 months</option></select></label>
         </section>
       </div>
 
       <section class="card gr-prev">
-        <div class="card-h" style="margin:0"><h2>Live preview</h2><span class="sub">what a user sees, before you save</span></div>
-        <div class="row4">
+        <div class="card-h" style="margin:0"><h2>Live preview</h2><span class="sub">what a seller sees, before you save</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
           <select id="pvNiche" aria-label="Niche"></select>
-          <select id="pvPins" aria-label="Pins"></select>
-          <select id="pvStore" aria-label="Store"><option value="etsy">Etsy</option><option value="shopify">Shopify</option><option value="ebay">eBay</option></select>
-          <input type="number" id="pvCur" min="0" placeholder="Views now" aria-label="Current monthly views">
+          <input type="number" id="pvCur" min="0" placeholder="Views now (empty = new account)" aria-label="Current monthly views">
         </div>
         <div id="pvBox"></div>
       </section>
@@ -1437,16 +1408,10 @@
   }
 
   // ---------------- growth graph ----------------
-  var GRS = { g: null, def: null, niche: "", rankFor: "_all", canEdit: false, widget: null, dirty: false };
-  var GR_IDS = ["trend", "gift", "evergreen", "hook", "lifestyle"];
-  var GR_LBL = ["Best", "2nd best", "Middle", "2nd worst", "Worst"];
-  var GR_COL = ["#34D6A8", "#5BC0EB", "#A78BFA", "#FFB65C", "#FF7A93"];
-  var GR_PINS = ["0 pins", "1 to 24", "25 to 99", "100 to 299", "300+"];
-  var UP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>';
-  var DOWN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+  // One graph per niche: Pinterest views in month 1 to 6 for an account starting at zero.
+  var GRS = { g: null, def: null, canEdit: false, widget: null, dirty: false };
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
-  function grNiche(name) { return GRS.g.niches.filter(function (n) { return n.name === name; })[0]; }
-  function grOrder(name) { return GRS.g.rank[name] || GRS.g.rank._all; }
+  function grNum(n) { return Math.round(Number(n) || 0).toLocaleString("en-IN"); }
   function grDirty() { GRS.dirty = true; $("grMsg").textContent = "Not saved yet. Press Save growth graph to make it live."; grPreview(); }
 
   async function loadGrowth() {
@@ -1457,176 +1422,68 @@
       GRS.g = clone(r.settings.growth);
       GRS.def = clone(r.defaults.growth);
       GRS.canEdit = !!r.can_edit;
-      if (!GRS.niche || !grNiche(GRS.niche)) GRS.niche = GRS.g.niches[0].name;
       $("grMeta").textContent = r.meta && r.meta.updated_by ? "Last saved " + full(r.meta.updated_at) + " by " + r.meta.updated_by + "." : "Using default numbers. Type your real results and save.";
       grRenderAll();
       if (!GRS.canEdit) { $("grMsg").textContent = "View only. Only the owner can change the growth graph."; }
     } catch (e) { toast("Could not load the growth graph: " + e.message, true); }
   }
-  function grRenderAll() { grRank(); grNiches(); grTables(); grPctRow(); grNames(); grPins(); grStores(); grPreviewSetup(); grLock(); }
+  function grRenderAll() { grTable(); $("grPat").value = String(GRS.g.patience || 2); grPreviewSetup(); grLock(); }
   function grLock() {
     var dis = !GRS.canEdit;
     Array.prototype.forEach.call($("pane-growth").querySelectorAll("input, button, select"), function (el) {
       if (el.closest(".gr-prev")) return;
-      el.disabled = dis || el.disabled;
+      el.disabled = dis;
     });
   }
-
-  // 1. ranking
-  function grRank() {
-    var sel = $("grRankFor");
-    sel.innerHTML = '<option value="_all">All niches (default order)</option>' + GRS.g.niches.map(function (n) {
-      return '<option value="' + esc(n.name) + '">' + esc(n.name) + (GRS.g.rank[n.name] ? " (own order)" : " (uses default)") + '</option>';
+  function grTable() {
+    var h = '<thead><tr><th>Niche</th>';
+    for (var m = 1; m <= 6; m++) h += '<th>Month ' + m + '</th>';
+    h += '<th>6 month total</th><th></th></tr></thead><tbody>';
+    h += GRS.g.niches.map(function (n, i) {
+      var tot = n.views.reduce(function (s, v) { return s + (Number(v) || 0); }, 0);
+      return '<tr><td><b>' + esc(n.name) + '</b></td>' +
+        n.views.map(function (v, m) { return '<td><input type="number" min="0" step="100" data-n="' + i + '" data-m="' + m + '" value="' + v + '" aria-label="' + esc(n.name) + ' month ' + (m + 1) + ' views"></td>'; }).join("") +
+        '<td class="tot" data-tot="' + i + '">' + grNum(tot) + '</td>' +
+        '<td>' + (n.name === "Other" ? "" : '<button class="btn btn-g btn-sm" type="button" data-del="' + i + '">Remove</button>') + '</td></tr>';
     }).join("");
-    sel.value = GRS.rankFor;
-    var own = GRS.rankFor !== "_all";
-    $("grOwnWrap").hidden = !own;
-    $("grOwn").checked = own && !!GRS.g.rank[GRS.rankFor];
-    $("grOwnTxt").textContent = own ? GRS.rankFor + " has its own order" : "";
-    var order = grOrder(GRS.rankFor === "_all" ? "_all" : GRS.rankFor);
-    var editable = GRS.rankFor === "_all" || !!GRS.g.rank[GRS.rankFor];
-    $("grRank").innerHTML = order.map(function (id, k) {
-      var st = GRS.g.strategies[id];
-      return '<div class="gr-r"><span class="gr-b" style="background:' + GR_COL[k] + '">' + GR_LBL[k] + '</span><div><b>' + esc(st.name) + '</b><small>' + esc(st.short) + '</small></div>' +
-        '<div class="gr-mv"><button type="button" data-mv="-1" data-k="' + k + '" aria-label="Move up"' + (k === 0 || !editable ? " disabled" : "") + '>' + UP + '</button><button type="button" data-mv="1" data-k="' + k + '" aria-label="Move down"' + (k === 4 || !editable ? " disabled" : "") + '>' + DOWN + '</button></div></div>';
-    }).join("") + (editable ? "" : '<p class="hint">Uses the default order. Turn on "own order" above to change it only for ' + esc(GRS.rankFor) + '.</p>');
+    $("grTbl").innerHTML = h + '</tbody>';
     if (!GRS.canEdit) grLock();
   }
-  $("grRankFor").onchange = function () { GRS.rankFor = this.value; grRank(); if (this.value !== "_all") { GRS.niche = this.value; $("pvNiche").value = this.value; grNiches(); grTables(); } grPreview(); };
-  $("grOwn").onchange = function () {
-    if (this.checked) GRS.g.rank[GRS.rankFor] = GRS.g.rank._all.slice();
-    else delete GRS.g.rank[GRS.rankFor];
-    grRank(); grTables(); grDirty();
-  };
-  $("grRank").addEventListener("click", function (e) {
-    var b = e.target.closest("[data-mv]"); if (!b || b.disabled) return;
-    var k = Number(b.getAttribute("data-k")), to = k + Number(b.getAttribute("data-mv"));
-    var key = GRS.rankFor === "_all" ? "_all" : GRS.rankFor;
-    var arr = GRS.g.rank[key]; if (!arr) return;
-    var t = arr[k]; arr[k] = arr[to]; arr[to] = t;
-    grRank(); grTables(); grDirty();
-  });
-
-  // 2. numbers
-  function grNiches() {
-    $("grNiches").innerHTML = GRS.g.niches.map(function (n) {
-      return '<button type="button" class="chip' + (n.name === GRS.niche ? " on" : "") + (GRS.g.rank[n.name] ? " custom" : "") + '" data-n="' + esc(n.name) + '">' + esc(n.name) + '</button>';
-    }).join("");
-    $("grDelNiche").disabled = !GRS.canEdit || GRS.niche === "Other";
-  }
-  $("grNiches").addEventListener("click", function (e) {
-    var b = e.target.closest("[data-n]"); if (!b) return;
-    GRS.niche = b.getAttribute("data-n"); grNiches(); grTables();
-    $("pvNiche").value = GRS.niche; grPreview();
-  });
-  function grTable(id, key) {
-    var n = grNiche(GRS.niche), order = grOrder(GRS.niche);
-    var h = '<thead><tr><th>Rank</th>' + [1, 2, 3, 4, 5, 6].map(function (m) { return '<th>Month ' + m + '</th>'; }).join("") + '<th style="text-align:right">3 months</th><th style="text-align:right">6 months</th></tr></thead><tbody>';
-    n[key].forEach(function (row, r) {
-      var t3 = row[0] + row[1] + row[2], t6 = t3 + row[3] + row[4] + row[5];
-      h += '<tr class="' + (r === 0 ? "best" : "") + '"><td><span class="gr-b" style="background:' + GR_COL[r] + '">' + GR_LBL[r] + '</span><small>' + esc(GRS.g.strategies[order[r]].name) + '</small></td>' +
-        row.map(function (v, m) { return '<td><input type="text" inputmode="numeric" data-key="' + key + '" data-r="' + r + '" data-m="' + m + '" value="' + v + '" aria-label="' + GR_LBL[r] + ' month ' + (m + 1) + '"></td>'; }).join("") +
-        '<td class="tot" data-t3="' + key + r + '">' + short(t3) + '</td><td class="tot" data-t6="' + key + r + '">' + short(t6) + '</td></tr>';
-    });
-    $(id).innerHTML = h + '</tbody>';
-  }
-  function grTables() { grTable("grViews", "views"); grTable("grVisits", "visits"); if (!GRS.canEdit) grLock(); }
-  function onNum(e) {
-    var i = e.target; if (!i.getAttribute("data-key")) return;
-    var key = i.getAttribute("data-key"), r = Number(i.getAttribute("data-r")), m = Number(i.getAttribute("data-m"));
-    var v = Math.max(0, Math.round(Number(String(i.value).replace(/[^0-9.]/g, "")) || 0));
-    var row = grNiche(GRS.niche)[key][r];
-    row[m] = v;
-    var t3 = row[0] + row[1] + row[2], t6 = t3 + row[3] + row[4] + row[5];
-    var c3 = document.querySelector('[data-t3="' + key + r + '"]'), c6 = document.querySelector('[data-t6="' + key + r + '"]');
-    if (c3) c3.textContent = short(t3); if (c6) c6.textContent = short(t6);
+  $("grTbl").addEventListener("input", function (e) {
+    var t = e.target, n = t.getAttribute("data-n"), m = t.getAttribute("data-m");
+    if (n === null || m === null) return;
+    var row = GRS.g.niches[Number(n)];
+    row.views[Number(m)] = Math.max(0, Math.min(1e9, Math.round(Number(t.value) || 0)));
+    var cell = $("grTbl").querySelector('[data-tot="' + n + '"]');
+    if (cell) cell.textContent = grNum(row.views.reduce(function (s, v) { return s + v; }, 0));
     grDirty();
-  }
-  $("grViews").addEventListener("input", onNum);
-  $("grVisits").addEventListener("input", onNum);
-  function grPctRow() {
-    $("grPct").innerHTML = GRS.g.tier_pct.map(function (p, k) {
-      return '<label>' + GR_LBL[k] + ' %<input type="number" min="0" max="100" data-pct="' + k + '" value="' + p + '"' + (k === 0 ? " disabled" : "") + '></label>';
-    }).join("");
-  }
-  $("grPct").addEventListener("input", function (e) { var k = e.target.getAttribute("data-pct"); if (k === null) return; GRS.g.tier_pct[Number(k)] = Math.max(0, Math.min(100, Number(e.target.value) || 0)); GRS.dirty = true; });
-  $("grFill").onclick = function () {
-    var n = grNiche(GRS.niche);
-    ["views", "visits"].forEach(function (key) {
-      for (var r = 1; r < 5; r++) n[key][r] = n[key][0].map(function (v) { return Math.round(v * GRS.g.tier_pct[r] / 100); });
-    });
-    grTables(); grDirty(); toast("Lower ranks filled for " + GRS.niche + ".");
-  };
-  $("grCopyAll").onclick = function () {
-    if (!confirm("Copy the " + GRS.niche + " numbers to every other niche? Their numbers will be replaced.")) return;
-    var src = grNiche(GRS.niche);
-    GRS.g.niches.forEach(function (n) { if (n !== src) { n.views = clone(src.views); n.visits = clone(src.visits); } });
-    grDirty(); toast("Copied to all niches. Press Save to make it live.");
-  };
+  });
+  $("grTbl").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-del]"); if (!b) return;
+    var i = Number(b.getAttribute("data-del")), n = GRS.g.niches[i];
+    if (!n || n.name === "Other") return;
+    if (!confirm("Remove the niche " + n.name + "? Sellers who picked it will see the Other numbers.")) return;
+    GRS.g.niches.splice(i, 1);
+    grTable(); grPreviewSetup(); grDirty();
+  });
   $("grAddNiche").onclick = function () {
     var name = $("grNewNiche").value.replace(/[^A-Za-z0-9 &+'\/-]/g, "").replace(/\s+/g, " ").trim().slice(0, 30);
     if (!name) { toast("Type a niche name first.", true); return; }
-    if (grNiche(name) || GRS.g.niches.some(function (n) { return n.name.toLowerCase() === name.toLowerCase(); })) { toast("That niche already exists.", true); return; }
-    if (GRS.g.niches.length >= 24) { toast("Max 24 niches.", true); return; }
-    var other = grNiche("Other") || GRS.g.niches[0];
+    if (GRS.g.niches.some(function (n) { return n.name.toLowerCase() === name.toLowerCase(); })) { toast(name + " is already in the list.", true); return; }
+    if (GRS.g.niches.length >= 24) { toast("You can have up to 24 niches.", true); return; }
+    var other = GRS.g.niches.filter(function (n) { return n.name === "Other"; })[0];
     var at = GRS.g.niches.indexOf(other);
-    GRS.g.niches.splice(at < 0 ? GRS.g.niches.length : at, 0, { name: name, views: clone(other.views), visits: clone(other.visits) });
-    GRS.niche = name; $("grNewNiche").value = "";
-    grRank(); grNiches(); grTables(); grPreviewSetup(); grDirty();
-    toast(name + " added with the Other numbers. Type its real numbers.");
+    GRS.g.niches.splice(at < 0 ? GRS.g.niches.length : at, 0, { name: name, views: clone(other ? other.views : [0, 0, 0, 0, 0, 0]) });
+    $("grNewNiche").value = "";
+    grTable(); grPreviewSetup(); $("pvNiche").value = name; grDirty();
   };
-  $("grDelNiche").onclick = function () {
-    if (GRS.niche === "Other") return;
-    if (!confirm("Remove the niche " + GRS.niche + "? Users who picked it will see the Other graph.")) return;
-    GRS.g.niches = GRS.g.niches.filter(function (n) { return n.name !== GRS.niche; });
-    delete GRS.g.rank[GRS.niche];
-    if (GRS.rankFor === GRS.niche) GRS.rankFor = "_all";
-    GRS.niche = GRS.g.niches[0].name;
-    grRank(); grNiches(); grTables(); grPreviewSetup(); grDirty();
-  };
-
-  // 3. names
-  function grNames() {
-    $("grNames").innerHTML = GR_IDS.map(function (id) {
-      var st = GRS.g.strategies[id];
-      return '<div class="gn"><input type="text" maxlength="30" data-sn="' + id + '" value="' + esc(st.name) + '" aria-label="Strategy name"><input type="text" maxlength="110" data-ss="' + id + '" value="' + esc(st.short) + '" aria-label="Short line"></div>';
-    }).join("");
-  }
-  $("grNames").addEventListener("input", function (e) {
-    var t = e.target, id = t.getAttribute("data-sn") || t.getAttribute("data-ss"); if (!id) return;
-    var v = t.value.replace(/[^\x20-\x7E]/g, "");
-    if (t.getAttribute("data-sn")) GRS.g.strategies[id].name = v || id; else GRS.g.strategies[id].short = v;
-    grDirty();
-  });
-  $("grNames").addEventListener("change", function () { grRank(); grTables(); });
-
-  // 4. pins + 5. stores
-  function grPins() {
-    $("grPins").innerHTML = GRS.g.pins_pct.map(function (p, k) { return '<label>' + GR_PINS[k] + '<input type="number" min="10" max="500" data-pp="' + k + '" value="' + p + '"></label>'; }).join("");
-  }
-  $("grPins").addEventListener("input", function (e) { var k = e.target.getAttribute("data-pp"); if (k === null) return; GRS.g.pins_pct[Number(k)] = Math.max(10, Math.min(500, Number(e.target.value) || 100)); grDirty(); });
-  function grStores() {
-    var nm = { etsy: "Etsy", shopify: "Shopify", ebay: "eBay" };
-    $("grStores").innerHTML = ["etsy", "shopify", "ebay"].map(function (p) {
-      var st = GRS.g.stores[p];
-      return '<div class="row2"><label>' + nm[p] + ' visits %<input type="number" min="0" max="300" data-sv="' + p + '" value="' + st.visits + '"></label><label>' + nm[p] + ' sale %<input type="number" min="0" max="100" step="0.1" data-sc="' + p + '" value="' + st.cvr + '"></label></div>';
-    }).join("");
-    $("grVary").value = GRS.g.vary;
-  }
-  $("grStores").addEventListener("input", function (e) {
-    var t = e.target, p = t.getAttribute("data-sv") || t.getAttribute("data-sc"); if (!p) return;
-    if (t.getAttribute("data-sv")) GRS.g.stores[p].visits = Math.max(0, Math.min(300, Number(t.value) || 0));
-    else GRS.g.stores[p].cvr = Math.max(0, Math.min(100, Number(t.value) || 0));
-    grDirty();
-  });
-  $("grVary").oninput = function () { GRS.g.vary = Math.max(0, Math.min(20, Math.round(Number(this.value) || 0))); grDirty(); };
+  $("grPat").onchange = function () { GRS.g.patience = Number(this.value) || 2; grDirty(); };
 
   // preview
   function grPreviewSetup() {
-    var pv = $("pvNiche");
+    var pv = $("pvNiche"), keep = pv.value;
     pv.innerHTML = GRS.g.niches.map(function (n) { return '<option>' + esc(n.name) + '</option>'; }).join("");
-    pv.value = GRS.niche;
-    if (!$("pvPins").options.length) $("pvPins").innerHTML = '<option value="">Pins unknown</option>' + GR_PINS.map(function (l, k) { return '<option value="' + [0, 12, 60, 200, 400][k] + '">' + l + ' pins</option>'; }).join("");
+    if (keep && GRS.g.niches.some(function (n) { return n.name === keep; })) pv.value = keep;
     grPreview();
   }
   var pvT = null;
@@ -1635,17 +1492,16 @@
     pvT = setTimeout(function () {
       if (!window.GMPGrowth || !GRS.g) return;
       window.GMPGrowth.setConfig(clone(GRS.g));
-      var pins = $("pvPins").value;
-      var inp = { niche: $("pvNiche").value, platform: $("pvStore").value, pins: pins === "" ? null : Number(pins), current: Number($("pvCur").value) || 0, seed: "preview", target: 100 };
+      var inp = { niche: $("pvNiche").value, current: Number($("pvCur").value) || 0 };
       if (!GRS.widget) GRS.widget = window.GMPGrowth.mount($("pvBox"), inp, {});
       else GRS.widget.update(inp);
     }, 250);
   }
-  ["pvNiche", "pvPins", "pvStore", "pvCur"].forEach(function (id) { $(id).addEventListener("input", grPreview); });
+  ["pvNiche", "pvCur"].forEach(function (id) { $(id).addEventListener("input", grPreview); });
 
   $("grReset").onclick = function () {
-    if (!confirm("Put back the default numbers, names and order? Your typed numbers are replaced (nothing is live until you save).")) return;
-    GRS.g = clone(GRS.def); GRS.niche = GRS.g.niches[0].name; GRS.rankFor = "_all";
+    if (!confirm("Put back the default numbers? Your typed numbers are replaced (nothing is live until you save).")) return;
+    GRS.g = clone(GRS.def);
     grRenderAll(); grDirty();
   };
   $("grSave").onclick = async function () {
@@ -1653,7 +1509,6 @@
     try {
       var r = await api("/api/admin/settings", { growth: GRS.g });
       GRS.g = clone(r.settings.growth); GRS.dirty = false;
-      if (!grNiche(GRS.niche)) GRS.niche = GRS.g.niches[0].name;
       grRenderAll();
       $("grMsg").textContent = "Saved. Every user's graph uses these numbers now.";
       $("grMeta").textContent = "Last saved just now.";

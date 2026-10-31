@@ -28,9 +28,10 @@
   .h-card h2 { font-size: clamp(1.15rem, 2.4vw, 1.4rem); margin: 0; }
   .h-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
   .h-muted { color: var(--muted); font-size: .92rem; }
+  #pfNudge { color: var(--green-text); font-weight: 700; white-space: nowrap; }
 
   /* hero */
-  .h-hero { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 18px; align-items: stretch; }
+  .h-hero { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; align-items: stretch; }
   .h-hello { padding: clamp(6px, 2vw, 14px) 4px; display: grid; align-content: center; gap: 10px; }
   .h-hello h1 { font-size: clamp(2rem, 5vw, 3.1rem); line-height: 1.04; }
   .h-hello p { color: var(--muted); font-size: 1.05rem; max-width: 52ch; }
@@ -262,21 +263,13 @@
     <div class="sparks" aria-hidden="true"><b style="left:4%;top:6%;--d:0s"></b><b style="left:46%;top:2%;--d:1.1s"></b><b style="left:38%;top:58%;--d:2.2s"></b><b style="left:58%;top:30%;--d:.6s"></b></div>
     <div class="h-hello">
       <h1 id="hi">Hi there</h1>
-      <p id="hiSub">Here is your shop, your Pinterest and where they can go together.</p>
+      <p id="hiSub">Here is your Pinterest and where it can go. <a href="/profile.html" id="pfNudge" hidden></a></p>
       <div class="moti" id="moti" aria-live="polite">
         <div class="moti-top"><span class="moti-k"><i></i><span id="motiK">For you today</span></span><div class="moti-dots" id="motiDots"></div></div>
         <div class="moti-body" id="motiBody"></div>
         <div class="moti-bar"><i id="motiBar"></i></div>
       </div>
       <div class="moti-stats" id="motiStats"></div>
-    </div>
-    <div class="h-card h-setup" aria-label="Your setup">
-      <div class="ring"><svg viewBox="0 0 100 100"><circle class="bg" cx="50" cy="50" r="42"/><circle class="fg" id="ringFg" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="264"/></svg><b id="ringTxt">0%</b></div>
-      <div>
-        <h2 style="font-size:1.05rem;margin-bottom:8px">Your growth setup</h2>
-        <ul class="steps-l" id="steps"></ul>
-        <p class="h-muted" id="setupMsg" style="font-size:.82rem;margin-top:6px" aria-live="polite"></p>
-      </div>
     </div>
   </section>
 
@@ -285,26 +278,13 @@
   <section class="pred" id="predCard" aria-label="Your growth forecast">
     <div id="gwBox"></div>
     <div class="pred-cta" id="predCta">
-      <p id="ctaTxt"><b>Want these numbers for real?</b>We run the Best strategy on your shop: pins designed, written and posted for you.</p>
+      <p id="ctaTxt"><b>Want these numbers for real?</b>We design, write and post your pins for you.</p>
       <button class="btn btn-gold" type="button" id="ctaBtn">Increase my store visits</button>
     </div>
   </section>
 
 
   <div id="planBox" hidden></div>
-
-  <section class="h-row">
-    <div class="h-card" id="storeCard">
-      <div class="h-head"><div><h2>Your store</h2><p class="h-muted">Buyers from Pinterest land here.</p></div><button class="linkish" type="button" id="editShop" hidden>Edit</button></div>
-      <div id="storeBody"></div>
-    </div>
-    <div class="h-card goal" id="goalCard">
-      <div class="h-head" style="margin-bottom:0"><div><h2>Your monthly goal</h2><p class="h-muted" id="goalSub">Sales you want from Pinterest</p></div></div>
-      <div class="goal-big" id="goalBig">100<small>sales / month</small></div>
-      <div class="gbars" id="goalBars"></div>
-      <p class="h-muted" id="goalNote"></p>
-    </div>
-  </section>
 
   <section class="h-card" id="pinCard">
     <div class="h-head">
@@ -355,54 +335,18 @@
     location.href = "/?landing=1";
   };
 
-  // ---------------- setup checklist ----------------
-  function renderSetup() {
-    var pr = D.profile, pin = D.pinterest;
-    var hasShop = Object.keys(pr.links || {}).length > 0;
-    var alerts = "Notification" in window && Notification.permission === "granted";
-    var items = [
-      { ok: true, t: "Account created" },
-      { ok: hasShop, t: "Add your store link", act: "shop" },
-      { ok: pin.connected, t: "Connect Pinterest", href: "/api/auth/login?next=/home.html" },
-      { ok: pr.offer_status === "submitted", t: ST.offer_active ? "Reserve your " + ST.offer_name + " slot" : "Reserve your growth slot", href: "/signup.html#offer" },
-      { ok: !!pr.niche, t: "Tell us what you sell", act: "niche" },
-      { ok: alerts, t: "Get updates on this phone", act: "alerts" }
-    ];
-    var done = items.filter(function (i) { return i.ok; }).length;
-    var pct = Math.round(100 * done / items.length);
-    $("steps").innerHTML = items.map(function (i, k) {
-      var btn = i.ok ? "" : (i.href ? '<a class="go" href="' + i.href + '">Do it</a>' : '<button type="button" data-act="' + i.act + '">Do it</button>');
-      return '<li class="' + (i.ok ? "ok" : "") + '"><span class="ck"></span><span>' + esc(i.t) + '</span>' + btn + '</li>';
-    }).join("");
-    requestAnimationFrame(function () { $("ringFg").setAttribute("stroke-dashoffset", String(264 - 264 * pct / 100)); });
-    Array.prototype.forEach.call(document.querySelectorAll("#steps li"), function (li, k) { li.style.animationDelay = (0.25 + k * 0.08).toFixed(2) + "s"; });
-    var ring = document.querySelector(".ring");
-    if (ring) {
-      var was = ring.classList.contains("full");
-      ring.classList.toggle("full", pct === 100);
-      if (pct === 100 && !was && D._setupSeen) confetti();
-      D._setupSeen = true;
-    }
-    GR.countUp($("ringTxt"), pct, 1200, function (v) { return Math.round(v) + "%"; });
-    $("hiSub").textContent = pct === 100 ? "Everything is set. Here is where your shop is heading." : "You are " + pct + "% set up. Finish the steps to get the most out of Pinterest.";
+  // ---------------- profile nudge (the full checklist lives on /profile.html) ----------------
+  function renderNudge() {
+    var s = D.profile_steps || { pct: 100 };
+    var a = $("pfNudge"); if (!a) return;
+    if (s.pct >= 100) { a.hidden = true; return; }
+    a.hidden = false;
+    a.textContent = "Your profile is " + s.pct + "% complete. Finish it";
   }
-  document.addEventListener("click", async function (e) {
+  document.addEventListener("click", function (e) {
     var b = e.target.closest("[data-act]");
     if (!b) return;
-    if (b.tagName === "A") e.preventDefault();
-    var act = b.getAttribute("data-act");
-    if (act === "shop") { showShopForm(); $("storeCard").scrollIntoView({ behavior: "smooth", block: "center" }); }
-    if (act === "niche") {
-      $("predCard").scrollIntoView({ behavior: "smooth", block: "start" });
-      var sel = document.querySelector('#gwBox select[data-f="niche"]');
-      if (sel) setTimeout(function () { sel.focus({ preventScroll: true }); }, 500);
-    }
-    if (act === "alerts" && window.GMPPush) {
-      b.disabled = true; b.textContent = "Wait";
-      var r = await window.GMPPush.enable();
-      renderSetup();
-      $("setupMsg").textContent = r.message;
-    }
+    if (b.getAttribute("data-act") === "shop") { e.preventDefault(); location.href = "/profile.html#store"; }
   });
 
   // ---------------- offer banner ----------------
@@ -429,95 +373,12 @@
     tick(); clearInterval(cdT); cdT = setInterval(tick, 1000);
   }
 
-  // ---------------- store ----------------
-  var editing = false, chosen = [];
-  function renderStore() {
-    var pr = D.profile, links = pr.links || {};
-    var keys = ["etsy", "shopify", "ebay"].filter(function (p) { return links[p]; });
-    $("editShop").hidden = !keys.length || editing;
-    if (!keys.length || editing) return showShopForm();
-    $("storeBody").innerHTML = '<div class="shops">' + keys.map(function (p) {
-      return '<div class="shop"><span class="ic ' + p + '">' + NAMES[p].charAt(0) + '</span><div style="min-width:0"><b>' + NAMES[p] + ' store</b><span class="u">' + esc(shortUrl(links[p])) + '</span></div><a class="open" href="' + esc(links[p]) + '" target="_blank" rel="noopener noreferrer">Open store</a></div>';
-    }).join("") + (pr.pinterest_url ? '<div class="shop"><span class="ic" style="background:#FDE7EC;color:#C02D52">P</span><div style="min-width:0"><b>Pinterest profile</b><span class="u">' + esc(shortUrl(pr.pinterest_url)) + '</span></div><a class="open" href="' + esc(pr.pinterest_url) + '" target="_blank" rel="noopener noreferrer">Open</a></div>' : "") + '</div>';
-  }
-  function showShopForm() {
-    editing = true;
-    $("editShop").hidden = true;
-    var pr = D.profile, links = pr.links || {};
-    chosen = (pr.platforms || []).slice();
-    if (!chosen.length) chosen = ["etsy"];
-    $("storeBody").innerHTML =
-      '<form class="h-form" id="shopForm" novalidate>' +
-      '<div><div style="font-weight:700;font-size:.88rem;margin-bottom:6px">Where do you sell?</div><div class="pchips" id="pchips">' +
-      ["etsy", "shopify", "ebay"].map(function (p) { return '<button type="button" class="pchip' + (chosen.indexOf(p) > -1 ? " on" : "") + '" data-p="' + p + '">' + NAMES[p] + '</button>'; }).join("") +
-      '</div></div><div id="lnks" style="display:grid;gap:12px"></div>' +
-      '<label>Pinterest profile link <span class="h-muted" style="font-weight:500">(optional)</span><input id="fPin" type="url" inputmode="url" placeholder="pinterest.com/yourname" value="' + esc(pr.pinterest_url || "") + '"></label>' +
-      '<div class="h-err" id="shopErr" role="alert"></div>' +
-      '<div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-primary" type="submit" id="shopSave">Save my store</button>' + (Object.keys(links).length ? '<button class="btn btn-ghost" type="button" id="shopCancel">Cancel</button>' : "") + '</div></form>';
-    function drawLinks() {
-      var keep = {};
-      Array.prototype.forEach.call(document.querySelectorAll("#lnks input"), function (i) { keep[i.getAttribute("data-p")] = i.value; });
-      $("lnks").innerHTML = chosen.map(function (p) {
-        var v = keep[p] !== undefined ? keep[p] : (links[p] || "");
-        var ph = { etsy: "etsy.com/shop/yourshop", shopify: "yourstore.com", ebay: "ebay.com/str/yourstore" }[p];
-        return '<label>' + NAMES[p] + ' link<input type="url" inputmode="url" data-p="' + p + '" placeholder="' + ph + '" value="' + esc(v) + '"></label>';
-      }).join("");
-    }
-    drawLinks();
-    $("pchips").onclick = function (e) {
-      var b = e.target.closest(".pchip"); if (!b) return;
-      var p = b.getAttribute("data-p"), at = chosen.indexOf(p);
-      if (at > -1) { if (chosen.length > 1) chosen.splice(at, 1); } else chosen.push(p);
-      Array.prototype.forEach.call(document.querySelectorAll(".pchip"), function (c) { c.classList.toggle("on", chosen.indexOf(c.getAttribute("data-p")) > -1); });
-      drawLinks();
-    };
-    var cancel = $("shopCancel"); if (cancel) cancel.onclick = function () { editing = false; renderStore(); };
-    $("shopForm").onsubmit = async function (e) {
-      e.preventDefault();
-      var lk = {};
-      Array.prototype.forEach.call(document.querySelectorAll("#lnks input"), function (i) { if (i.value.trim()) lk[i.getAttribute("data-p")] = i.value.trim(); });
-      if (!Object.keys(lk).length) { $("shopErr").textContent = "Paste at least one store link."; return; }
-      var btn = $("shopSave"); btn.disabled = true; btn.textContent = "Saving";
-      try {
-        var r = await api("/api/user/hub", { action: "shop", platforms: chosen, links: lk, pinterest_url: $("fPin").value.trim() });
-        D.profile.platforms = r.platforms; D.profile.links = r.links; D.profile.pinterest_url = r.pinterest_url || "";
-        editing = false;
-        renderAll(true);
-      } catch (err) {
-        $("shopErr").textContent = err.message;
-        btn.disabled = false; btn.textContent = "Save my store";
-      }
-    };
-  }
-
   // ---------------- goal ----------------
+  // the forecast: their current monthly views + the graph of their niche (set in Admin > Growth graph)
   function growthInput() {
     var pr = D.profile, pin = D.pinterest;
-    var p = mainPlatform() || "etsy";
-    var live = pin.pin_count != null;
-    var pins = live ? pin.pin_count : (pr.pins_count != null ? pr.pins_count : (pin.rss_count ? pin.rss_count : null));
-    return {
-      niche: pr.niche || "", platform: p, pins: pins, pinsLive: live,
-      hasPin: !!pr.pinterest_url || pin.connected, current: pin.views30 || 0,
-      seed: (pr.links || {})[p] || D.user.email || "", target: pr.target || 0
-    };
+    return { niche: pr.niche || "", platform: mainPlatform() || "etsy", current: pin.views30 || 0 };
   }
-  function renderGoal() {
-    var pr = D.profile;
-    var target = pr.target || 100;
-    var inp = growthInput(); inp.target = target;
-    var best = GR.plan(inp).best;
-    $("goalBig").innerHTML = esc(target) + "<small>sales / month</small>";
-    $("goalSub").textContent = pr.target ? "The goal you set" + (pr.wait ? ", in " + pr.wait + " month" + (pr.wait > 1 ? "s" : "") : "") : "A common first goal (set yours in the slot form)";
-    var rows = [3, 6].map(function (mo) { return { l: "Month " + mo, v: Math.max(1, Math.round(best.sales[mo])) }; });
-    var max = Math.max(target, rows[1].v) || 1;
-    $("goalBars").innerHTML = rows.map(function (r) { return '<div class="bar-r"><span>' + r.l + '</span><i style="--w:0%" data-w="' + Math.max(3, 100 * r.v / max) + '%"></i><b>~' + r.v + '</b></div>'; }).join("") +
-      '<div class="bar-r goal-r"><span>Your goal</span><i style="--w:0%" data-w="' + (100 * target / max) + '%"></i><b>' + target + '</b></div>';
-    requestAnimationFrame(function () { Array.prototype.forEach.call(document.querySelectorAll("#goalBars i"), function (i) { i.style.setProperty("--w", i.getAttribute("data-w")); }); });
-    var m6 = rows[1].v;
-    $("goalNote").textContent = m6 >= target ? "On track: with the Best strategy (" + best.name + "), Pinterest alone could cover your goal by month 6." : "With the Best strategy (" + best.name + ") Pinterest may give about " + m6 + " sales a month by month 6. More pins and better photos close the gap faster.";
-  }
-
   // ---------------- pinterest ----------------
   function renderPins() {
     var pin = D.pinterest, pr = D.profile;
@@ -544,23 +405,15 @@
     }
     var msg = pr.pinterest_url
       ? "We could not load pins from " + esc(shortUrl(pr.pinterest_url)) + ". The profile may be private or new. Connect Pinterest to show your pins here."
-      : "No pins to show yet. Connect your Pinterest account, or add your Pinterest link in Your store.";
+      : "No pins to show yet. Connect your Pinterest account, or add your Pinterest link in <a href=\"/profile.html#store\">your profile</a>.";
     $("pinBody").innerHTML = '<div class="empty"><div class="ghost" aria-hidden="true"><i></i><i></i><i></i></div><p class="h-muted" style="max-width:46ch">' + msg + '</p></div>';
   }
 
   // ---------------- prediction (widget from /gmp-growth.js) ----------------
   var GW = null;
-  async function saveGrowth(field, value) {
-    var body = { action: "growth" };
-    if (field === "niche") { body.niche = value; D.profile.niche = value; }
-    if (field === "pins") { body.pins_count = value; D.profile.pins_count = value; }
-    renderGoal(); renderSetup(); renderMoti();
-    try { await api("/api/user/hub", body); }
-    catch (e) { $("setupMsg").textContent = e.message; }
-  }
   function renderPred() {
     var inp = growthInput();
-    if (!GW) GW = GR.mount($("gwBox"), inp, { edit: true, onChange: saveGrowth });
+    if (!GW) GW = GR.mount($("gwBox"), inp, {});
     else GW.update(inp);
     var store = D.profile.platforms && D.profile.platforms.length ? NAMES[inp.platform] : "online";
     if ($("ctaBtn") && !D.plans) $("ctaBtn").textContent = "Increase my " + store + " store visits";
@@ -583,7 +436,7 @@
     if (D.billing && D.billing.active) {
       cta.innerHTML = '<p class="h-ok"><b>Your ' + esc(D.billing.plan_name) + ' plan is active.</b>Approve your pins and we keep growing these numbers.</p><a class="btn btn-primary" href="/app.html">Open Pin Studio</a>';
     } else {
-      $("ctaTxt").innerHTML = "<b>Your Pinterest is connected.</b>Pick a plan and we run the Best strategy on your account.";
+      $("ctaTxt").innerHTML = "<b>Your Pinterest is connected.</b>Pick a plan and we start growing your account.";
       $("ctaBtn").textContent = "See my plans";
       $("ctaBtn").onclick = function () { box.scrollIntoView({ behavior: "smooth", block: "start" }); };
     }
@@ -602,7 +455,7 @@
   }
 
   function setInterestDone() {
-    $("predCta").innerHTML = '<p class="h-ok"><b>You are on the list.</b>We will run the Best strategy on your shop. Our team will WhatsApp you within 24 hours.</p>' +
+    $("predCta").innerHTML = '<p class="h-ok"><b>You are on the list.</b>We will start growing your shop. Our team will WhatsApp you within 24 hours.</p>' +
       (ST.sales_whatsapp ? '<a class="btn btn-primary" target="_blank" rel="noopener" href="https://wa.me/' + ST.sales_whatsapp.replace(/\D/g, "") + '?text=' + encodeURIComponent("Hi GrowMyPin, I want to increase my store visits.") + '">Chat now on WhatsApp</a>' : "");
   }
   function wireSeg() {
@@ -611,7 +464,6 @@
       try { await api("/api/user/hub", { action: "interest", source: "home" }); D.profile.interest_at = new Date().toISOString(); setInterestDone(); }
       catch (e) { btn.disabled = false; btn.textContent = "Try again"; }
     };
-    $("editShop").onclick = function () { showShopForm(); };
   }
 
   // ---------------- greeting + rotating motivation (changes with time of day and day) ----------------
@@ -641,31 +493,23 @@
   }
   function buildMoti() {
     var pr = D.profile, pin = D.pinterest;
-    var inp = growthInput();
-    var P = GR.plan(inp), b = P.best;
-    var store = NAMES[inp.platform] || "Etsy";
+    var P = GR.plan(growthInput()), v = P.views;
+    var store = NAMES[mainPlatform()] || "online";
     var name = first() || "you";
-    var v3 = GR.total(b.views, 3), s3 = GR.total(b.visits, 3), sales6 = Math.round(GR.total(b.sales, 6));
+    var v3 = GR.total(v, 3), v6 = GR.total(v, 6);
     var list = [];
     if (pin.views30 != null) {
       list.push({ ic: "eye", t: GR.fmt(pin.views30) + " views on your pins in the last 30 days", s: "That is " + GR.fmt(pin.views30) + " chances for a buyer to find your " + store + " shop, " + name + "." });
-      if (pin.views30 > 0) list.push({ ic: "up", t: "Next stop: " + GR.fmt(b.views[3]) + " views in month 3", s: "With " + b.name + ", your monthly views can grow from " + GR.fmt(pin.views30) + " to " + GR.fmt(b.views[3]) + "." });
+      list.push({ ic: "up", t: "Next stop: " + GR.fmt(v[3]) + " views a month by month 3", s: "Your monthly views can grow from " + GR.fmt(pin.views30) + " to " + GR.fmt(v[3]) + "." });
     } else if (pr.pinterest_url) {
       list.push({ ic: "eye", t: "Your Pinterest is live, " + name, s: (pin.source === "profile" ? "Your latest pins are showing below. " : "") + "<a href=\"/api/auth/login?next=/home.html\">Connect Pinterest</a> to see your real monthly views here." });
     } else {
-      list.push({ ic: "pin", t: "Add your Pinterest link to see your views", s: "Then this card shows how many people saw your pins this month. <a href=\"#\" data-act=\"shop\">Add it now</a>" });
+      list.push({ ic: "pin", t: "Add your Pinterest link to see your views", s: "Then this card shows how many people saw your pins this month. <a href=\"/profile.html#store\">Add it now</a>" });
     }
     var pc = pin.pin_count != null ? pin.pin_count : pr.pins_count;
     if (pc) list.push({ ic: "pin", t: GR.fmtFull(pc) + " pins are working for you day and night", s: "Every pin is a small shop window. It keeps bringing views for months after you post it." });
-    list.push({ ic: "bag", c: "warm", t: GR.fmtFull(s3) + " " + store + " store visits are waiting in the next 3 months", s: "That is what " + (P.nicheKnown ? P.niche.toLowerCase() + " shops" : "shops like yours") + " can get with " + b.name + "." });
-    list.push({ ic: "up", t: GR.fmt(v3) + " Pinterest views in your first 3 months", s: "Patience first, then reward: month 3 alone can bring " + GR.fmt(b.views[3]) + " views." });
-    if (pr.target) {
-      var hit = 0; for (var i = 1; i <= 6; i++) if (b.sales[i] >= pr.target) { hit = i; break; }
-      list.push(hit
-        ? { ic: "flag", c: "vio", t: "Your " + pr.target + " sales a month goal: month " + hit, s: "That is when Pinterest alone can reach your goal with " + b.name + "." }
-        : { ic: "flag", c: "vio", t: "About " + Math.max(1, Math.round(b.sales[6])) + " sales in month 6, " + name, s: "Step by step towards your " + pr.target + " sales a month goal. More pins close the gap faster." });
-    }
-    if (sales6 > 0) list.push({ ic: "bag", c: "warm", t: "Around " + GR.fmtFull(sales6) + " sales in 6 months from Pinterest", s: "Real buyers who found your products on Pinterest and clicked to your " + store + " shop." });
+    list.push({ ic: "up", t: GR.fmt(v3) + " Pinterest views in your next 3 months", s: "Patience first, then reward: month 3 alone can bring " + GR.fmt(v[3]) + " views." });
+    list.push({ ic: "up", c: "warm", t: GR.fmt(v[6]) + " views a month by month 6", s: "About " + GR.fmt(v6) + " views in total over 6 months, step by step." });
     list.push(seasonMsg(new Date().getMonth()));
     var ny = nyHour();
     if (ny >= 7 && ny <= 23) list.push({ ic: "clock", c: "vio", t: "It is " + (ny % 12 || 12) + (ny < 12 ? " am" : " pm") + " in New York right now", s: "US buyers are scrolling Pinterest. Your pins can be in front of them today." });
@@ -677,11 +521,11 @@
     var seed = new Date().toDateString() + "|" + slot(), h = 0;
     for (var k = 0; k < seed.length; k++) h = (h * 31 + seed.charCodeAt(k)) >>> 0;
     var first0 = list.shift();
-    for (var j = list.length - 1; j > 0; j--) { h = (h * 1103515245 + 12345) >>> 0; var r = h % (j + 1); var t = list[j]; list[j] = list[r]; list[r] = t; }
+    for (var j = list.length - 1; j > 0; j--) { h = (h * 1103515245 + 12345) >>> 0; var r = h % (j + 1); var tt = list[j]; list[j] = list[r]; list[r] = tt; }
     list.unshift(first0);
     var stats = pin.views30 != null
-      ? [[GR.fmt(pin.views30), "Pinterest views, last 30 days"], [GR.fmt(b.views[3]), "monthly views by month 3"], [b.name, "best strategy now"]]
-      : [[GR.fmtFull(s3), store + " visits in 3 months"], [GR.fmt(v3), "views in 3 months"], [b.name, "best strategy now"]];
+      ? [[GR.fmt(pin.views30), "Pinterest views, last 30 days"], [GR.fmt(v[3]), "views a month by month 3"], [GR.fmt(v[6]), "views a month by month 6"]]
+      : [[GR.fmt(v[3]), "views a month by month 3"], [GR.fmt(v3), "views in 3 months"], [GR.fmt(v[6]), "views a month by month 6"]];
     return { list: list, stats: stats };
   }
   var MT = { i: 0, timer: null, list: [], paused: false };
@@ -774,7 +618,7 @@
     if (!again) startFX();
     renderMoti();
     $("av").textContent = (first() || D.user.email || "G").charAt(0).toUpperCase();
-    renderSetup(); renderOffer(); renderStore(); renderGoal(); renderPins(); renderPred();
+    renderNudge(); renderOffer(); renderPins(); renderPred();
     if (!again) wireSeg();
     renderPlans();
   }
@@ -803,11 +647,8 @@
     // came back from "Connect Pinterest" while Pinterest connect is not open yet
     if (/[?&]pinterest=soon/.test(location.search)) {
       try { history.replaceState(null, "", location.pathname + location.hash); } catch (e) {}
-      showShopForm();
-      var pb = $("storeCard"); if (pb) pb.scrollIntoView({ behavior: "smooth", block: "center" });
-      var fp = $("fPin"); if (fp) setTimeout(function () { fp.focus({ preventScroll: true }); }, 600);
-      var em = $("shopErr");
-      if (em) { em.style.color = "#0B7A69"; em.textContent = "Direct Pinterest connect opens very soon. For now, paste your Pinterest profile link here and we will show your pins and graph from it."; }
+      location.replace("/profile.html?pinterest=soon#store");
+      return;
     }
   })();
 })();

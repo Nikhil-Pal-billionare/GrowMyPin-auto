@@ -391,10 +391,7 @@
       var store = p ? GR.NAMES[p] : "online";
       var ps = g.pin_stats || {};
       GR.setConfig(SET.growth);
-      var P = GR.plan({
-        niche: g.niche || "", platform: p || "etsy", pins: ps.pins != null ? ps.pins : g.pins_count,
-        hasPin: !!g.has_pinterest, current: ps.views30 || 0, seed: (g.links || {})[p] || "", target: g.target || 100
-      });
+      var P = GR.plan({ niche: g.niche || "", platform: p || "etsy", current: ps.views30 || 0 });
       var bg = document.createElement("div");
       bg.className = "gmp-vp-bg";
       bg.setAttribute("role", "dialog");
@@ -403,12 +400,12 @@
         '<div class="gmp-vp">' +
         '<button class="x" type="button" aria-label="Close">&times;</button>' +
         '<div class="k">Your Pinterest views can reach</div>' +
-        '<div class="nums"><span class="a">0</span><small>to</small><span class="b">0</span></div>' +
+        '<div class="nums"><span class="b">0</span></div>' +
         '<div class="u">total Pinterest views in the next 6 months</div>' +
         '<div class="u2"></div>' +
         '<h3></h3>' +
-        '<svg role="img" aria-label="Your store visits rising over 6 months"></svg>' +
-        '<div class="note">Estimate for your shop, based on results of GrowMyPin client accounts. Not a guarantee.</div>' +
+        '<svg role="img" aria-label="Your Pinterest views rising over 6 months"></svg>' +
+        '<div class="note"></div>' +
         '<div class="acts"><button class="yes" type="button"></button><button class="no" type="button"></button></div>' +
         '</div>';
       bg.querySelector("h3").textContent = tpl(SET.popup_title || "Increase your {store} store visits", { store: store });
@@ -416,10 +413,10 @@
       bg.querySelector(".no").textContent = SET.popup_no_btn || "I'll do later";
       document.body.appendChild(bg);
       GMPSky(bg.querySelector(".gmp-vp"));
-      GR.countUp(bg.querySelector(".a"), GR.total(P.worst.views, 6), 1400);
       GR.countUp(bg.querySelector(".b"), GR.total(P.best.views, 6), 1800);
-      bg.querySelector(".u2").textContent = "and up to " + GR.fmtFull(GR.total(P.best.visits, 6)) + " " + (p ? store + " " : "") + "store visits with our Best strategy, " + P.best.name + ".";
-      GR.drawRise(bg.querySelector("svg"), P.best.visits, {});
+      bg.querySelector(".u2").textContent = "That is about " + GR.fmt(P.best.views[6]) + " views a month by month 6.";
+      bg.querySelector(".note").textContent = GR.DISCLAIMER;
+      GR.drawRise(bg.querySelector("svg"), P.best.views, {});
       function close() { bg.remove(); document.removeEventListener("keydown", onKey); }
       function onKey(e) { if (e.key === "Escape") close(); }
       document.addEventListener("keydown", onKey);

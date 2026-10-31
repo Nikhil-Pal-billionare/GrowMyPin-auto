@@ -1127,14 +1127,10 @@
   var FCW = null;
   function openForecast() {
     var p = GR.pickPlatform(R.platforms) || "etsy";
-    var inp = { niche: R.niche, platform: p, pins: null, hasPin: !!R.hasPin, seed: R.links[p] || user.email || "", target: R.target };
+    var inp = { niche: R.niche, platform: p, current: 0 };
     $("fcPop").classList.add("on");
     if (window.GMPSky) window.GMPSky(document.querySelector("#fcPop .fc-card"));
-    if (!FCW) FCW = GR.mount($("fcW"), inp, { edit: true, onChange: function (f, v) {
-      var body = { action: "growth" };
-      if (f === "niche") { body.niche = v; R.niche = v; } else body.pins_count = v;
-      api("/api/user/hub", body).catch(function () {});
-    } });
+    if (!FCW) FCW = GR.mount($("fcW"), inp, {});
     else FCW.update(inp);
     setTimeout(function () { $("fcClose").focus({ preventScroll: true }); }, 100);
   }

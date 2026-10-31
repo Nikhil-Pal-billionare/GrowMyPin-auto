@@ -8,7 +8,7 @@
 
 import { sendJson, getSession, pinterest } from "../../lib.js";
 import { getUser, db } from "../../app.js";
-import { getProfile, upsertProfile, isAdminEmail } from "../../growth.js";
+import { getProfile, upsertProfile, isAdminEmail, profileSteps } from "../../growth.js";
 import { publicPlans, billingState, reconcileUser } from "../../billing.js";
 import { getSettings, publicSettings } from "../../settings.js";
 
@@ -155,6 +155,7 @@ export default async function handler(req, res) {
       plans: plans,
       plans_preview: previewPlans && !pin.connected,
       billing: billingState(p),
+      profile_steps: profileSteps(p),
       settings: publicSettings(settings)
     });
   } catch (e) {

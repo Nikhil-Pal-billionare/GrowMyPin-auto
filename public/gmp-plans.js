@@ -345,22 +345,21 @@
     function scene2() {
       dots(1); box.classList.remove("wide");
       var G = window.GMPGrowth;
-      var lo = G ? G.total(P.worst.views, 3) : 0, hi = G ? G.total(P.best.views, 3) : 0;
-      var vis = G ? G.total(P.best.visits, 3) : 0;
+      var hi = G ? G.total(P.best.views, 3) : 0;
+      var m3 = P.best.views[3] || 0;
       var pat = P.best.patience || 2;
       body.innerHTML = '<div class="sc"><div class="kk">Your next 3 months</div>' +
         '<h2>' + (first(ctx) ? esc(first(ctx)) + ", your" : "Your") + ' account can <em>grow</em></h2>' +
-        '<div class="nums"><span class="a">0</span><small>to</small><span class="b">0</span></div>' +
+        '<div class="nums"><span class="b">0</span></div>' +
         '<div class="u">total Pinterest views in 3 months</div>' +
-        '<svg class="rise" role="img" aria-label="Store visits rising month by month"></svg>' +
+        '<svg class="rise" role="img" aria-label="Pinterest views rising month by month"></svg>' +
         '<div class="ph"><span class="pa">Patience: month 1' + (pat > 2 ? " to " + (pat - 1) : "") + '</span><span class="rw">Reward: from month ' + pat + '</span></div>' +
-        '<p class="l">With our Best strategy, <b>' + esc(P.best.name) + '</b>, that can mean up to <b>' + Math.round(vis).toLocaleString("en-IN") + ' ' + esc(ctx.store || "") + ' store visits</b> in 3 months.</p>' +
+        '<p class="l">Month 3 alone can bring about <b>' + Math.round(m3).toLocaleString("en-IN") + ' views</b> a month.</p>' +
         '<button class="gpl-pay go" type="button" data-go="3">' + (paid ? "Go to my pins" : "Unlock this growth") + '</button>' +
-        '<div class="fine">Estimate based on GrowMyPin client accounts in your niche. Not a guarantee.</div></div>';
+        '<div class="fine">' + esc(G ? G.DISCLAIMER : "This is an estimate, not a guarantee.") + '</div></div>';
       if (G) {
-        G.countUp(body.querySelector(".a"), lo, 1300);
         G.countUp(body.querySelector(".b"), hi, 1700);
-        G.drawRise(body.querySelector("svg.rise"), P.best.visits, {});
+        G.drawRise(body.querySelector("svg.rise"), P.best.views, {});
       }
     }
     function scene3() {

@@ -24,6 +24,21 @@ export function isOwnerPreview(req) {
   return !!(u && u.email && sup && lower(u.email) === sup);
 }
 
+// "Complete your profile": 4 steps, 25% each. Used by the menu ring and the profile page.
+// Pinterest counts as done with a profile link or a connected account (pin_stats is saved on connect).
+export function profileSteps(p) {
+  const pr = p || {};
+  const links = pr.shop_links || {};
+  const steps = [
+    { k: "store", t: "Add your store link", ok: Object.keys(links).some(function (x) { return !!links[x]; }) },
+    { k: "pinterest", t: "Add your Pinterest", ok: !!pr.pinterest_url || !!pr.pin_stats },
+    { k: "niche", t: "Tell us what you sell", ok: !!pr.niche },
+    { k: "goal", t: "Set your monthly sales goal", ok: (Number(pr.target_sales) || 0) > 0 }
+  ];
+  const done = steps.filter(function (s) { return s.ok; }).length;
+  return { pct: Math.round(100 * done / steps.length), steps: steps };
+}
+
 export function nowIso() {
   return new Date().toISOString();
 }

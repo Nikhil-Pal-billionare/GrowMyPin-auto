@@ -127,6 +127,21 @@ Live on Vercel (Hobby plan). Owner edits code via GitHub web/mobile UI, so all c
 - Next SEO pages (later): Pinterest strategies that raise outbound clicks now, Pinterest is a long-term game,
   how to find fresh content ideas every time. Add each to sitemap.xml and footer.
 
+## v1.9 One growth estimate + Profile page (31 Oct 2026)
+- Growth graph is ONE estimate per niche: settings.growth = { niches: [{ name, views: [month 1..6] }], patience: 1-3 }.
+  Forecast = seller's current monthly views (Pinterest views30, 0 if not connected) + their niche graph. Views only:
+  no strategies, no grey lines, no store visits / sales. Old saved data (5 ranks) is read as the Best row.
+  Every graph shows: "This is an estimate, not a guarantee. Actual results depend on how your pins perform,
+  changes on Pinterest, and your products." (GMPGrowth.DISCLAIMER). Sellers never see niche or method.
+- Admin > Growth graph: one table (niche x month 1-6 views, 6 month total, add / remove niche, Other is fixed),
+  Patience months select, live preview (niche + views now). Edit = owner only.
+- /profile.html (new): "Complete your profile" ring + 4 steps (store link, Pinterest link or connected, what you sell,
+  monthly sales goal; 25% each, profileSteps() in server/growth.js), Your store form, What do you sell chips,
+  Monthly goal (10 / 100 / 1000, hub action "goal"), Pinterest connect / disconnect, plan, account, log out.
+- Home: setup ring, Your store and Your monthly goal removed; small "Your profile is X% complete" link in the greeting.
+- Menu bar: Profile tab opens /profile.html and has a ring around the icon = profile % (/api/user/me profile_pct).
+- Pin Studio AI strategies (forecast.js, generate.js) are separate and unchanged.
+
 ## Admin (/admin)
 - Access: SUPER_ADMIN_EMAIL (Vercel env, owner, full access) + emails in table admin_emails (view only).
   Anyone else gets the normal 404 page. Admin emails cannot be created via public signup.
