@@ -310,8 +310,9 @@ function buildPrompt(report, shop, analytics, today) {
     "What we could read from the shop (" + shop.source + "):",
     shop.summary.slice(0, 6000),
     "",
-    analytics ? ("Real Pinterest analytics from the seller's connected account, last " + analytics.days + " days: total impressions " + analytics.total +
-      ", last 30 days " + analytics.last30 + ", average per day last 7 days " + analytics.avg7 + ". Start the forecast from this level.") :
+    // Pinterest data is NEVER sent to the AI (privacy policy promise). The server adds the
+    // seller's real current views on top of this forecast in cleanResult().
+    analytics ? "The seller's current Pinterest views are added by our own system and are not shared with you. Forecast only the EXTRA monthly views that consistent optimized pins would add, starting from zero." :
       "No Pinterest analytics connected. Assume the account starts near zero views unless the shop data clearly shows an established brand.",
     "",
     BENCHMARKS,
@@ -363,11 +364,17 @@ export function cleanResult(raw, analytics) {
   const num = function (v) { const n = Number(v); return isFinite(n) && n > 0 ? Math.round(n) : 0; };
   let months = Array.isArray(j.months) ? j.months.slice(0, 6) : [];
   if (months.length < 6) throw new Error("AI returned fewer than 6 months");
-  const floor = analytics ? analytics.last30 * 0.5 : 0;
+  // Real current monthly views (computed on our server, never seen by the AI).
+  // The AI forecasts only the extra views, so we add this base on top.
+  const base = analytics ? analytics.last30 : 0;
   months = months.map(function (m, i) {
     let avg = Math.min(num(m.avg), 5000000);
     let worst = num(m.worst), best = num(m.best);
-    if (avg < floor) avg = Math.round(floor);
+    if (base) {
+      avg = avg + base;
+      worst = worst + Math.round(base * 0.7);
+      best = best + Math.round(base * 1.3);
+    }
     if (!worst || worst > avg) worst = Math.round(avg * 0.45);
     if (worst < avg * 0.15) worst = Math.round(avg * 0.15);
     if (!best || best < avg) best = Math.round(avg * 2);
