@@ -225,7 +225,7 @@ export const DEFAULT_BANNERS = {
   interval: 5,
   items: [
     { id: "b1", on: true, theme: "night", offer_only: true, kicker: "{offer}", title: "Up to {percent}% off GrowMyPin plans", text: "Reserve your slot today. The offer price is locked for you once you sign up.", btn: "Reserve my slot", link: "/signup.html", image: "" },
-    { id: "b2", on: true, theme: "green", offer_only: false, kicker: "Pinterest + blogs", title: "More buyers for your Etsy and Shopify store", text: "We send real traffic from Pinterest and blog posts straight to your product listings.", btn: "Grow visits", link: "/signup.html", image: "" },
+    { id: "b2", on: true, theme: "green", offer_only: false, kicker: "Pinterest + blogs", title: "More buyers for your Etsy and Shopify store", text: "We send real traffic from Pinterest and blog posts straight to your product listings.", btn: "Sign up", link: "/signup.html", image: "" },
     { id: "b3", on: true, theme: "light", offer_only: false, kicker: "Free in 2 minutes", title: "See your 6 month growth forecast", text: "Tell us what you sell and get a personal Pinterest views and store visits forecast.", btn: "Get my forecast", link: "/signup.html", image: "" },
     { id: "b4", on: true, theme: "gold", offer_only: false, kicker: "You stay in control", title: "Nothing goes live until you approve", text: "Every pin and blog post waits for your OK before it is published.", btn: "See how it works", link: "#process", image: "" }
   ]

@@ -1266,7 +1266,7 @@
   }
   $("bnAdd").onclick = function () {
     bnRead();
-    BN.b.items.push({ id: "b" + Date.now().toString(36), on: true, theme: "green", offer_only: false, kicker: "", title: "New banner title", text: "", btn: "Grow visits", link: "/signup.html", image: "" });
+    BN.b.items.push({ id: "b" + Date.now().toString(36), on: true, theme: "green", offer_only: false, kicker: "", title: "New banner title", text: "", btn: "Sign up", link: "/signup.html", image: "" });
     bnRender(); bnDirty();
     var last = document.querySelector("#bnList .bn-card:last-child [data-k=title]"); if (last) { last.focus(); last.select(); }
   };
