@@ -1,11 +1,24 @@
 // Pinterest account + boards for the Studio dashboard (app.html).
 
 import { sendJson, getSession, pinterest } from "../lib.js";
+import { isOwnerPreview } from "../growth.js";
+
+// Sample data for the owner-only preview. Nothing here comes from Pinterest.
+const PREVIEW = {
+  connected: true,
+  preview: true,
+  account: { username: "owner-preview", profile_image: "", account_type: "BUSINESS", business_name: "Owner preview" },
+  boards: [
+    { id: "preview-1", name: "Gift ideas (sample)", privacy: "PUBLIC" },
+    { id: "preview-2", name: "Home decor (sample)", privacy: "PUBLIC" },
+    { id: "preview-3", name: "Jewelry (sample)", privacy: "PUBLIC" }
+  ]
+};
 
 export default async function handler(req, res) {
   try {
     const s = await getSession(req, res);
-    if (!s) return sendJson(res, 200, { connected: false });
+    if (!s) return sendJson(res, 200, isOwnerPreview(req) ? PREVIEW : { connected: false });
 
     const a = await pinterest(s, "/user_account");
     if (!a.ok) {

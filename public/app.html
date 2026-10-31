@@ -318,8 +318,12 @@
     if (type !== "err") flashTimer = setTimeout(function () { box.innerHTML = ""; }, 6000);
   }
 
+  // Owner-only preview: /app.html?preview=1 (the server checks it is the owner's account).
+  var PREVIEW = /[?&]preview=1(&|$)/.test(location.search);
+
   async function api(path, body) {
     var opts = { credentials: "same-origin", headers: {} };
+    if (PREVIEW) opts.headers["x-gmp-preview"] = "1";
     if (body) {
       opts.method = "POST";
       opts.headers["Content-Type"] = "application/json";
@@ -1193,6 +1197,7 @@
       var me = await api("/api/me");
       if (!me.connected) { showConnect(); return; }
       boards = me.boards || [];
+      if (me.preview) flash("Owner preview: sample account and boards. AI drafts are real. Publish posts nothing.", "warn");
       renderAccount(me.account);
       renderBoards();
       $("connectView").style.display = "none";

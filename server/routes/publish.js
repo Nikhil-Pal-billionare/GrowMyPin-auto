@@ -3,11 +3,15 @@
 // clicks Approve on that pin and confirms the publish dialog.
 
 import { getSession, pinterest, sendJson, isHttpUrl, clip } from "../lib.js";
+import { isOwnerPreview } from "../growth.js";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return sendJson(res, 405, { error: "POST only" });
   try {
     const s = await getSession(req, res);
+    if (!s && isOwnerPreview(req)) {
+      return sendJson(res, 409, { error: "Owner preview: nothing was posted to Pinterest." });
+    }
     if (!s) return sendJson(res, 401, { error: "Connect your Pinterest account first" });
 
     const b = req.body || {};

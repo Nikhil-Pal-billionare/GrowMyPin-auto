@@ -14,6 +14,16 @@ export function superEmail() {
   return lower(process.env.SUPER_ADMIN_EMAIL);
 }
 
+// Owner-only Pin Studio preview, for while the Pinterest API is not approved yet.
+// True only when the page asks for it (app.html?preview=1 sends header x-gmp-preview: 1)
+// AND the logged-in GrowMyPin account is SUPER_ADMIN_EMAIL. Other admins and users never get it.
+export function isOwnerPreview(req) {
+  if (String((req.headers && req.headers["x-gmp-preview"]) || "") !== "1") return false;
+  const u = getUser(req);
+  const sup = superEmail();
+  return !!(u && u.email && sup && lower(u.email) === sup);
+}
+
 export function nowIso() {
   return new Date().toISOString();
 }

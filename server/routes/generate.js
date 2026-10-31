@@ -2,6 +2,7 @@
 // Drafts go back to the browser, where the user must approve each one before publishing.
 
 import { getSession, sendJson, isHttpUrl, clip } from "../lib.js";
+import { isOwnerPreview } from "../growth.js";
 
 const MODEL = process.env.ANTHROPIC_MODEL || "claude-haiku-5-5";
 
@@ -140,7 +141,7 @@ export default async function handler(req, res) {
   if (req.method !== "POST") return sendJson(res, 405, { error: "POST only" });
   try {
     const s = await getSession(req, res);
-    if (!s) return sendJson(res, 401, { error: "Connect your Pinterest account first" });
+    if (!s && !isOwnerPreview(req)) return sendJson(res, 401, { error: "Connect your Pinterest account first" });
     if (!process.env.ANTHROPIC_API_KEY) return sendJson(res, 500, { error: "ANTHROPIC_API_KEY env var missing" });
 
     const body = req.body || {};
