@@ -129,7 +129,10 @@ export default async function handler(req, res) {
       const a = await isAdminEmail(u.email).catch(function () { return { admin: false }; });
       previewPlans = !!a.admin;
     }
-    if (pin.connected || previewPlans) plans = publicPlans(settings);
+    // Profile page "Upgrade" button asks with ?plans=upgrade: plans for everyone, even without Pinterest
+    // (some sellers have no Pinterest account yet; our team sets it up after they pay).
+    const upgrade = url.searchParams.get("plans") === "upgrade";
+    if (pin.connected || previewPlans || upgrade) plans = publicPlans(settings);
     // paid but closed the Razorpay window early: pick the payment up now
     if (url.searchParams.get("paycheck") === "1") {
       try { if (await reconcileUser(u.id)) p = await getProfile(u.id) || p; } catch (e) { /* v1.4 SQL not run yet */ }

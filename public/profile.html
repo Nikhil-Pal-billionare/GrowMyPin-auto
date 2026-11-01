@@ -268,6 +268,7 @@
   .acct span { color: var(--muted); font-weight: 600; font-size: .88rem; }
   .acct b { overflow-wrap: anywhere; }
   .pf-sec { scroll-margin-top: 90px; }
+  .pf-up { margin-top: 16px; min-width: 180px; }
   @media (max-width: 760px) { .pf-grid { grid-template-columns: 1fr; } }
   @media (max-width: 520px) { .pf-top { grid-template-columns: 1fr; justify-items: center; text-align: center; } .pf-ring { width: 112px; height: 112px; } }
 </style>
@@ -302,6 +303,7 @@
         <h1 id="pfTitle">Complete your profile</h1>
         <p class="who" id="pfWho"></p>
         <ul class="pf-steps" id="pfSteps"></ul>
+        <button class="btn btn-gold pf-up" type="button" data-upgrade hidden>Upgrade</button>
       </div>
     </div>
   </section>
@@ -345,6 +347,7 @@
 </template>
 
 <script src="/gmp-growth.js"></script>
+<script src="/gmp-plans.js"></script>
 <script>
 (function () {
   function $(id) { return document.getElementById(id); }
@@ -513,11 +516,23 @@
       $("pinBody").innerHTML = '<p class="h-muted" style="margin-bottom:12px">Connect to see your real views and pins, and to post the pins you approve.</p><a class="btn btn-primary" href="/api/auth/login?next=/profile.html">Connect Pinterest</a>';
     }
   }
+  // ---------------- Upgrade: plans popup (from /gmp-plans.js), works with or without Pinterest ----------------
+  function openUpgrade() {
+    if (!D.plans || !window.GMPPlans) return;
+    window.GMPPlans.reveal({
+      plans: D.plans, billing: D.billing || {}, user: D.user, pinterest: D.pinterest || {},
+      P: null, store: "", preview: false, upgrade: true,
+      onPaid: function (b) { D.billing = b; renderPlan(); }
+    }, 3);
+  }
   function renderPlan() {
     var b = D.billing || {};
-    if (b.active) $("planBody").innerHTML = '<p><b>' + esc(b.plan_name) + ' plan is active.</b></p><p class="h-muted">Till ' + esc(fmtDate(b.plan_until)) + (b.days_left != null ? ", " + esc(b.days_left) + " days left" : "") + '.</p>';
-    else if (D.pinterest.connected) $("planBody").innerHTML = '<p class="h-muted" style="margin-bottom:12px">No plan yet.</p><a class="btn btn-gold" href="/home.html#plans">See plans</a>';
-    else $("planBody").innerHTML = '<p class="h-muted">Plans open after you connect Pinterest.</p>';
+    var up = D.plans ? '<button class="btn btn-gold" type="button" data-upgrade style="margin-top:12px">' + (b.active ? "Upgrade or add months" : "Upgrade") + '</button>' : "";
+    if (b.active) $("planBody").innerHTML = '<p><b>' + esc(b.plan_name) + ' plan is active.</b></p><p class="h-muted">Till ' + esc(fmtDate(b.plan_until)) + (b.days_left != null ? ", " + esc(b.days_left) + " days left" : "") + '.</p>' + up;
+    else if (D.plans) $("planBody").innerHTML = '<p class="h-muted">No plan yet. Pick a plan and we start growing your store visits.</p>' + up;
+    else $("planBody").innerHTML = '<p class="h-muted">Plans open very soon.</p>';
+    var top = document.querySelector(".pf-up");
+    if (top) top.hidden = !D.plans;
   }
   function renderAcct() {
     $("acctBody").innerHTML =
@@ -530,7 +545,7 @@
 
   (async function boot() {
     try {
-      D = await api("/api/user/home");
+      D = await api("/api/user/home?plans=upgrade");
     } catch (e) {
       if (e.status === 401) { document.cookie = "gmp_in=; Max-Age=0; path=/"; location.replace("/signup.html#login"); return; }
       $("main").innerHTML = '<div class="h-card" style="text-align:center"><h2>Could not load your profile</h2><p class="h-muted" style="margin:8px 0 14px">' + esc(e.message) + '</p><button class="btn btn-primary" onclick="location.reload()">Try again</button></div>';
@@ -542,6 +557,9 @@
     $("av").textContent = (first() || D.user.email || "G").charAt(0).toUpperCase();
     $("editShop").onclick = function () { showShopForm(); };
     renderTop(); renderStore(); renderNiche(); renderGoal(); renderPin(); renderPlan(); renderAcct();
+    $("main").addEventListener("click", function (e) { if (e.target.closest("[data-upgrade]")) { e.preventDefault(); openUpgrade(); } });
+    // /profile.html#upgrade opens the plans popup straight away
+    if (location.hash === "#upgrade") setTimeout(openUpgrade, 400);
     // came back from "Connect Pinterest" while Pinterest connect is not open yet
     if (/[?&]pinterest=soon/.test(location.search)) {
       try { history.replaceState(null, "", location.pathname + location.hash); } catch (e) {}

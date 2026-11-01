@@ -363,13 +363,16 @@
       }
     }
     function scene3() {
-      if (paid) { location.href = "/app.html"; return; }
+      // ctx.upgrade = opened from the Profile "Upgrade" button: people with a plan can add more months
+      if (paid && !ctx.upgrade) { location.href = "/app.html"; return; }
       dots(2); box.classList.add("wide");
       var cur = findItem(plans, sel);
+      var bl = ctx.billing || {};
+      var actNote = bl.active ? '<p class="l" style="margin:0 0 14px">Your <b>' + esc(bl.plan_name) + '</b> plan is active till <b>' + esc(fmtDate(bl.plan_until)) + '</b>. A new plan starts the day this one ends.</p>' : "";
       body.innerHTML = '<div class="sc"><div class="plan-top"><div><div class="kk">' + (plans.offer_name ? esc(plans.offer_name) + " price" : "Choose your plan") + (ctx.preview ? '<span class="pv">PREVIEW</span>' : "") + '</div>' +
         '<h2>' + esc(plans.headline) + '</h2></div>' +
         (plans.offer_end ? '<div class="gpl-cd" aria-label="Offer ends in"><span class="cdv"></span> left</div>' : "") + '</div>' +
-        planCards(plans, sel) +
+        actNote + planCards(plans, sel) +
         '<div style="height:14px"></div>' + levelsHtml(plans, pin.views30) +
         '<div style="display:grid;gap:10px;margin-top:16px;justify-items:center"><button class="gpl-pay" type="button" data-pay style="width:min(420px,100%)">' + payLabel(cur) + '</button>' +
         '<div class="gpl-err" role="alert"></div>' + trustHtml() +
@@ -382,7 +385,10 @@
         '<div class="kk">Payment successful</div>' +
         '<h2>You are in' + (first(ctx) ? ", <em>" + esc(first(ctx)) + "</em>" : "") + '!</h2>' +
         '<p class="l">Your <b>' + esc((plan && plan.name) || b.plan_name) + '</b> plan is active till <b>' + esc(fmtDate(b.plan_until)) + '</b>. A receipt is on its way to your email from Razorpay.</p>' +
-        '<a class="gpl-pay go" href="/app.html">Approve my first pins</a>' +
+        (pin.connected
+          ? '<a class="gpl-pay go" href="/app.html">Approve my first pins</a>'
+          : '<p class="l" style="margin-top:10px">Next: our team will WhatsApp you within 24 hours to set up your Pinterest.</p>' +
+            (plans.whatsapp ? '<a class="gpl-pay go" target="_blank" rel="noopener" href="' + esc(waLink(plans.whatsapp, "Hi GrowMyPin, I just took the " + ((plan && plan.name) || b.plan_name) + " plan. Please set up my Pinterest.")) + '">Chat with us on WhatsApp</a>' : "")) +
         '<button class="sec" type="button" data-close>Back to my home</button></div>';
       confetti();
       setTimeout(confetti, 900);
