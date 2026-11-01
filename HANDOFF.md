@@ -64,7 +64,7 @@ Live on Vercel (Hobby plan). Owner edits code via GitHub web/mobile UI, so all c
 - PINTEREST_REDIRECT_URI = https://growmypin-auto.vercel.app/api/auth/callback (also add in Pinterest app > Configure > Redirect URIs).
 
 ## v1.4 Plans + Razorpay (30 Oct 2026)
-- Plans: Monthly Rs 1499 (old price Rs 2999 struck), 3 months Rs 2699 (Bestseller, Rs 4497 struck), 6 months Rs 5999 (Rs 8994 struck), 1 year Rs 11999 (Rs 17988 struck); % off is computed from the struck price,
+- Plans: Monthly Rs 1499 (old price Rs 2999 struck), 3 months Rs 2699 (Bestseller, Rs 4497 struck), 6 months Rs 5999 (Rs 8994 struck), 1 year Rs 11999 (Rs 17988 struck, no tag); % off is computed from the struck price,
   plus view levels (25K Rs 1499, 50K Rs 2500, 1L Rs 4000, 2L+ Rs 5500 a month). All editable in Admin > Plans and payments.
   Stored in site_settings.data.plans (server/settings.js DEFAULT_PLANS + normalizePlans). No Rs 4000 month-1 charge.
 - Plans are shown ONLY after Pinterest is connected. /api/user/home returns `plans` only when connected

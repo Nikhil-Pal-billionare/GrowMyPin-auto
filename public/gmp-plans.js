@@ -511,6 +511,7 @@
     ".gup .nm{flex:1;min-width:0}" +
     ".gup .nm b{display:block;font-size:.98rem}" +
     ".gup .nm small{color:#5B6470;font-size:.8rem}" +
+    ".gup .nm .pmb{display:block;font-style:normal;font-weight:800;font-size:1.05rem;color:#0B6B5C}" +
     ".gup .nm .tg{display:inline-block;margin-left:6px;font-size:.7rem;font-weight:700;color:#0B6B5C;background:#E3F5EE;border-radius:6px;padding:1px 6px;vertical-align:middle}" +
     ".gup .pr{text-align:right;white-space:nowrap}" +
     ".gup .pr b{display:block;font-size:1.05rem}" +
@@ -555,9 +556,11 @@
         var tag = p.tag || (p.id === plans.featured ? "Recommended" : "");
         var pm = p.months > 1 ? money(p.per_month) + " / month" : "Billed every month";
         var off = p.off_pct ? '<span class="off">' + p.off_pct + '% off</span>' : "";
+        // featured plan (3 months): per month price big and bold, so "Rs 900 a month" is what people see first
+        var pmHtml = p.id === plans.featured && p.months > 1 ? '<em class="pmb">' + pm + '</em>' : '<small>' + pm + '</small>';
         return '<button type="button" role="radio" aria-checked="' + on + '" class="row' + (on ? " on" : "") + '" data-plan="' + esc(p.id) + '">' +
           '<span class="rd" aria-hidden="true"></span>' +
-          '<span class="nm"><b>' + esc(p.name) + (tag ? '<span class="tg">' + esc(tag) + '</span>' : "") + '</b><small>' + pm + '</small></span>' +
+          '<span class="nm"><b>' + esc(p.name) + (tag ? '<span class="tg">' + esc(tag) + '</span>' : "") + '</b>' + pmHtml + '</span>' +
           '<span class="pr">' + (p.compare > p.price ? '<s>' + money(p.compare) + '</s>' : "") + off + '<b>' + money(p.price) + '</b></span></button>';
       }).join("");
     }
@@ -567,7 +570,7 @@
       return '<div class="lv"><p>Extra each month, only when your monthly Pinterest views reach a level:</p>' +
         lv.map(function (l) { return '<div><span>' + short(l.views) + '+ views</span><b>' + money(l.charge) + ' / month</b></div>'; }).join("") + '</div>';
     }
-    function payText() { return "Pay " + money(findItem(plans, sel).price); }
+    function payText() { var it = findItem(plans, sel); return "Pay " + money(it.price) + (it.months > 1 ? " (" + money(it.per_month) + "/month)" : ""); }
 
     function form() {
       var b = ctx.billing || {};
