@@ -519,11 +519,10 @@
   // ---------------- Upgrade: plans popup (from /gmp-plans.js), works with or without Pinterest ----------------
   function openUpgrade() {
     if (!D.plans || !window.GMPPlans) return;
-    window.GMPPlans.reveal({
+    window.GMPPlans.simple({
       plans: D.plans, billing: D.billing || {}, user: D.user, pinterest: D.pinterest || {},
-      P: null, store: "", preview: false, upgrade: true,
       onPaid: function (b) { D.billing = b; renderPlan(); }
-    }, 3);
+    });
   }
   function renderPlan() {
     var b = D.billing || {};

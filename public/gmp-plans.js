@@ -493,5 +493,128 @@
     confetti(); setTimeout(confetti, 900);
   }
 
-  window.GMPPlans = { reveal: reveal, section: section, success: showSuccess, money: money };
+  // ---------------- simple plans popup (Profile "Upgrade" button) ----------------
+  // Plain white popup: plan list, view levels, one pay button. No sky, no animation.
+  var SCSS =
+    ".gup-bg{position:fixed;inset:0;z-index:195;display:grid;place-items:center;padding:16px;overflow-y:auto;background:rgba(20,24,30,.5)}" +
+    ".gup{position:relative;width:min(460px,100%);margin:auto;background:#fff;color:#24292F;border-radius:20px;padding:22px 20px 18px;font-family:Figtree,system-ui,sans-serif;box-shadow:0 20px 60px rgba(0,0,0,.18);max-height:calc(100vh - 32px);overflow-y:auto}" +
+    ".gup .foot{position:sticky;bottom:-18px;margin:0 -20px -18px;padding:4px 20px 14px;background:#fff}" +
+    ".gup h3{margin:0;font-size:1.25rem;font-weight:800}" +
+    ".gup .x{position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;border:0;background:#F2F4F7;color:#24292F;font-size:1.3rem;line-height:1;cursor:pointer}" +
+    ".gup .sub{margin:4px 0 0;color:#5B6470;font-size:.9rem}" +
+    ".gup .note{margin:12px 0 0;padding:10px 12px;border-radius:12px;background:#F1FAF6;color:#0B6B5C;font-size:.88rem}" +
+    ".gup .list{display:grid;gap:8px;margin-top:14px}" +
+    ".gup .row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:10px 14px;border:1.5px solid #E3E6EB;border-radius:14px;background:#fff;font:inherit;color:inherit;cursor:pointer}" +
+    ".gup .row.on{border-color:#0F8A76;background:#F4FBF8}" +
+    ".gup .rd{width:18px;height:18px;border-radius:50%;border:2px solid #C3C9D1;flex:none}" +
+    ".gup .row.on .rd{border:5px solid #0F8A76}" +
+    ".gup .nm{flex:1;min-width:0}" +
+    ".gup .nm b{display:block;font-size:.98rem}" +
+    ".gup .nm small{color:#5B6470;font-size:.8rem}" +
+    ".gup .nm .tg{display:inline-block;margin-left:6px;font-size:.7rem;font-weight:700;color:#0B6B5C;background:#E3F5EE;border-radius:6px;padding:1px 6px;vertical-align:middle}" +
+    ".gup .pr{text-align:right;white-space:nowrap}" +
+    ".gup .pr b{display:block;font-size:1.05rem}" +
+    ".gup .pr s{color:#8A93A0;font-size:.78rem}" +
+    ".gup .lv{margin-top:14px;padding:12px 14px;border-radius:14px;background:#F7F8FA;font-size:.86rem}" +
+    ".gup .lv p{margin:0 0 8px;color:#5B6470}" +
+    ".gup .lv div{display:flex;justify-content:space-between;padding:4px 0;border-top:1px solid #E9ECF0}" +
+    ".gup .lv div:first-of-type{border-top:0}" +
+    ".gup .pay{display:block;width:100%;margin-top:16px;padding:14px;border:0;border-radius:14px;background:#0F8A76;color:#fff;font:inherit;font-weight:800;font-size:1rem;cursor:pointer;text-align:center;text-decoration:none}" +
+    ".gup .pay:disabled{opacity:.6;cursor:default}" +
+    ".gup .err{color:#C0392B;font-size:.86rem;margin-top:8px;min-height:1em;text-align:center}" +
+    ".gup .err a{color:#0F8A76;font-weight:700}" +
+    ".gup .fine{margin:8px 0 0;color:#8A93A0;font-size:.78rem;text-align:center}" +
+    ".gup .ok{width:56px;height:56px;border-radius:50%;background:#0F8A76;color:#fff;display:grid;place-items:center;font-size:1.8rem;margin:6px auto 12px}" +
+    ".gup .ctr{text-align:center}" +
+    ".gup .lnk{display:block;margin:10px auto 0;background:none;border:0;color:#5B6470;font:inherit;font-size:.88rem;cursor:pointer;text-decoration:underline}";
+  var scssOn = false;
+
+  function simple(ctx) {
+    if (!ctx || !ctx.plans) return;
+    if (!scssOn) { var s = document.createElement("style"); s.textContent = SCSS; document.head.appendChild(s); scssOn = true; }
+    var old = document.querySelector(".gup-bg"); if (old) old.remove();
+    var plans = ctx.plans, pin = ctx.pinterest || {}, sel = plans.featured;
+    var bg = document.createElement("div");
+    bg.className = "gup-bg";
+    bg.setAttribute("role", "dialog");
+    bg.setAttribute("aria-modal", "true");
+    bg.setAttribute("aria-label", "Choose your plan");
+    bg.innerHTML = '<div class="gup"><button class="x" type="button" aria-label="Close">&times;</button><div class="body"></div></div>';
+    document.body.appendChild(bg);
+    var body = bg.querySelector(".body");
+    function close() { if (!bg.classList.contains("busy")) { bg.remove(); document.removeEventListener("keydown", onKey); } }
+    function onKey(e) { if (e.key === "Escape") close(); }
+    document.addEventListener("keydown", onKey);
+    bg.addEventListener("click", function (e) { if (e.target === bg || e.target.closest(".x") || e.target.closest("[data-close]")) close(); });
+
+    function rows() {
+      return plans.items.map(function (p) {
+        var on = p.id === sel;
+        var tag = p.id === plans.featured ? "Recommended" : (p.save ? "Save " + money(p.save) : "");
+        var pm = p.months > 1 ? money(p.per_month) + " / month" : "Billed every month";
+        return '<button type="button" role="radio" aria-checked="' + on + '" class="row' + (on ? " on" : "") + '" data-plan="' + esc(p.id) + '">' +
+          '<span class="rd" aria-hidden="true"></span>' +
+          '<span class="nm"><b>' + esc(p.name) + (tag ? '<span class="tg">' + esc(tag) + '</span>' : "") + '</b><small>' + pm + '</small></span>' +
+          '<span class="pr">' + (p.compare > p.price ? '<s>' + money(p.compare) + '</s>' : "") + '<b>' + money(p.price) + '</b></span></button>';
+      }).join("");
+    }
+    function levels() {
+      var lv = plans.levels || [];
+      if (!lv.length) return "";
+      return '<div class="lv"><p>Extra each month, only when your monthly Pinterest views reach a level:</p>' +
+        lv.map(function (l) { return '<div><span>' + short(l.views) + '+ views</span><b>' + money(l.charge) + ' / month</b></div>'; }).join("") + '</div>';
+    }
+    function payText() { return "Pay " + money(findItem(plans, sel).price); }
+
+    function form() {
+      var b = ctx.billing || {};
+      body.innerHTML = '<h3>Choose your plan</h3>' +
+        '<p class="sub">' + (plans.offer_name ? esc(plans.offer_name) + ' price, ends in <span class="cdv"></span>' : "Pick a plan and we start growing your store visits.") + '</p>' +
+        (b.active ? '<p class="note">Your ' + esc(b.plan_name) + ' plan is active till ' + esc(fmtDate(b.plan_until)) + '. A new plan starts the day it ends.</p>' : "") +
+        '<div class="list" role="radiogroup" aria-label="Plans">' + rows() + '</div>' + levels() +
+        '<div class="foot"><button class="pay" type="button" data-pay>' + payText() + '</button>' +
+        '<div class="err" role="alert"></div>' +
+        '<p class="fine">Secure payment via Razorpay: UPI, cards, netbanking. Cancel any time.' + (plans.test_mode ? " TEST mode: no real money is taken." : "") + '</p></div>';
+      countdown(body.querySelector(".cdv"), plans.offer_end);
+    }
+    function done(b, plan) {
+      var name = (plan && plan.name) || b.plan_name;
+      body.innerHTML = '<div class="ctr"><div class="ok">&#10003;</div><h3>Payment successful</h3>' +
+        '<p class="sub">Your ' + esc(name) + ' plan is active till ' + esc(fmtDate(b.plan_until)) + '. Razorpay will email your receipt.</p>' +
+        (pin.connected
+          ? '<a class="pay" href="/app.html">Open Pin Studio</a>'
+          : '<p class="sub" style="margin-top:10px">Our team will WhatsApp you within 24 hours to set up your Pinterest.</p>' +
+            (plans.whatsapp ? '<a class="pay" target="_blank" rel="noopener" href="' + esc(waLink(plans.whatsapp, "Hi GrowMyPin, I just took the " + name + " plan. Please set up my Pinterest.")) + '">Chat with us on WhatsApp</a>' : "")) +
+        '<button class="lnk" type="button" data-close>Close</button></div>';
+    }
+
+    body.addEventListener("click", function (e) {
+      var r = e.target.closest("[data-plan]");
+      if (r) {
+        sel = r.getAttribute("data-plan");
+        Array.prototype.forEach.call(body.querySelectorAll(".row"), function (x) { var on = x === r; x.classList.toggle("on", on); x.setAttribute("aria-checked", String(on)); });
+        body.querySelector("[data-pay]").textContent = payText();
+        body.querySelector(".err").textContent = "";
+        return;
+      }
+      var pb = e.target.closest("[data-pay]");
+      if (!pb) return;
+      var err = body.querySelector(".err");
+      err.textContent = "";
+      pay(ctx, sel, {
+        onBusy: function (bz, label) { pb.disabled = !!bz; bg.classList.toggle("busy", !!bz); pb.textContent = bz ? (label || "Opening Razorpay") : payText(); },
+        onError: function (m) {
+          if (m.indexOf("__wa__") === 0) {
+            var item = findItem(plans, sel);
+            err.innerHTML = esc(m.slice(6)) + (plans.whatsapp ? ' <a target="_blank" rel="noopener" href="' + esc(waLink(plans.whatsapp, "Hi GrowMyPin, I want the " + item.name + " plan (" + money(item.price) + ").")) + '">Chat on WhatsApp</a>' : "");
+          } else err.textContent = m;
+        },
+        onPaid: function (b, plan) { bg.classList.remove("busy"); ctx.billing = b; done(b, plan); if (ctx.onPaid) ctx.onPaid(b); }
+      });
+    });
+    form();
+    return { close: close };
+  }
+
+  window.GMPPlans = { reveal: reveal, section: section, success: showSuccess, simple: simple, money: money };
 })();
