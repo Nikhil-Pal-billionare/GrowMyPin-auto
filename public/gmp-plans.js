@@ -515,6 +515,7 @@
     ".gup .pr{text-align:right;white-space:nowrap}" +
     ".gup .pr b{display:block;font-size:1.05rem}" +
     ".gup .pr s{color:#8A93A0;font-size:.78rem}" +
+    ".gup .pr .off{margin-left:6px;font-size:.72rem;font-weight:800;color:#fff;background:#E2553B;border-radius:6px;padding:1px 6px}" +
     ".gup .lv{margin-top:14px;padding:12px 14px;border-radius:14px;background:#F7F8FA;font-size:.86rem}" +
     ".gup .lv p{margin:0 0 8px;color:#5B6470}" +
     ".gup .lv div{display:flex;justify-content:space-between;padding:4px 0;border-top:1px solid #E9ECF0}" +
@@ -550,12 +551,14 @@
     function rows() {
       return plans.items.map(function (p) {
         var on = p.id === sel;
-        var tag = p.id === plans.featured ? "Recommended" : (p.save ? "Save " + money(p.save) : "");
+        // tag from Admin > Plans (e.g. Bestseller); featured plan without a tag shows Recommended
+        var tag = p.tag || (p.id === plans.featured ? "Recommended" : "");
         var pm = p.months > 1 ? money(p.per_month) + " / month" : "Billed every month";
+        var off = p.off_pct ? '<span class="off">' + p.off_pct + '% off</span>' : "";
         return '<button type="button" role="radio" aria-checked="' + on + '" class="row' + (on ? " on" : "") + '" data-plan="' + esc(p.id) + '">' +
           '<span class="rd" aria-hidden="true"></span>' +
           '<span class="nm"><b>' + esc(p.name) + (tag ? '<span class="tg">' + esc(tag) + '</span>' : "") + '</b><small>' + pm + '</small></span>' +
-          '<span class="pr">' + (p.compare > p.price ? '<s>' + money(p.compare) + '</s>' : "") + '<b>' + money(p.price) + '</b></span></button>';
+          '<span class="pr">' + (p.compare > p.price ? '<s>' + money(p.compare) + '</s>' : "") + off + '<b>' + money(p.price) + '</b></span></button>';
       }).join("");
     }
     function levels() {

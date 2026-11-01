@@ -81,9 +81,9 @@ export const DEFAULT_PLANS = {
   enabled: true,
   items: [
     { id: "m1", on: true, name: "Monthly", months: 1, price: 1499, compare: 2999, tag: "Diwali price", levels: true },
-    { id: "m3", on: true, name: "3 months", months: 3, price: 2999, compare: 0, tag: "Recommended", levels: true },
-    { id: "m6", on: true, name: "6 months", months: 6, price: 5999, compare: 0, tag: "", levels: true },
-    { id: "m12", on: true, name: "1 year", months: 12, price: 11999, compare: 0, tag: "Best value", levels: true }
+    { id: "m3", on: true, name: "3 months", months: 3, price: 2699, compare: 4497, tag: "Bestseller", levels: true },
+    { id: "m6", on: true, name: "6 months", months: 6, price: 5999, compare: 8994, tag: "", levels: true },
+    { id: "m12", on: true, name: "1 year", months: 12, price: 11999, compare: 17988, tag: "Best value", levels: true }
   ],
   featured: "m3",
   levels: [
